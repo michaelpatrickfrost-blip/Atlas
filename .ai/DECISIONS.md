@@ -1,3 +1,44 @@
+## 12 October 2026 — explicit immutable dashboard embedding and registry composition
+
+Pages may embed a saved View only through an explicit owning Page policy opt-in
+and an exact tenant/version/schema/checksum graph edge. Core stays module-neutral;
+Analytics supplies a pure bounded count/chart display adapter. A newer active
+View does not substitute a Page's immutable saved pin. Current Read for every used
+native source and actual combined query cost precede nested View providers; hidden
+Views issue no native queries. Profile eligibility remains closed. The forward
+migration widens only the existing dependency-kind CHECK, keeping all original
+FK/history/completeness/graph guards and requiring original migration/recovery gates.
+
+Registry composition registers declarative View owners first, then original
+remaining module bundles, because strict Page registration requires an approved
+View source to exist. This removes a fragile module-list ordering dependency while
+retaining all original duplicate/hash/owner validations and exact contribution IDs;
+Core still imports no business module directly. Retained source hashes are not
+changed by absent opt-in. New @3 authoring stays behind actual paired-reader proof.
+
+## 12 October 2026 — retained Page policies and field historical metadata
+
+Adding safe owner Page panels must not invalidate a sealed previous Page. Preserve
+its exact registered source policy/hash and compile retained restore/comparison/
+activation against that source, with fresh current owner and used projection grants.
+Allow only strict append-only query/surface/metric declarations (same ordered retained
+hashes, entity, access, fields/facts/commands/variants and bounded budget).
+Sales source@2 adds one genuine anchored money total query/metric; exact source@1
+policy/budget and old metric prefixes remain. Its actual candidate+rollback family
+fence prevents old readers receiving the new source. No Finance writes or report engine.
+New Ticket source@2 is gated by its own actual candidate+rollback reader family;
+trusted new-authoring can choose approved retained@1 until that family is available.
+Stored@2 never falls back silently. This adapts versioning to existing Atlas owner
+contracts without changing the specification's immutability/security requirements.
+
+Field status and settlement history do not return or use old literal defaults.
+The separately named HistoricalMetadata guard skips only unused retained default
+VALUE lookup, avoiding deleted old reference defaults blocking legitimate history.
+Current/source/target/written schema/seal/module/native/reference CONTRACT policies
+and original actual-value/history/ref coverage remain. Mutation preparation,
+publishing, execution and cutover still authorise actual default values; no client
+mode or generic bypass. Root reviewed helperf41d and independent source review.
+
 ## 11 October 2026 — One publisher and genuine standalone visual Studio context
 
 The standalone /design-studio route sits outside Admin/customer shell chrome;

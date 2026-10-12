@@ -6,12 +6,18 @@ import type { PageApprovals } from "@/core/studio/pages/approvals";
 import { compilePage } from "@/core/studio/pages/compiler";
 import { checksum } from "@/core/studio/registry/contracts";
 const m = vi.hoisted(() => ({ stamps: new WeakMap<object, object>(), refresh: vi.fn(), withAuthority: vi.fn(), profile: vi.fn(), owner: vi.fn(), version: vi.fn(), definition: vi.fn(), read: vi.fn(), approvals: vi.fn(), resolve: vi.fn(), invoke: vi.fn() }));
-vi.mock("@/core/auth/session", () => ({ sessionAuthorityStamp: (session: object) => m.stamps.get(session) }));
+vi.mock("@/core/auth/session", async () => {
+  const actual = await vi.importActual<typeof import("@/core/auth/session")>("@/core/auth/session");
+  return { ...actual, sessionAuthorityStamp: (session: Session) => actual.sessionAuthorityStamp(session) ?? m.stamps.get(session) };
+});
+vi.mock("@/core/db/client", () => ({ db: {} }));
 vi.mock("@/core/studio/fields/runtime-authority", () => ({ fieldRuntimeAuthorityInTransaction: m.refresh, withFieldRuntimeAuthority: m.withAuthority }));
 vi.mock("@/core/studio/record-types/runtime-profile", () => ({ resolveRecordProfileInTransaction: m.profile }));
 vi.mock("@/core/studio/pages/server-approvals", () => ({ reconstructPageApprovalsInTransaction: m.approvals }));
 vi.mock("@/core/studio/pages/runtime", () => ({ readPublishedPageInTransaction: m.read }));
 import { readRecordDefaultCustomerPage, readRecordDefaultCustomerPageInTransaction, prepareVisibleRecordDefaultActionInTransaction, prepareVisibleRecordDefaultSurfaceInTransaction, recordDefaultCustomerPageTarget, recordDefaultCustomerPageTargetInTransaction } from "@/core/studio/pages/record-default";
+import { sessionForUser, sessionAuthorityStamp } from "@/core/auth/session";
+import { assertCapability } from "@/core/permissions/check";
 
 // Real strict Page compiler and exact retained configuration seal/edge verifier.
 // Native owner/private access, fresh identity, canonical assignment/profile and
@@ -73,6 +79,51 @@ it("uses the exact profile-selected retained Page and genuine current native/pro
   expect(m.definition.mock.calls[0][0]).toEqual({ where: { id: uuid(1), organisationId: "company", kind: "page", retiredAt: null },
     select: { id: true, organisationId: true, name: true, revision: true } });
   expect(view).not.toHaveProperty("page"); expect(view).not.toHaveProperty("authority");
+});
+it("reconstructs the retained embedded View pin under real issued authority and propagates current View denial without following a new active head", async () => {
+  // Actual private server stamp issuance; membership storage/current refresh,
+  // native/profile access, approval metadata and shared reader remain explicit
+  // collaborators. Real seal/edge verification and Page compilation are used.
+  const membership = { id: "member", organisationId: "company", userId: "actor", active: true, sessionVersion: 4,
+    grantedCapabilities: ["tickets.ticket.read", "analytics.dashboard.read"], deniedCapabilities: [], roles: [],
+    user: { name: "Actor", email: "actor@example.test", authVersion: 3, platformAdmin: null },
+    organisation: { name: "Company", kind: "CUSTOMER", status: "ACTIVE", auditAccess: {}, restrictedAccessAreas: [] } };
+  const membershipClient = { membership: { findUnique: vi.fn().mockResolvedValue(membership) } } as unknown as Pick<Prisma.TransactionClient, "membership">;
+  const currentSession = (await sessionForUser("company", "actor", membershipClient))!;
+  const actualStamp = sessionAuthorityStamp(currentSession)!;
+  expect(actualStamp).toMatchObject({ authVersion: 3, sessionVersion: 4 });
+  expect(sessionAuthorityStamp({ ...currentSession })).toBeUndefined();
+  const current: FieldRuntimeAuthority = { ...authority, session: currentSession, stamp: actualStamp };
+  m.refresh.mockResolvedValue(current);
+  const viewPin = { kind: "view" as const, definitionId: uuid(40), versionId: uuid(41), schemaVersion: 1 as const, checksum: "e".repeat(64) };
+  const sourceView = { ...ref("analytics.dashboard.view"), ownerModuleId: "analytics", capability: "analytics.dashboard.read", kind: "surface" as const, classification: "confidential" as const };
+  const plan = compilePage({ ...stored.payload, sections: stored.payload.sections.map(section => ({ ...section,
+    components: [...section.components, { id: "overview", type: "analyticsView" as const, view: viewPin, formFactors: ["phone" as const] }] })) },
+    { ...stored.compiledPlan.approvals, maxQueryCost: 16, embeddedViews: [{ reference: viewPin, sourceView,
+      dependencies: [{ ...ref("analytics.dashboard.view"), ownerModuleId: "analytics", kind: "surface", classification: "confidential" }], queryCount: 1, queryCost: 8 }] });
+  Object.assign(stored, { payload: plan.payload, compiledPlan: plan, checksum: checksum(plan), configurationDependencies: [{
+    organisationId: "company", definitionId: stored.definitionId, versionId: stored.id,
+    targetDefinitionId: viewPin.definitionId, targetVersionId: viewPin.versionId, targetKind: "view", targetSchemaVersion: 1, targetChecksum: viewPin.checksum }] });
+  pin.checksum = stored.checksum;
+  m.approvals.mockImplementation(async (_authority, request) => {
+    expect(request).toEqual({ sourcePage: storedSource, customFields: [], embeddedViews: [viewPin] });
+    return stored.compiledPlan.approvals;
+  });
+  const project = vi.fn(() => ({ formFactor: "phone", variantId: null, sections: [{ id: "main", components: [{ id: "overview", type: "analyticsView", output: { view: viewPin } }] }] }));
+  m.read.mockImplementation(async (fresh, request) => {
+    assertCapability(fresh.session, "analytics.dashboard.read");
+    expect(request.page).toEqual(pin);
+    return project();
+  });
+  const model = await readRecordDefaultCustomerPageInTransaction(current, input);
+  expect(model?.model.sections[0].components[0]).toMatchObject({ output: { view: { versionId: uuid(41) } } });
+  expect(m.approvals).toHaveBeenCalledWith(current, { sourcePage: storedSource, customFields: [], embeddedViews: [viewPin] });
+  expect(m.definition.mock.calls.every(([request]) => !Object.hasOwn(request.select, "activeVersionId"))).toBe(true);
+  currentSession.capabilities.delete("analytics.dashboard.read");
+  await expect(readRecordDefaultCustomerPageInTransaction(current, input)).rejects.toThrow("FORBIDDEN");
+  expect(m.read).toHaveBeenCalledTimes(2);
+  expect(project).toHaveBeenCalledOnce();
+  expect(m.invoke).not.toHaveBeenCalled();
 });
 it("wrapper reuses one fresh ordinary authority transaction without needing Studio authoring permissions", async () => {
   await readRecordDefaultCustomerPage(session, input);

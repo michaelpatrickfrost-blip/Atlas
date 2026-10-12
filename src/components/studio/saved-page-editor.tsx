@@ -7,6 +7,7 @@ import { createDesignPageDisplayModel, type PagePresentationCatalog } from "@/co
 import type { PageDisplayModel } from "@/core/studio/pages/render-model";
 import { StudioPageEditor, type PageEditorCanvasProps, type PageEditorFieldChoice, type PageEditorPaletteItem, type PageEditorPreset, type PageEditorSaveResult } from "./page-editor";
 import { PageRenderer } from "./page-renderer";
+import { EmbeddedBusinessView } from "@/modules/analytics/components/embedded-business-view";
 import type { PageEditorConditions } from "./page-conditions-model";
 
 type Version = { id: string; label: string; publishedAt?: string };
@@ -223,7 +224,8 @@ function Canvas({ canvas, catalog, actual, onFormFactor, onAlternateSamples }: {
   useEffect(() => { onFormFactor(canvas.formFactor); }, [canvas.formFactor, onFormFactor]);
   useEffect(() => { onAlternateSamples(!!canvas.designVariantId); }, [canvas.designVariantId, onAlternateSamples]);
   const model = !canvas.designVariantId && actual?.formFactor === canvas.formFactor ? actual : createDesignPageDisplayModel(canvas.page, catalog, canvas.formFactor);
-  return <PageRenderer model={model} interaction="design_only" selection={canvas.selection} onSelect={canvas.onSelect} />;
+  return <PageRenderer model={model} interaction="design_only" selection={canvas.selection} onSelect={canvas.onSelect}
+    renderAnalyticsView={component => <EmbeddedBusinessView output={component.output}/>}/>;
 }
 function EditorDialog({ titleId, title, busy, onClose, children, wide = false }: { titleId: string; title: string; busy: boolean; onClose: () => void; children: ReactNode; wide?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);

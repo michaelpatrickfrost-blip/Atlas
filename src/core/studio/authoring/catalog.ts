@@ -1,7 +1,10 @@
 import type { FieldRuntimeAuthority } from "../fields/runtime-authority";
 import type { ContractMetadata } from "../registry/types";
 import { reconstructPageApprovalsInTransaction } from "../pages/server-approvals";
-import { authoredPageFieldPins, pageReadScope } from "../pages/definition-compiler";
+import { authoredPageFieldPins, authoredPageViewPins, pageReadScope, resolveAuthoringPageSource } from "../pages/definition-compiler";
+import { inspectSealedViewForReadInTransaction } from "../views/runtime";
+import { reconstructEmbeddedViewApproval } from "../pages/embedded-views";
+import { viewVersionReferenceSchema } from "../views/schema";
 import { compilePage } from "../pages/compiler";
 import type { PagePayload } from "../pages/schema";
 import type { PagePresentationCatalog } from "../pages/design-model";
@@ -24,8 +27,11 @@ export async function discoverPageScreensInTransaction(authority: FieldRuntimeAu
   for (const source of sources) if ((latest.get(source.id)?.version ?? 0) < source.version) latest.set(source.id, source);
   const result = [];
   for (const source of latest.values()) {
-    const resolved = await authority.registry.resolvePageSourcePolicy({ session: authority.session, transaction: authority.transaction }, ref(source));
-    result.push({ sourcePage: ref(source), entity: ref(resolved.source), name: resolved.source.label,
+    const candidate = authority.registry.describePageSource(ref(source));
+    const selected = resolveAuthoringPageSource(authority,
+      ref(authority.registry.describe(candidate.policy.entity.id, candidate.policy.entity.version)));
+    const resolved = await authority.registry.resolvePageSourcePolicy({ session: authority.session, transaction: authority.transaction }, ref(selected.metadata));
+    result.push({ sourcePage: ref(selected.metadata), entity: ref(resolved.source), name: resolved.source.label,
       owner: resolved.source.ownerModuleId, variants: resolved.policy.variants });
   }
   return result.sort((left, right) => left.name.localeCompare(right.name));
@@ -36,7 +42,7 @@ export async function discoverPageScreensInTransaction(authority: FieldRuntimeAu
  */
 export async function pageEditorCatalogInTransaction(authority: FieldRuntimeAuthority, page: PagePayload) {
   assertCapability(authority.session, STUDIO_CAPABILITIES.read);
-  const source = authority.registry.describePageSourceForEntity(page.entity), metadata = source.metadata;
+  const source = resolveAuthoringPageSource(authority, page.entity), metadata = source.metadata;
   const selected = authoredPageFieldPins(page);
   const activeFields = source.policy.fieldSourceVersions.length ? await authority.transaction.studioDefinition.findMany({
     where: { organisationId: authority.session.organisationId, kind: "customField", retiredAt: null,
@@ -55,7 +61,8 @@ export async function pageEditorCatalogInTransaction(authority: FieldRuntimeAuth
     if (field.readCapability && !authority.session.capabilities.has(field.readCapability)) continue;
     available.push({ kind: "customField", definitionId: definition.id, versionId: version.id, schemaVersion: sealed.schemaVersion, checksum: version.checksum });
   }
-  const approvals = await reconstructPageApprovalsInTransaction(authority, { sourcePage: ref(metadata), customFields: available });
+  const approvals = await reconstructPageApprovalsInTransaction(authority, { sourcePage: ref(metadata), customFields: available,
+    embeddedViews: authoredPageViewPins(page) });
   const scope = pageReadScope(compilePage(page, approvals), source.policy);
   const allowed = (capability?: string) => !capability || authority.session.capabilities.has(capability);
   const authorized = async (reference: { id: string; version: number; schemaHash: string; contractHash: string }) => {
@@ -103,11 +110,39 @@ export async function pageEditorCatalogInTransaction(authority: FieldRuntimeAuth
     palette.push({ key: `command:${command.id}`, label, description: "A button for an approved app operation.", component: { type: "action", label,
       command: ref(command), collectInput: "owner_schema", confirm: true, preview: false, formFactors: [...command.formFactors] } });
   }
+  for (const metric of approvals.metrics) if (await authorized(metric) && readableQueries.has(`${metric.query.id}@${metric.query.version}`)) {
+    const label = authority.registry.describe(metric.id, metric.version).label;
+    catalog.metrics.push({ id: metric.id, version: metric.version, label });
+    palette.push({ key: `metric:${metric.id}`, label, description: "Show a key number from the app's current record.", component: {
+      type: "metric", label, metric: ref(metric), formFactors: [...metric.formFactors] } });
+  }
+  // Only a Page owner's explicit opt-in can offer saved immutable dashboards.
+  // Inspect each complete seal and current used-source Read before its name is
+  // returned. Discovery performs no count/provider queries or active substitution.
+  if (source.policy.embeddedViewSources?.length) {
+    const views = await authority.transaction.studioDefinition.findMany({ where: { organisationId: authority.session.organisationId,
+      kind: "view", retiredAt: null, activeVersionId: { not: null } }, include: { activeVersion: true }, orderBy: { id: "asc" }, take: 101 });
+    if (views.length > 100) throw new Error("This business exceeds its approved saved-dashboard limit.");
+    for (const definition of views) {
+      try {
+        const version = definition.activeVersion;
+        if (!version || definition.organisationId !== authority.session.organisationId || definition.activeVersionId !== version.id) continue;
+        const pin = viewVersionReferenceSchema.parse({ kind: "view", definitionId: definition.id, versionId: version.id,
+          schemaVersion: version.schemaVersion, checksum: version.checksum });
+        const approval = await reconstructEmbeddedViewApproval(authority, pin, source.policy);
+        await inspectSealedViewForReadInTransaction(authority, pin, approval.sourceView.id);
+        palette.push({ key: `view:${definition.id}`, label: definition.name, description: "Add this saved dashboard version. Its figures use each viewer's current access.",
+          component: { type: "analyticsView", label: definition.name, view: pin, formFactors: [...forms] } });
+      } catch (error) {
+        if (!(error instanceof Error) || !/^(FORBIDDEN|DEPENDENCY_BROKEN|NOT_FOUND):/.test(error.message)) throw error;
+      }
+    }
+  }
   const declaredFacts = entityDetailsSchema.parse(source.source.details).record?.requiredFacts?.facts ?? [];
   for (const surface of approvals.surfaces) if (scope === "record" && await authorized(surface)) {
     const label = authority.registry.describe(surface.id, surface.version).label;
     catalog.surfaces.push({ id: surface.id, version: surface.version, label });
-    palette.push({ key: `surface:${surface.id}`, label, description: "The app's complete authorised form, including additional fields.", component: {
+    palette.push({ key: `surface:${surface.id}`, label, description: surface.id === "tickets.ticket.progress_form" ? "The app's complete authorised form, including additional fields." : "An approved read-only panel from the app, using its current record access.", component: {
       type: "surface", label, family: surface.family, surface: ref(surface), formFactors: [...surface.formFactors] } });
   }
   const readableFacts: typeof approvals.facts = [];

@@ -14,12 +14,13 @@ export type PageRendererProps = {
   onNext?: (componentId: string, cursor: NonNullable<Extract<PageDisplayComponent, { type: "queryList" }>["nextCursor"]>) => void;
   onRecordSelect?: (componentId: string, recordId: string) => void;
   renderSurface?: (component: Extract<PageDisplayComponent, { type: "surface" }>) => ReactNode;
+  renderAnalyticsView?: (component: Extract<PageDisplayComponent, { type: "analyticsView" }>) => ReactNode;
 };
 const grids = ["", "grid-cols-1", "grid-cols-2", "grid-cols-3"];
 /** One renderer for customer pages and labelled Studio sample/live previews.
  * Design interaction cannot invoke a command, paginate protected data or navigate
  * business records. Live callbacks go back through the owning server endpoints. */
-export function PageRenderer({ model, interaction, selection, onSelect, onAction, onNext, onRecordSelect, renderSurface }: PageRendererProps) {
+export function PageRenderer({ model, interaction, selection, onSelect, onAction, onNext, onRecordSelect, renderSurface, renderAnalyticsView }: PageRendererProps) {
   const design = interaction === "design_only";
   const selected = (kind: Selection["kind"], id: string) => design && selection?.kind === kind && selection.id === id;
   return <div className="space-y-6" data-page-form-factor={model.formFactor}>
@@ -43,7 +44,8 @@ export function PageRenderer({ model, interaction, selection, onSelect, onAction
               {component.nextCursor && <Button type="button" variant="ghost" className="mt-3" disabled={design || !onNext} onClick={() => { if (!design && component.nextCursor) onNext?.(component.id, component.nextCursor); }}>Next page</Button>}
             </div> : component.type === "instructions" || component.type === "callout" ? <p className={`whitespace-pre-wrap text-sm leading-6 ${component.type === "callout" && component.tone === "warning" ? "text-amber-800" : component.type === "callout" && component.tone === "success" ? "text-emerald-800" : "text-[var(--color-ink-muted)]"}`}>{component.text}</p>
               : component.type === "action" ? <Button type="button" variant="primary" disabled={design || !onAction} onClick={() => { if (!design) onAction?.(component.id); }}>{component.label || "Continue"}</Button>
-                : component.type === "surface" && !design && renderSurface ? renderSurface(component) : <p className="text-sm text-[var(--color-ink-muted)]">This area is supplied by the owning app.</p>}
+                : component.type === "analyticsView" ? renderAnalyticsView?.(component) ?? <p className="text-sm text-[var(--color-ink-muted)]">{component.output ? "This saved dashboard needs its approved chart display." : "Saved dashboard preview. Use the actual-record preview to load figures with your current access."}</p>
+                  : component.type === "surface" && !design && renderSurface ? renderSurface(component) : <p className="text-sm text-[var(--color-ink-muted)]">This area is supplied by the owning app.</p>}
         </div>)}
       </div>
     </section>)}

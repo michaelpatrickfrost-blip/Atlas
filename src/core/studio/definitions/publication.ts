@@ -8,12 +8,15 @@ import { bindPublishedField } from "../fields/binding";
 import type { compileConditionalCustomField } from "../fields/conditional-compiler";
 import type { VersionedFieldPayload } from "../fields/required-contract";
 import { lockFieldEntitiesInTransaction } from "../fields/entity-lock";
-import { assertStudioRuntimeFeatureEnabled, studioRuntimeFeaturesForPayload } from "../runtime-features";
+import { assertStudioRuntimeFeatureEnabled, studioRuntimeFeaturesForCompiledDefinition } from "../runtime-features";
 import type { CompiledRecordProfile } from "../record-types/compiler";
 import type { CompiledPageDefinition } from "../pages/definition-compiler";
 import type { CompiledViewDefinition } from "../views/definition-compiler";
 import { bindPublishedProfile } from "../record-types/binding";
 import { inspectConfigurationGraph } from "../configuration/pins";
+import { assertSameViewOwner } from "../views/origin";
+import { inspectViewVersionPin } from "../views/seal";
+import { sealedConfigurationVersionSelection } from "../configuration/pins";
 import { pagePayloadSchema } from "../pages/schema";
 
 export type PublicationDraft = Prisma.StudioDraftGetPayload<{ include: { definition: true; baseVersion: { select: { version: true } } } }>;
@@ -36,7 +39,7 @@ export async function publishCompiledDefinitionInTransaction(tx: Prisma.Transact
   if (draft.organisationId !== session.organisationId || draft.definition.organisationId !== session.organisationId
     || draft.definitionId !== draft.definition.id || draft.revision !== expectedRevision || draft.definition.kind !== compiled.plan.kind
     || draft.definition.latestVersion !== (draft.baseVersion?.version ?? 0)) conflict();
-  for (const feature of studioRuntimeFeaturesForPayload(compiled.plan.kind, compiled.plan.payload)) assertStudioRuntimeFeatureEnabled(feature);
+  for (const feature of studioRuntimeFeaturesForCompiledDefinition(compiled.plan.kind, compiled.plan.payload, compiled.plan)) assertStudioRuntimeFeatureEnabled(feature);
   const definitionId = draft.definitionId;
   const modules = [...new Set(compiled.plan.dependencies.map(d => d.ownerModuleId))];
   const available = await tx.moduleState.count({ where: { organisationId: session.organisationId, moduleId: { in: modules }, enabled: true, entitled: true } });
@@ -53,6 +56,17 @@ export async function publishCompiledDefinitionInTransaction(tx: Prisma.Transact
       definitionId, version: 1, definition: { kind: "page", retiredAt: null } }, select: { payload: true } });
     if (!origin || pagePayloadSchema.parse(origin.payload).entity.id !== compiled.plan.payload.entity.id)
       throw new Error("A published screen keeps its original business area. Create a new screen for a different app.");
+  }
+  if (compiled.plan.kind === "view") {
+    assertSameViewOwner(draft.payload, compiled.payload);
+    if (draft.definition.latestVersion > 0) {
+      const origin = await tx.studioDefinitionVersion.findFirst({ where: { organisationId: session.organisationId,
+        definitionId, version: 1, definition: { kind: "view", retiredAt: null } }, select: sealedConfigurationVersionSelection });
+      if (!origin) conflict();
+      inspectViewVersionPin(session.organisationId, { kind: "view", definitionId, versionId: origin.id,
+        schemaVersion: origin.schemaVersion, checksum: origin.checksum }, origin);
+      assertSameViewOwner(origin.payload, compiled.payload);
+    }
   }
   const changed = await tx.studioDefinition.updateMany({ where: { id: definitionId, organisationId: session.organisationId,
     revision: draft.definition.revision, latestVersion: draft.definition.latestVersion, retiredAt: null }, data: { latestVersion: { increment: 1 }, revision: { increment: 1 } } });

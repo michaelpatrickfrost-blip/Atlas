@@ -616,3 +616,17 @@ by compilation. Analytics `analytics.dashboard.view@1` is the first finite compl
 count-measure family. Original personal Analytics boards/providers remain intact.
 Compiler availability alone grants no publication/readiness: original immutable
 publisher plus compatible customer readers and actual gates are separate work.
+
+
+## Page owners embedding saved Views — 12 October 2026
+
+A Page-source policy can opt in to a finite exact `embeddedViewSources` list. A
+structured `analyticsView` component carries an immutable View definition/version/
+schema/checksum pin; no arbitrary queries or executable code. Approval reconstruction
+checks the actual sealed View source/dependencies against that owner policy. All used
+current native Read/module/tenant permissions remain independent of design visibility.
+Actual declared query cost/count contributes to the Page's combined runtime budget.
+Owners without opt-in retain their old contracts. Approved display remains module-owned
+and pure; Core owns only typed registry/runtime contracts. New Sales/Ticket source@3
+inherits all retained@2 surfaces and requires the paired embedding reader feature;
+old stored sources never silently upgrade or change checksums.

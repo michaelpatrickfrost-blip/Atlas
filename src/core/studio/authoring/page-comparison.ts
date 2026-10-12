@@ -5,7 +5,7 @@ import type { FieldRuntimeAuthority } from "../fields/runtime-authority";
 import { STUDIO_CAPABILITIES } from "../permissions";
 import { checksum } from "../registry/contracts";
 import { loadSealedConfigurationVersion } from "../configuration/pins";
-import { compileStructuredPage } from "../pages/definition-compiler";
+import { compileRetainedStructuredPage } from "../pages/definition-compiler";
 import { createDesignPageDisplayModel } from "../pages/design-model";
 import { formFactorSchema } from "../pages/schema";
 import { pageEditorCatalogInTransaction } from "./catalog";
@@ -27,7 +27,7 @@ export async function comparePageVersionInTransaction(authority: FieldRuntimeAut
   if (!row) throw new Error("This published design is unavailable.");
   const version = await loadSealedConfigurationVersion(authority.session, tx, { kind: "page", definitionId: definition.id,
     versionId: row.id, schemaVersion: row.schemaVersion, checksum: row.checksum });
-  const compiled = await compileStructuredPage(authority, version.payload);
+  const compiled = await compileRetainedStructuredPage(authority, version);
   if (compiled.checksum !== version.checksum || checksum(version.compiledPlan) !== compiled.checksum)
     throw new Error("DEPENDENCY_BROKEN: this previous design needs a fresh review.");
   if (!compiled.payload.formFactors.includes(value.formFactor)) throw new Error("This previous design does not support this preview size.");

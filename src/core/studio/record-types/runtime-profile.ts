@@ -13,7 +13,7 @@ import { entityProfilePayloadSchema, recordTypePayloadSchema, configurationRefer
   type ConfigurationReference, type EntityProfileReference, type EntityProfile, type EntityProfilePayload, type RecordTypePayload } from "./schema";
 import { resolveEntityProfile, resolveRecordTypeProfile } from "./resolver";
 import { recordTypeAssignmentProvenanceSchema } from "./assignment-contract";
-import { authoredPageFieldPins } from "../pages/definition-compiler";
+import { authoredPageFieldPins, authoredPageViewPins } from "../pages/definition-compiler";
 import { reconstructPageMetadataInTransaction } from "../pages/server-approvals";
 import { compilePage } from "../pages/compiler";
 import { compileCustomFieldForInitialisation } from "../compiler/fields";
@@ -84,7 +84,7 @@ export async function inspectRecordProfileInTransaction(authority: FieldRuntimeA
     const stored = z.object({ approvals: pageApprovalsSchema }).parse(pageVersion.compiledPlan);
     const { id, version, schemaHash, contractHash } = stored.approvals.sourcePage;
     const sourcePage = { id, version, schemaHash, contractHash };
-    const approvals = await reconstructPageMetadataInTransaction(authority, { sourcePage, customFields: authoredPageFieldPins(page) });
+    const approvals = await reconstructPageMetadataInTransaction(authority, { sourcePage, customFields: authoredPageFieldPins(page), embeddedViews: authoredPageViewPins(page) });
     const compiledPage = compilePage(page, approvals);
     if (page.entity.id !== resolved.entity.id || checksum(compiledPage) !== pageVersion.checksum) invalid();
     for (const ref of compiledPage.dependencies) add(ref);

@@ -20,6 +20,38 @@ function mount(options: Partial<FieldChangeEditorProps> = {}) {
   return callbacks;
 }
 describe("friendly published field change editor", () => {
+  it("keeps the reviewed text mapping after a saved draft remount, and editing it blocks preview", async () => {
+    const stringField: AdditionalFieldMigrationSetup = { ...initial,
+      source: { kind: "editable", initial: { label: "Priority note", help: "", type: "string", settings: { minLength: 0, maxLength: 100, multiline: false, characters: "any" } } },
+      target: { kind: "editable", initial: { label: "Priority note", help: "", type: "enum", settings: { choices: ["Urgent", "Normal"] } } } };
+    const save = vi.fn<FieldChangeEditorProps["callbacks"]["save"]>(async () => ({ ...stringField, draftRevision: 4 }));
+    const preview = vi.fn<FieldChangeEditorProps["callbacks"]["preview"]>(async () => { throw new Error("No actual values in this UI test"); });
+    mount({ initial: stringField, callbacks: { save, preview } });
+    fireEvent.change(screen.getByLabelText("Existing text 1"), { target: { value: "critical" } });
+    fireEvent.change(screen.getByLabelText("Change to choice 1"), { target: { value: "1" } });
+    fireEvent.change(screen.getByLabelText("Other text values"), { target: { value: "empty" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save new settings" }));
+    await screen.findByText("New settings saved as a draft. The live field is unchanged.");
+    expect((screen.getByLabelText("Existing text 1") as HTMLInputElement).value).toBe("critical");
+    expect((screen.getByLabelText("Change to choice 1") as HTMLSelectElement).value).toBe("1");
+    fireEvent.click(screen.getByRole("button", { name: "Preview saved change" }));
+    await waitFor(() => expect(preview).toHaveBeenCalledWith(expect.objectContaining({ draftRevision: 4,
+      conversion: { kind: "string_to_enum", mapping: [{ from: "critical", toChoice: 1 }], unmapped: "empty" } })));
+    fireEvent.change(screen.getByLabelText("Existing text 1"), { target: { value: "changed" } });
+    expect(screen.getByRole("button", { name: "Preview saved change" }).hasAttribute("disabled")).toBe(true);
+  });
+  it("keeps explicit time-loss review after saving the date conversion", async () => {
+    const dateField: AdditionalFieldMigrationSetup = { ...initial,
+      source: { kind: "editable", initial: { label: "Due", help: "", type: "datetime", settings: {} } },
+      target: { kind: "editable", initial: { label: "Due", help: "", type: "date", settings: {} } } };
+    const save = vi.fn<FieldChangeEditorProps["callbacks"]["save"]>(async () => ({ ...dateField, draftRevision: 4 }));
+    mount({ initial: dateField, callbacks: { save, preview: vi.fn() } });
+    fireEvent.click(screen.getByRole("checkbox", { name: "Allow the time of day to be removed in the review" }));
+    fireEvent.click(screen.getByRole("button", { name: "Save new settings" }));
+    await screen.findByText("New settings saved as a draft. The live field is unchanged.");
+    expect((screen.getByRole("checkbox", { name: "Allow the time of day to be removed in the review" }) as HTMLInputElement).checked).toBe(true);
+    expect(save).toHaveBeenCalledWith(expect.objectContaining({ conversion: { kind: "datetime_to_date", timezone: "UTC", loss: "allow_time_loss" } }));
+  });
   it("preserves entered values on failed save and requires saved settings before preview", async () => {
     const callbacks = mount(); callbacks.save.mockRejectedValueOnce(new Error("CONFLICT"));
     fireEvent.change(screen.getByLabelText("Largest value"), { target: { value: "20" } });

@@ -3,7 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
+import { TicketRecordSurface } from "@/components/service-work/ticket-record-panels";
 import { PageRenderer } from "@/components/studio/page-renderer";
+import { EmbeddedBusinessView } from "@/modules/analytics/components/embedded-business-view";
 import type { PageDisplayModel } from "@/core/studio/pages/render-model";
 import type { PageReadRequest, PageQueryOutput } from "@/core/studio/pages/owner-contract";
 import { loadBusinessScreen, loadRecordBusinessScreen, executeBusinessScreenButton, openBusinessScreenRecord } from "../actions";
@@ -69,9 +71,11 @@ export function PublishedBusinessScreen({ initial, request, surfaces = {} }: { i
     finally { setBusy(false); }
   };
   return <div aria-busy={busy}>{feedback && <p role="alert" className="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">{feedback}</p>}
-    <PageRenderer model={view.model} interaction="live" onNext={next} onAction={action} onRecordSelect={openRecord} renderSurface={component =>
+    <PageRenderer model={view.model} interaction="live" onNext={next} onAction={action} onRecordSelect={openRecord}
+      renderAnalyticsView={component => <EmbeddedBusinessView output={component.output}/>} renderSurface={component =>
       (view.versionId === initial.versionId && view.definitionRevision === initial.definitionRevision
         && view.model.formFactor === initial.model.formFactor && view.mode === initial.mode
         && view.profileFingerprint === initial.profileFingerprint && view.nativeRevision === initial.nativeRevision ? surfaces[component.id] : undefined)
+      ?? (component.surface ? <TicketRecordSurface surface={component.surface} outputs={component.outputs}/> : null)
       ?? <p className="text-sm text-slate-500">This app form has changed. Refresh to load its current version.</p>}/></div>;
 }

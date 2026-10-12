@@ -452,3 +452,18 @@ cloning personal Dashboard rows or introducing another execution store. Current
 source compiler exists; publication/readiness/customer renderer remain workstreams
 and do not have a live completion claim. See modules/ANALYTICS_STUDIO.md and the
 Studio execution ledger for actual acceptance state.
+
+
+## Studio immutable dashboard embedding — 12 October 2026
+
+Page owners explicitly declare allowed View-source revisions. Core reconstructs
+exact sealed company View pins and dependency edges, independently preflights current
+used native permissions and reserves combined visible Page/View query budgets. Hidden
+Views do not load figures; visibility facts can run first to choose the visible set.
+Customer default layouts retain their exact approved Page/View versions. Core imports
+no module renderer/service; the existing Analytics module supplies pure approved chart
+display at the UI boundary. Absence of opt-in/embedded approvals preserves historical
+seals. The registry registers declared View sources before dependent Page owners,
+keeping strict validation for each original owning bundle. New owner@3 activation
+requires accepted immutable current/rollback semantic reader evidence. Source checks
+and actual release acceptance are distinct; consult the execution ledger.

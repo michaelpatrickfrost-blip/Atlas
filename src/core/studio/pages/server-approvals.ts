@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { viewVersionReferenceSchema } from "../views/schema";
+import { reconstructEmbeddedViewApproval } from "./embedded-views";
 import { sessionAuthorityStamp } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
 import { checksum } from "../registry/contracts";
@@ -13,7 +15,8 @@ import { inspectSealedFieldVersion } from "../fields/sealed-field";
 import type { FieldRuntimeAuthority } from "../fields/runtime-authority";
 import { pageApprovalsSchema, pageRegistryApprovalSchema, type PageRegistryApproval, type ValidatedPageApprovals } from "./approvals";
 
-const requestSchema = z.strictObject({ sourcePage: referenceSchema, customFields: z.array(customFieldReferenceSchema).max(100).default([]) });
+const requestSchema = z.strictObject({ sourcePage: referenceSchema, customFields: z.array(customFieldReferenceSchema).max(100).default([]),
+  embeddedViews: z.array(viewVersionReferenceSchema).max(4).optional() });
 type ApprovalRequest = z.input<typeof requestSchema>;
 const refKey = (ref: { id: string; version: number }) => `${ref.id}@${ref.version}`;
 const reference = ({ id, version, schemaHash, contractHash }: ContractMetadata): ContractReference => ({ id, version, schemaHash, contractHash });
@@ -83,6 +86,11 @@ async function reconstruct(authority: FieldRuntimeAuthority, input: ApprovalRequ
       query: reference(registry.describe(fact.query.id, fact.query.version)), sourceEntityId: source.id, valueType: fact.valueType,
       nullable: fact.nullable, classification: fact.classification, ...(fact.capability ? { capability: fact.capability } : {}), provenance: fact.provenance };
   });
+  const embeddedViews = [];
+  if (request.embeddedViews) {
+    if (new Set(request.embeddedViews.map(pin => pin.definitionId)).size !== request.embeddedViews.length) broken();
+    for (const pin of request.embeddedViews) embeddedViews.push(await reconstructEmbeddedViewApproval(authority, pin, policy));
+  }
   const result = {
     entity: approval(source, "entity"), sourcePage: approval(metadata, "surface"), variants: policy.variants, fieldSourceVersions: policy.fieldSourceVersions,
     ...(customFields.length && entityDetailsSchema.parse(source.details).record?.writeCapability
@@ -99,6 +107,7 @@ async function reconstruct(authority: FieldRuntimeAuthority, input: ApprovalRequ
       query: reference(registry.describe(metric.query.id, metric.query.version)), formFactors: metric.formFactors })),
     surfaces: policy.surfaces.map(surface => ({ ...approval(surface.surface, "surface"), kind: "surface" as const, sourceEntityId: source.id,
       family: surface.family, queries: surface.queries.map(ref => reference(registry.describe(ref.id, ref.version))), formFactors: surface.formFactors })),
+    ...(embeddedViews.length ? { embeddedViews } : {}),
     maxQueryCost: policy.maxQueryCost,
   };
   return pageApprovalsSchema.parse(result);

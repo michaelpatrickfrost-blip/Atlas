@@ -177,3 +177,20 @@ describe("explicit module-owned Analytics view compiler", () => {
     expect(viewPayloadSchema.safeParse({ ...payload(), organisationId: "foreign" }).success).toBe(false);
   });
 });
+
+it("explicit metadata reconstruction grants no native Read/Manage and still rejects changed current module/owner policy without executing queries", async () => {
+  const input = payload(), expected = await compile(input);
+  current.capabilities.clear();
+  const reconstructed = await registry.reconstructViewSourceMetadataInTransaction({ session: current, transaction }, input.sourceView, expected.payload.content);
+  expect(reconstructed.requests).toEqual(expected.plan.requests); expect(reconstructed.dependencies).toEqual(expected.plan.dependencies);
+  await expect(registry.compileViewSourceInTransaction({ session: current, transaction }, input.sourceView, input.content)).rejects.toThrow("FORBIDDEN");
+  enabled.delete("sales"); await expect(registry.reconstructViewSourceMetadataInTransaction({ session: current, transaction }, input.sourceView, input.content)).rejects.toThrow("DEPENDENCY_BROKEN");
+  expect(m.businessRead).not.toHaveBeenCalled();
+});
+it("metadata reconstruction rejects forged contexts and current source opt-out even when only design metadata is requested", async () => {
+  const input = payload(); current.capabilities.clear();
+  await expect(registry.reconstructViewSourceMetadataInTransaction({ session: { ...current }, transaction }, input.sourceView, input.content)).rejects.toThrow("genuine");
+  registry.register("sales", { contributions: [declarative({ id: "sales.orders.metric", version: 2, label: "Removed", capability: "sales.order.read", lifecycle: "active", classification: "confidential", kind: "metric", schema: z.strictObject({}), references: [] })] });
+  await expect(registry.reconstructViewSourceMetadataInTransaction({ session: current, transaction }, input.sourceView, input.content)).rejects.toThrow("DEPENDENCY_BROKEN");
+  expect(m.businessRead).not.toHaveBeenCalled();
+});

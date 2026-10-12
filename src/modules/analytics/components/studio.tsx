@@ -95,6 +95,17 @@ type BoardState = {
   refreshSeconds: number;
   filters: BoardFilters;
 };
+export type BusinessDraftControls = {
+  definitionId: string;
+  revision: number;
+  business?: string;
+  maxWidgets: number;
+  saveDraft(input: BoardState & { revision: number }): Promise<{
+    definitionId: string;
+    revision: number;
+  }>;
+  onDirtyChange?(dirty: boolean): void;
+};
 const emptyFilters: BoardFilters = { from: "", to: "", search: "" };
 const colours = Object.keys(palettes) as NonNullable<StudioWidget["color"]>[];
 export function Studio({
@@ -114,6 +125,7 @@ export function Studio({
   serverActions,
   workspaceHref = "/analytics",
   monitorHref = "/board",
+  businessDraft,
 }: {
   metrics: AnalyticsResult[];
   datasets?: ReportSpec[];
@@ -131,10 +143,15 @@ export function Studio({
   serverActions?: AnalyticsStudioActions;
   workspaceHref?: string;
   monitorHref?: string;
+  businessDraft?: BusinessDraftControls;
 }) {
   if (serverActions && [serverActions.saveAction, serverActions.deleteAction, serverActions.loadMetricsAction,
     serverActions.loadDataAction, serverActions.loadSliceAction, serverActions.loadGoalsAction].some(action => typeof action !== "function"))
     throw new Error("This selected-business dashboard adapter is incomplete.");
+  if (businessDraft && (!serverActions || sample || createNew || datasets.length || goals.length || dashboards.length !== 1 || selectedId !== businessDraft.definitionId
+    || !Number.isInteger(businessDraft.maxWidgets) || businessDraft.maxWidgets < 1 || businessDraft.maxWidgets > 24))
+    throw new Error("This business dashboard editor needs its complete saved-draft adapter.");
+  const maxWidgets = businessDraft?.maxWidgets ?? 24;
   const actions = serverActions ?? nativeStudioActions;
   const workspace = internalPageHref(workspaceHref), monitorPage = internalPageHref(monitorHref);
   const router = useRouter(),
@@ -190,6 +207,8 @@ export function Studio({
     >({}),
     [dataLoading, setDataLoading] = useState(false);
   const [loadedKey, setLoadedKey] = useState("");
+  const onDirtyChange = businessDraft?.onDirtyChange;
+  useEffect(() => { onDirtyChange?.(dirty); }, [dirty, onDirtyChange]);
   const period = board.period;
   const { metrics, updated, refreshError, refreshing } = useLiveMetrics(
     initialMetrics,
@@ -323,10 +342,10 @@ export function Studio({
       !window.confirm("Leave this dashboard and discard unsaved changes?")
     )
       return;
-    router.push(query ? `${base}?${query}` : base);
+    router.push(businessDraft ? `${workspace}${businessDraft.business ? `?business=${encodeURIComponent(businessDraft.business)}` : ""}` : query ? `${base}?${query}` : base);
   }
   function add(metric?: AnalyticsResult, dataset?: ReportSpec) {
-    if (board.widgets.length >= 24) return;
+    if (board.widgets.length >= maxWidgets) return;
     const w: StudioWidget = {
       id: crypto.randomUUID(),
       metricId: metric?.id ?? `data.${dataset!.id}`,
@@ -358,7 +377,7 @@ export function Studio({
   }
   function duplicate(id: string) {
     const source = board.widgets.find((w) => w.id === id);
-    if (!source || board.widgets.length >= 24) return;
+    if (!source || board.widgets.length >= maxWidgets) return;
     const w = {
       ...source,
       id: crypto.randomUUID(),
@@ -402,6 +421,7 @@ export function Studio({
     };
   }
   function monitor() {
+    if (businessDraft) { setMessage("Use the published business dashboard link after it goes live."); return; }
     if (dirty || !selected) {
       setMessage("Save your dashboard before opening its monitor view.");
       return;
@@ -418,6 +438,16 @@ export function Studio({
   function save(asCopy = false) {
     startTransition(async () => {
       try {
+        if (businessDraft) {
+          if (asCopy) throw new Error("Create another business dashboard from its design library.");
+          const saved = await businessDraft.saveDraft({ ...board, revision: businessDraft.revision });
+          if (saved.definitionId !== businessDraft.definitionId || saved.revision !== businessDraft.revision + 1)
+            throw new Error("This saved draft changed. Your entries are still here; reopen it to compare.");
+          setDirty(false);
+          setMessage("Draft saved. Review it before making it live for your business.");
+          router.refresh();
+          return;
+        }
         const id = await actions.saveAction({
           ...board,
           period,
@@ -522,7 +552,7 @@ export function Studio({
                 <Button onClick={() => go(`dashboard=${b.id}`)}>
                   Open dashboard <ArrowUpRight size={14} />
                 </Button>
-                {canManage && (
+                {canManage && !businessDraft && (
                   <button
                     aria-label={`Delete ${b.name}`}
                     className="ml-auto rounded-lg p-2 text-slate-400 hover:text-rose-600"
@@ -635,7 +665,7 @@ export function Studio({
             onClick={() => (sample ? setOpened(false) : go())}
             className="text-xs font-semibold text-blue-600"
           >
-            ← Your dashboards
+            ← {businessDraft ? "Business dashboards" : "Your dashboards"}
           </button>
           <h1 className="mt-2 truncate text-2xl font-semibold tracking-tight sm:text-3xl">
             {board.name}
@@ -661,10 +691,10 @@ export function Studio({
           >
             <RefreshCw size={15} />
           </Button>
-          <Button onClick={monitor}>
+          {!businessDraft && <Button onClick={monitor}>
             <Monitor size={15} />
             <span className="hidden sm:inline">Monitor</span>
-          </Button>
+          </Button>}
           {canManage && (
             <Button
               onClick={() => {
@@ -684,7 +714,7 @@ export function Studio({
               onClick={() => save()}
             >
               <Save size={15} />
-              {pending ? "Saving…" : "Save"}
+              {pending ? "Saving…" : businessDraft ? "Save draft" : "Save"}
             </Button>
           )}
         </div>
@@ -717,7 +747,7 @@ export function Studio({
             ))}
           </select>
         </label>
-        <button
+        {!businessDraft && <button
           className={styles.filterToggle}
           aria-expanded={filterOpen}
           onClick={() => setFilterOpen(!filterOpen)}
@@ -726,7 +756,7 @@ export function Studio({
           {Object.values(board.filters).filter(Boolean).length > 0 && (
             <span>{Object.values(board.filters).filter(Boolean).length}</span>
           )}
-        </button>
+        </button>}
         <span className={styles.refreshLabel}>
           {board.refreshSeconds
             ? `Refreshes every ${board.refreshSeconds}s`
@@ -797,7 +827,7 @@ export function Studio({
         <div className={styles.editBar}>
           <Button
             variant="primary"
-            disabled={board.widgets.length >= 24}
+            disabled={board.widgets.length >= maxWidgets}
             onClick={() => {
               setLibrary(!library);
               setFocused(null);
@@ -853,14 +883,14 @@ export function Studio({
               ))}
             </select>
           </label>
-          {selected && !sample && (
+          {selected && !sample && !businessDraft && (
             <Button disabled={pending} onClick={() => save(true)}>
               <Copy size={14} />
               Save a copy
             </Button>
           )}
           <span className="text-xs text-slate-400">
-            {board.widgets.length}/24 widgets
+            {board.widgets.length}/{maxWidgets} widgets
           </span>
         </div>
       )}
@@ -946,13 +976,13 @@ export function Studio({
               >
                 Business measures
               </button>
-              <button
+              {!businessDraft && <button
                 className={styles.pill}
                 aria-pressed={libraryKind === "records"}
                 onClick={() => setLibraryKind("records")}
               >
                 Build from records
-              </button>
+              </button>}
             </div>
             <label className="relative flex-1">
               <Search
@@ -1194,7 +1224,7 @@ export function Studio({
                     {m?.snapshot ? " · Current snapshot" : ""}
                     {w.data && m?.definition ? ` · ${m.definition}` : ""}
                   </p>
-                  {m && (
+                  {m && !businessDraft && (
                     <Link
                       prefetch={false}
                       href={
@@ -1900,7 +1930,7 @@ export function Studio({
                 <ArrowDown size={15} />
               </Button>
               <Button
-                disabled={board.widgets.length >= 24}
+                disabled={board.widgets.length >= maxWidgets}
                 onClick={() => duplicate(active.id)}
               >
                 <Copy size={14} />

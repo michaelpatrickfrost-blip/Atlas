@@ -14,12 +14,12 @@ before the complete Phase2 gate passes. Foundation-first order remains authorise
 
 # Current Workstream
 
-2D6 visual comparison/facts/tables source IMPLEMENTED; current owner integration
-50/5 tests PASS. Reviewed Ticket panels22b2, View publisher692757 and field-control
-f41d7908 projected uncommitted with root customer renderer/retained compilation/
-selected-business Analytics draft seam/actions. Full lifecycle UI, actual View
-reader/editor/customer Home and owner KPI embedding IN PROGRESS. Original bridge
-b408c4fa release26087 EXIT1 before activation on stale Finance exact link-name assertion (existing arrow). Home cross-header/mobile sequencing passed. Exact document href/reference/navigation checker corrected; next original pinned bridge retry. No whole Phase2 PASS claim.
+2D/E connected visual integration IMPLEMENTED source, verification IN PROGRESS.
+Original75977 full candidate/public combined acceptance PASS; live exact75977,
+rollbackc385. New owner@3/Page embedding/business dashboards/required-rule controls
+await compatible actual gates. Friendly closed2 adapters eb077b8b projected; original
+engine/current permissions retained. Default Page embedded-pin correction5d747336 integrated.
+2F integrated release gates IN PROGRESS. WholePhase2 FAIL/incomplete.
 
 # Overall Status
 
@@ -57,53 +57,50 @@ source coverage, phase plan and this ledger. No rewritten specification.
 
 # Current Workstream Detail
 
-11 October source checkpoint: original saved Page editor now persists/reviews/goes
-live/restores through the existing publisher/activation in one genuine selected-
-business transaction. Shared sample and actual-record preview remain inert. Simple
-approved status/priority visibility and shallow presentation variants are editable.
-Sales presets and native PDF command, Tickets owner projection and complete native
-progress form surface, /home published cards and /screens live renderer are wired.
-List/record query anchors stay explicit; related Sales line table stays record scope.
-Responsive changes SSR-load only selected visible domain forms; changed Page/head/
-device slots cannot reuse stale forms. Private/current/field grants remain server-side.
+Standalone screen designer uses original saved/review/live/restore engine, shared
+sample/actual rendering, desktop/tablet/phone controls, presets/palette/properties,
+permission-filtered facts/table columns and registered safe buttons. Tickets native
+panels and Sales zero-safe money KPI are exact retained owner@2; owner@3 explicitly
+opts into immutable original Analytics dashboards. Original View owners register
+first so strict Page contracts resolve them. Old owner policies/seals stay exact.
 
-070 record assignment SQL/source + required profile union/cohort coverage integrated.
-Original both-lock rehearsal PASS/ROLLBACK; fresh central history now confirms060
-and070 APPLIED by candidate builds. Current profile metadata-only Page compiler
-preserves genuine Create-only authority; no borrowing Read. Exact stored Page source
-refs preserved. Existing-record selection is implemented and integrated into native detail and Page
-progress forms with genuine owner authority; initial creation selector remains unfinished.
+Business dashboard designer saves reviewed company versions through the original
+engine; customer Home/reader recheck current native source rights. Embedded dashboard
+palette returns only authorised exact published pins. Same pure Analytics chart
+adapter renders design actual previews and customer screens; no duplicate engine.
+Combined visible native/nested budgets are reserved before nested provider execution.
+Record-default exact embedded approval omission found independently: correction
+5d747336 and genuine retained-pin/current-denial regression integrated; actual route
+gate pending.
 
-Visual checker13263fa0 independently source-reviewed and original driver wired,
-alongside profile checker25941bed. Strict exact compatible runtime pair/health gates
-precede fixture writes; Sales scoped proof does not claim Ticket private/write proof.
-627beb7d acceptance failed preactivation at foreign-tenant field retirement error
-ordering; opaque current-row conflict now checked before protected impact traversal. No actual current visual/profile central/browser proof yet. Friendly all15 field
-creation/base/type choices, dirty review guard and original Templates selected-
-business reuse are implemented source. Published Page cache stores only bounded
-compiled metadata; current grants/actual values remain independently read each time.
-Last confirmed live c385a2be/rollback5b6390c8; no activation claimed by local tests.
+Friendly additional-field settings/conversions preserve user choices and invalidate
+review on edits. Required-rule workflow uses plain native/detail choices and original
+saved target2 CAS/impact, full reviewed preparation/collection/seal/publication/
+conversion/activation/settlement. Initial optional1 activation remains explicit.
+Open published reviews resume without reading business values on GET. Full closed2
+friendly dispatch projected; sparse2 recovery remains closed. Current Test-only
+production conditional guards remain until actual paired-reader proof/fresh isolated
+non-Test fixture acceptance. No later workflow engine.
 
 # Files Changed
 
-Current integration: Prisma assignment model/additive070 SQL; record-types
-assignment/runtime/coverage; Page owner policies, approval factory, runtime/shared
-renderer/design model/compiler; Sales/Tickets owner Page contributions/presets;
-authoring context/pages/catalog/preview; original compiler/service/publication/
-activation and configuration impact; standalone (studio)/design-studio routes,
-Admin launch/proxy headers; shared Select accessible label; actual-runtime probe,
-record-profile checker and focused tests. No unrelated source removed.
+Connected source: Core original Page/View compiler, approvals/runtime/profile,
+registry source compatibility/feature evaluator, exact Sales/Ticket owner@2/@3,
+authoring palette/pages/views/requirements/migration adapters; shared Studio canvas,
+condition/device/layout/field controls; standalone dashboard/requirement routes;
+customer Home/screens/dashboard reader; pure original Analytics chart display;
+original visual acceptance checkers and focused tests. No unrelated functionality
+removed. Additive20261012010000 existing CHECK widening; no Prisma model changes.
+Matching CURRENT_STATE/DECISIONS/phase plan/visual and Analytics docs updated.
 
 # Database / Prisma Changes
 
-Additive080 APPLIED by original65ede12e candidate at2026-10-11 23:31:00.28027 UTC,
-after both-lock recovery/rehearsal. Original receipt guard validates receipt2 genuine
-native+assignment INSERT/current head/field origins/paired Audit and JSON shapes;
-receipt1 retained. No new table/model/backfill. Rehearsal restored exact guard
-hash43fe3efb04615d22d5ecc6732556be3a0bc02542bb358309667c890258950524;
-rehearsal hashd4314f9a92c56eaf7ea22d92bd1661fe32f9c14abc06c50cecadb38abc246fb7.
-060/070 APPLIED. Other module migrations untouched. Actual receipt2 HTTP/browser
-requires compatible readers; no business reset, extra dump or local database.
+030/040/050/060/070/080 applied as recorded below. New20261012010000 widens only
+existing dependency target-kind CHECK to allow exact immutable View edges; all
+foreign keys/history/graph guards remain. Actual both-lock central rehearsal
+PASS_ROLLBACK with existing verified003336 recovery; counts/constraints/triggers
+restored exactly. Forward migration NOT APPLIED. No tables/models/backfill/reset.
+Evidence /tmp/atlas-page-view-rehearsal-result.txt; no additional dump.
 
 # Migrations Applied
 
@@ -114,55 +111,30 @@ Other concurrent module migrations untouched.
 
 # Tests Added
 
-18 ordinary activation prerequisite cases (real sealed registry/compiler/genuine
-session issuance, explicit authority/coverage/SQL collaborators). Native checker13
-rollback-only SQL transactions; real closed1/2 multi-window source prepared, actual SQL PASS ad9 candidate/public. Actual control-lock commit races passed both stages.
-
-Native mode19 and actual engine/creation10 new cases. Native-proof suite17 total
-includes actual Watch action/event/parent receipt/final callback, window/resulting
-failure propagation and strict four-field reference shape. Native-lock19 adapted
-explicit identity/scope collaborators; genuine authority/private proofs covered
-separately. Existing initial12/creation8/versioned read25/ordinary10/required reader
-regressions retained. Storage/native SQL collaborators do NOT prove actual central
-rollback or SSI; real acceptance checker source is being prepared separately.
+Meaningful current tests cover exact retained Page/profile compiler, owner@3
+compatibility/paired semantic readiness, embedded pin/graph/budget/current rights,
+pure zero/escaping display, saved conversion retention, friendly conditional rule
+save/resume and closed2 original adapter dispatch/history. Actual nested dashboard
+and fresh isolated production conditional checkers in progress; no live inference
+from mocked SQL/authority collaborators.
 
 # Tests Run
 
-12 October integrated creation146/6 PASS, strict35645 EXIT0 after root pagination
-addition. Helper independent source review caught/fixed current-base replay and
-SQL string-shape holes; actual SQL/native/browser evidence still pending.
-
-12 October integrated default/settings/checker prefix183/5 PASS. New friendly field
-and original Templates actual browser/source checks added to original visual gate;
-not yet run. First strict route narrowing/checker variable errors corrected; final
-production19413/strict35359/scopedlint16498 EXIT0. Actual gate pending. Helper-only checks stay source evidence.
-
-Root integrated typed packet/writer/read/required110/5 PASS, then packet/writer/read/
-required/manifest/whole-form receipt/renderer182/8 PASS. Build26422 and final24417 exit0, including
-actual browser-safe typed control wiring and final source review corrections. Native regressions60/73 passed with13 stale
-domain-only fixture failures; corrected existing authority/owning boundary test
-collaborators, retained real capability checks; domain+genuine native-proof30/2 PASS.
-Final standalone strict58993/scoped lint8334 after source review fixes exit0. No broad full-suite claim.
-Logs /tmp/atlas-studio-form-{combined-tests,build,native-regression,native-corrected,
-types-current,lint-current}.txt. Current tests are local; central actual form/DDL/
-responsive and candidate/public verification still pending.
+Current root120/8 owner@3/probe/embedding/profile suites PASS;101/5 rule workflow/
+authoring/editor/conversion/display suites PASS;20/3 retained profile/display/
+conversion PASS. Catalogue1/1 PASS after additions-only snapshot review/update.
+Prior100/6,10/2,35/2,39/2 source/checker gates PASS. Production63693 EXIT0 and strict
+6975 EXIT0 precede latest projections; root integrated strict82160/lint43058/build92610 EXIT0;185/5 rule adapter/UI cases PASS72082. Retained-default2-line projection followed this build. Helper
+closed2 179/7, strict98687/scopedlint78140 PASS are helper-local source evidence.
+Original75977 candidate+public ALL COMBINED PASS28119; new feature families DEFERRED
+against old paired reader, not verified. New dependency SQL rehearsal PASS_ROLLBACK.
 
 # Test Results
 
-65ede12e production83068/strict78429/scopedlint92155 EXIT0;264/7 creation-evolution,
-27/1 Analytics sources and42/3 chooser/checker source suites PASS.
-Original release19593 EXIT1 BEFORE activation after native whole-form/private/
-window/concurrency checks PASS. Actual search plan chose usable instant index;
-exact fingerprint index choice assertion failed on small fixture. Corrected source
-retains actual authorised bounded ANALYZE/result/permission gates and checks actual
-catalogue validity/readiness/key order/default keys. Central fingerprint catalogue
-SQL PASS; original2d release actual search catalogue/native checks PASS; later Home utility
-allowlist fails before activation. Corrected checker actual rerun pending. Page/profile/default/type
-readiness DEFERRED against old livec385; DEFERRED never means feature PASS.
-Current uncommitted visual comparison18/2 and index/facts/table41/3 source tests PASS;
-original actual comparison/table/fact/zero-record preview wired, not run.
-Integrated147/8 and lifecycle/UI25/2 PASS. Production74423/strict85546/final lint54348
-EXIT0; post-build strict81285 EXIT0. First types DOM/mock tuple issues corrected.
+Live original75977 verified health/pointer; rollbackc385. Current visual source
+checks PASS as detailed above, integrated strict/lint/build and actual latest
+Page/profile/default/type/dashboard/conditional gates still pending. Root default-layout regression56/1 PASS after5d747336 projection. Rehearsal
+rolled back exactly; forward dependency migration NOT APPLIED. Phase2 gate FAIL.
 
 # Architecture Decisions
 
@@ -176,40 +148,37 @@ Decisions and rationale recorded in .ai/DECISIONS.md; no silent source divergenc
 
 # Known Issues
 
-Whole Phase2 FAIL/incomplete. Visual/profile/default/type and configured-search
-candidate/public evidence pending. Published field evolution target backend exists;
-original safe preview/control UI and conditional metadata editor remain required.
-Analytics sources exist; shared owner view compiler/publisher/customer editor/reader
-remain required. Fact/list controls and remaining approved component-family gaps
-are being compared with source8.1; no later engines or fabricated family coverage.
-Fresh livec385/rollback5b unchanged. Disabled readiness DEFERRED never feature PASS.
+WholePhase2 incomplete: compatible actual visual/profile/type/default/dashboard
+publication/runtime journeys pending; retained-default embedded approval omission
+fixed in source5d747336; actual route proof pending. Production non-Test conditional activation/rollback still requires
+explicit paired-reader readiness and fresh synthetic customer acceptance before
+opening the guard. Saved-source security/current rights remain mandatory.
+Actual latest live visuals not yet claimed; DEFERRED never means PASS.
 
 # Deferred Items
 
 Phase3 Decisions/Approvals;4 durable events;5 Flow;6 Automations migration;7 Process;
-8 packages/environments;9 broad adoption. Architectural context only, NOT STARTED.
-Visual/document/dashboard builders remain required Phase2 work, not moved to a
-later phase. Reuse existing Templates/Analytics, presets/shared responsive rendering,
-tenant-specific publication and safe domain buttons. Preserved visual stash28243b7
-is IN PROGRESS and unverified; do not restore its superseded planning entries.
+8 packages/environments;9 broad adoption: architectural context only, NOT STARTED.
+Visual templates/dashboard/screens are activePhase2, using existing Templates/
+Analytics/domain operations. No later engines/duplicate renderers/local business DB.
 
 # Acceptance Gate Status
 
-Phase0 PASS; Phase1 PASS; Phase2 FAIL (incomplete). Native d4e workstream PASS
-actual ad9 candidate AND public; typed forms and complete visual journey pending.
-Later phases remain architectural context only; no complete visual designer claim.
+Phase0 PASS; Phase1 PASS; Phase2 FAIL (incomplete). Original75977 combined release
+PASS does not pass newer visual families deferred against older paired readers.
+2F IN PROGRESS: production build, exact compatible candidate/public runtime,
+tenant/private/current permissions, native compatibility and representative visual
+journeys mandatory. No later phase starts.
 
 # Exact Next Action
 
-Lint/review/checkpoint only original Homechecker desktop reset before cross-header
-interaction, then original pinned retry.0d80release15657 EXIT1 afteractualnative/
-search/Admin and allfourHome/Appsviewport/Escape/focus PASS; Page/profile/type/
-defaultDEFERRED. Recovery000350/fixture000540 retained, no activation. Keep all
-visual source WIP excluded fromsmallcheckpoint; no forced clicks/runtimechange.
-Finish original-editor business dashboard routes/customerHome; integratefriendly
-field-control panel and explicitURLresume; SalesKPI source/family gates next.
-Owner integration50/5 and strict9504 PASS beforelatestwrappers. WholePhase2FAIL;
-no laterengine/copies/dependencyinstalls/ad-hocdumps.
+Integrate minimal record-default exact embeddedView pins/regression and original
+nested dashboard visual checker; run latest integrated strict/lint/production build,
+review and checkpoint coherent connected source + memory. Release original first
+compatible-reader bridge with rehearsed20261012010000, then repeat exact paired
+candidate/public visual/profile/type/default/dashboard/required gates. Complete
+fresh isolated non-Test conditional readiness slice under original permissions/
+recovery/locks. Re-read everyPhase2 gate before reporting PASS. No extra copies/dumps.
 
 # Historical checkpoint evidence
 

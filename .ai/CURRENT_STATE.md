@@ -1,3 +1,43 @@
+## 12 October 2026 — connected visual Phase2 recovery checkpoint
+
+Original75977b02dcb3355863788e968d839ec2481fa79a release28119 EXIT0: ALL COMBINED
+candidate dkml9o AND public05SPye acceptance PASS. Verified live health/pointer exact
+75977, immediate rollbackc385a2be2302a514e4b84e33198926cbf149bbf5. New visual
+families DEFERRED against older paired reader: no wholePhase2 PASS. Existing
+mandatory003336/003521/004259 backups/evidence retained. Original both-lock retention
+retired13 redundant compiled/dependency runtimes; server154GB free, live/rollback
+and historical sources/evidence/business data preserved. No ad-hoc dumps/copies.
+
+Projected original immutable Page/View compiler91c45, exact Tickets/Sales@3 and
+semantic paired-reader fencec5040146, retained Page/profile correctionc15a4bd7,
+published requirement target7079c882/resume61bf7d41 and friendly closed2 adapters
+eb077b8b. Root joins current-rights saved-dashboard palette, pure existing Analytics
+chart display, customer screens, standalone designer and friendly required-rule
+workflow. Fields/settings/conversion edits disable stale review; saved mappings
+survive remount. Native @1/@2 seals unchanged; @3 requires embedding and inherited
+reader families. Full registry registers View owners before opt-in Page owners.
+Independent review found record-default omission of exact embeddedViews approvals;
+minimal correction5d747336 and genuine retained-pin/current-denial regression integrated; actual route gate pending. No active-head fallback.
+
+20261012010000 existing dependency target-kind CHECK widening only: actual central
+both-lock rehearsal PASS_ROLLBACK, existing003336 recovery verified. Constraint
+before1b07d70f6f048950a9e03f1775b2ed609aa16a2d6b94e94e79dddb33a1eddd96,
+rehearsed8f6de08466222614fc0f880e26b898752456e7c98769c244e6bcf763d41c7758;
+counts unchanged, exact original constraint/triggers restored. NOT APPLIED; no
+model/table/backfill/reset. Evidence /tmp/atlas-page-view-rehearsal-result.txt.
+
+Root120/8 owner@3/probe/embedding/pins/profile cases PASS;101/5 friendly rule/UI/
+conversion/display cases PASS; catalogue1/1 PASS with approved additions-only
+snapshot update. Prior embedding production63693 EXIT0 and strict6975 EXIT0 precede
+latest owner@3/closed2 projection; root integrated strict82160/lint43058/build92610 EXIT0;185/5 rule adapter/UI cases PASS72082. Retained-default2-line projection followed this build.
+Helper closed2179/7, strict98687/scopedlint78140 PASS are local source evidence.
+Root retained-default56/1 PASS after projection; no actual route claim.
+WholePhase2 FAIL/incomplete. Next: integrate retained-default correction and actual
+nested-dashboard checker, run integrated checks/checkpoint; original immutable
+bridge then compatible candidate/public visual/profile/type/required gates. Non-Test
+conditional activation still guarded; fresh isolated production-safe acceptance
+and exact paired conditional feature are a separate scoped workstream. No Phase3.
+
 ## 12 October 2026 — bridge0d80 stopped before activation on checker viewport sequencing
 
 ## 12 October 2026 — MRP proposal acceptance correction (no app change)

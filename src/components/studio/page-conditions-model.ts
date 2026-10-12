@@ -40,7 +40,7 @@ export function patchVariantNode(page: PagePayload, id: string, selection: PageE
   const design = variantDesignPage(page, id), previous = selectedPageNode(design, selection);
   if (!previous) throw new Error('Choose an item first.');
   const next = selectedPageNode(changePageNode(design, selection, change), selection)!;
-  const allowed = selection.kind === 'section' ? ['label', 'help', 'columns', 'visibleWhen'] as const : ['label', 'help', 'visibleWhen'] as const;
+  const allowed = selection.kind === 'section' ? ['label', 'help', 'columns', 'visibleWhen'] as const : ['label', 'help', 'formFactors', 'visibleWhen'] as const;
   const previousObject = previous as unknown as Record<string, unknown>, nextObject = next as unknown as Record<string, unknown>;
   if (Object.keys({ ...previousObject, ...nextObject }).some(key => !allowed.some(value => value === key) && JSON.stringify(previousObject[key]) !== JSON.stringify(nextObject[key]))) throw new Error('Edit the default layout to change this business component.');
   const copies = structuredClone(variant.patches), operation = selection.kind === 'section' ? 'setSection' : 'setComponent';

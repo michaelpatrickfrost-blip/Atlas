@@ -1,3 +1,4 @@
+import { analyticsBusinessViewContract } from "@/modules/analytics/services/studio-view";
 import { describe, expect, it, vi } from 'vitest';
 const mocked = vi.hoisted(() => ({ current: vi.fn() }));
 vi.mock('@/core/db/client', () => ({ db: {} }));
@@ -18,6 +19,7 @@ const approval = (metadata: ContractMetadata) => ({ ...reference(metadata), owne
   classification: metadata.classification, capability: metadata.capability });
 function approved() {
   const registry = new CapabilityRegistry(async () => true);
+  registry.register('analytics', analyticsBusinessViewContract);
   registry.register('sales', { contributions: [...salesStudioContract.contributions, ...salesOrderPageContract.contributions] });
   const entity = registry.describe('sales.order', 1), sourcePage = registry.describe('sales.order.page', 1), header = registry.describe('sales.order.page.header', 1);
   const fields = entity.details.fields as Array<{ id: string; label: string; classification: string }>;

@@ -1,3 +1,4 @@
+import { checksum } from "../registry/contracts";
 import { type CompiledPagePlan, type PageReadRequest, type PageRegistryReference, samePageReference } from "./compiler";
 import type { PageComponent, PageScalar, PageSection, VisibilityPredicate } from "./schema";
 
@@ -93,6 +94,9 @@ export function resolvePageVariant(plan: CompiledPagePlan, context: PageSelectio
       } else if (component.type === "metric") {
         const approved = plan.approvals.metrics.find(value => samePageReference(value, component.metric));
         if (!approved || !granted(context, approved.capability)) continue;
+      } else if (component.type === "analyticsView") {
+        const approved = plan.approvals.embeddedViews?.find(value => checksum(value.reference) === checksum(component.view));
+        if (!approved || !granted(context, approved.sourceView.capability)) continue;
       } else if (component.type === "surface") {
         const approved = plan.approvals.surfaces.find(value => samePageReference(value, component.surface));
         if (!approved || !granted(context, approved.capability)) continue;

@@ -4,11 +4,12 @@ import { writeAudit } from "@/core/audit/log";
 import type { Prisma } from "@/generated/prisma/client";
 import type { FieldRuntimeAuthority } from "../fields/runtime-authority";
 import { STUDIO_CAPABILITIES as CAP } from "../permissions";
-import { compileStructuredPage } from "../pages/definition-compiler";
+import { compileStructuredPage, compileRetainedStructuredPage } from "../pages/definition-compiler";
 import { pagePayloadSchema } from "../pages/schema";
 import { publishCompiledDefinitionInTransaction } from "../definitions/publication";
 import { activateCompiledVersionInTransaction } from "../definitions/activation";
 import { lockFieldEntitiesInTransaction } from "../fields/entity-lock";
+import { loadSealedConfigurationVersion } from "../configuration/pins";
 import { checksum } from "../registry/contracts";
 
 const identity = z.strictObject({ definitionId: z.uuid(), revision: z.number().int().nonnegative().max(2147483646) });
@@ -100,7 +101,11 @@ export async function restorePageVersionInTransaction(authority: FieldRuntimeAut
   const version = await authority.transaction.studioDefinitionVersion.findFirst({ where: { id: value.versionId, definitionId: value.definitionId,
     organisationId: authority.session.organisationId, definition: { kind: "page", retiredAt: null } } });
   if (!version) throw new Error("This previous screen is unavailable.");
-  const compiled = await compileStructuredPage(authority, version.payload);
+  const sealed = await loadSealedConfigurationVersion(authority.session, authority.transaction, {
+    kind: "page", definitionId: value.definitionId, versionId: version.id,
+    schemaVersion: version.schemaVersion, checksum: version.checksum,
+  });
+  const compiled = await compileRetainedStructuredPage(authority, sealed);
   if (checksum(version.compiledPlan) !== compiled.checksum || version.checksum !== compiled.checksum)
     throw new Error("DEPENDENCY_BROKEN: this previous screen needs a new review before it can go live.");
   return activateCompiledVersionInTransaction(authority.transaction, authority.session, value.definitionId, value.definitionRevision, version, compiled);

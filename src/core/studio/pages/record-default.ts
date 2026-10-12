@@ -91,7 +91,8 @@ async function selectDefault(authority: FieldRuntimeAuthority, request: z.infer<
     || selectedOwner.anchor.organisationId !== session.organisationId || selectedOwner.anchor.recordId !== request.recordId
     || selectedOwner.anchor.nativeRevision !== nativeRevision || selectedOwner.anchor.revision !== owner.anchor.revision) changed();
   const currentApprovals = await reconstructPageApprovalsInTransaction(authority, { sourcePage: selectedSource,
-    customFields: frame.approvals.customFields.map(field => field.reference) });
+    customFields: frame.approvals.customFields.map(field => field.reference),
+    ...(frame.approvals.embeddedViews ? { embeddedViews: frame.approvals.embeddedViews.map(view => view.reference) } : {}) });
   const plan = compilePage(payload, currentApprovals);
   if (checksum(plan) !== pin.checksum || pageReadScope(plan, selectedOwner.policy) !== "record") unavailable();
   const definition = await transaction.studioDefinition.findFirst({ where: { id: pin.definitionId, organisationId: session.organisationId,

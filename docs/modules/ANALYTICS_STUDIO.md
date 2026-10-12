@@ -199,11 +199,105 @@ permission grant or second rendering/publication engine is introduced.
 
 Pure registered source schemas live in `registry/analytics-source-contracts.ts` to
 avoid importing executable providers into registry initialisation. Existing exports
-and source hashes remain stable. `ReviewedCompiledDefinition` has a type-only view
-member; public service kind allowlists, publisher and activation behavior remain
-unchanged. This checkpoint does not enable business GoLive or a customer reader.
+and source hashes remain stable. `ReviewedCompiledDefinition` includes the compiled view type. The subsequent
+publication bridge below explicitly adapts the original service; it does not
+enable business GoLive or a customer reader.
 
 Next: integrate explicit view authoring into the ORIGINAL publisher/activation with
 stable owner-origin checks, real candidate/rollback reader-format readiness and
 current-viewer source permission enforcement through the existing Analytics renderer.
 Actual central/SQL/browser/public verification remains mandatory before GoLive.
+
+## Original business view publication bridge — 12 October 2026
+
+Explicit schema-1 owner view envelopes now use the original Studio create/save/
+review/publish/activate services. Fresh current Studio Edit/Publish, Analytics
+Read/Manage and every independent used source/module approval are checked in the
+existing Serializable transaction. Raw personal boards and unsupported old view
+payloads do not acquire a fallback compiler. The original CAS, paired Audit,
+immutable definition/version/dependency storage and personal Analytics paths stay.
+A draft and all published versions retain their original stable owning source ID;
+changing the owning family creates another definition.
+
+Standalone view pins use the same private tenant/definition/version/schema/hash/
+payload/configuration-edge seal body as existing Page/profile references. View
+is not added to the profile configuration-reference enum. Activation independently
+checks the persisted payload/plan mirror, including omitted-default normalization.
+Original activeDefinition refreshes genuine Studio Read and reconstructs the exact
+metadata without borrowing native Read/Manage or executing a provider. Current
+module availability, contract support, owner opt-in and exact source/query policy
+still apply. Metadata visibility never grants business query access.
+
+The new analyticsBusinessViews.v1 release feature fences BOTH publication and
+activation. The actual runtime evaluator deliberately does NOT advertise this
+feature during the metadata bridge. Existing active/retained version scanning
+rejects unsupported reader downgrades, with the original suspended Test policy.
+Only the later actual customer reader/renderer and semantic current/rollback
+probes can enable it. Source compilation and mocked publication checks are not
+SQL, runtime, browser, customer GoLive or full Phase2 acceptance evidence.
+
+No Prisma/schema/migration change is proposed: inspected original tables accept
+TEXT kinds and schema1 compiled plans; dependency guards accept the exact sealed
+registry edges and an empty configuration edge set. Actual central guarded
+publication/activation/rollback acceptance remains pending, owned by the original
+release driver. Next stage reuses the native Analytics widget renderer and exact
+registered queries under actual viewer source rights; it adds no result cache.
+
+Retained Page activation now reconstructs the exact originally sealed owning Page
+source and complete checksum under current used grants. An additive owner source
+does not silently migrate a retained layout. New Ticket panel source @2 additionally
+requires ticketRecordPanels.v1 evidence from both actual runtime registries and the
+existing pure native panel renderer; retained @1 needs only structuredPages.v1.
+Until that pair is accepted, internal new authoring uses the independently approved
+@1 source. No caller-supplied source choice or privilege is added.
+
+## Registered business viewer and native chart reuse — 12 October 2026
+
+Core authoring/view helpers now refresh actual selected-business authority in the
+existing Serializable transaction, then call the original compiler/publisher/
+activation and paired Audit. Optional metadata rename uses definition CAS alongside
+draft CAS; publish+activation commits together. Friendly module inputs contain native
+dashboard settings and Studio revision IDs only, never client tenant/source approvals
+or result data. Actual draft.updatedAt is display metadata; revision controls saves.
+Browser-safe content contracts import only original pure native definitions.
+
+The customer reader selects the actual tenant active pointer, reconstructs the exact
+sealed owner plan, and preflights every used source/query capability/module/support
+window before the FIRST provider. Customers need native Analytics/source Read, with
+no Studio or Manage grant. Expected-head values are stale assertions, not selection.
+Only three approved finite complete count sources run through original registered
+adapters. Their original genuine-principal refresh and business reads remain; this
+is not a cross-provider snapshot. Discovery shares the exact metadata preflight
+without provider reads, omits denied source views before names and fails on corruption
+or more than 100 candidates. No business result persists or falls back to native
+personal dashboards/Reports/Goals.
+
+BusinessViewCharts is a thin supplied-results wrapper around original TileChart,
+presentation schemas and responsive stylesheet. The actual runtime evaluator now
+requires real customer reader exports, strict owner compilation and blocked forged
+authority before transaction access, then SSR of the actual native chart with zero
+and escaped labels. A probe-only restored CSS token loader reads the actual stylesheet;
+production build/browser gates separately prove layout. Both actual accepted runtime
+readers must support analyticsBusinessViews.v1 before publication or activation can
+open. A predecessor metadata bridge stays unsupported. Original driver must still
+prove SQL/CAS/Audit rollback, customer/browser/current permissions and public GoLive.
+
+Trusted exact retained View pins also have distinct metadata/read entries, with the
+same genuine current grants/seal reconstruction and no active-pointer substitution.
+Metadata inspection returns full exact plan, queryCount and cost computed from each
+approved query descriptor using original Page weights low1/medium3/high8, without
+provider reads. This is the cost an enclosing Page must charge. The existing View@1
+private budget/checksum remains unchanged; its original units are not substituted
+for the enclosing Page budget. Page embedding schema/edges/rendering remain another
+workstream, not implied by the standalone pin reader.
+
+
+## 12 October immutable dashboards on Studio pages
+
+Opt-in Page owners may embed an exact sealed company View version. Core reconstructs
+its immutable dependency graph and preflights all current used native permissions;
+combined cost/query bounds are reserved before visible nested View reads. Historical
+Page contracts without opt-in retain their seals. Module-owned pure chart display
+uses the same original Analytics renderer; Core imports no Analytics module service.
+The palette exposes only authorised published choices. Source is implemented;
+forward View-edge CHECK and compatible actual Page/default/customer gates pending.

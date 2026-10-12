@@ -1,23 +1,9 @@
-import { z } from "zod";
 import { viewSource } from "@/core/studio/registry/view-contracts";
 import type { StudioModuleContract } from "@/core/studio/registry/types";
 import type { ViewJson } from "@/core/studio/views/schema";
-import { boardFiltersSchema, dashboardSchema, widgetSchema } from "../definition";
+import { analyticsBusinessViewContentSchema } from "./business-view-contract";
+export { analyticsBusinessViewContentSchema } from "./business-view-contract";
 
-const { id: personalId, expectedUpdatedAt: personalCAS, ...boardShape } = dashboardSchema.shape;
-void personalId; void personalCAS;
-/** Native display controls reused with a closed business metadata boundary.
- * Original personal dashboards/data views remain unchanged. Export-based record
- * aggregation is deliberately unavailable in this first registered view family. */
-export const analyticsBusinessViewContentSchema = z.strictObject({ ...boardShape,
-  filters: z.strictObject(boardFiltersSchema.shape).default({ from: "", to: "", search: "" }),
-  widgets: z.array(z.strictObject({ ...widgetSchema.shape, data: z.never().optional() })).min(1).max(8),
-}).superRefine((value, context) => {
-  if (new Set(value.widgets.map(widget => widget.id)).size !== value.widgets.length)
-    context.addIssue({ code: "custom", message: "Widget IDs must be unique." });
-  if (value.filters.from || value.filters.to || value.filters.search)
-    context.addIssue({ code: "custom", message: "These registered count measures support a period and approved breakdown; record filters and report aggregations are not available in this business view yet." });
-});
 const sources = ["sales.orders", "sales.quotes", "products.catalogue"] as const;
 const sourceFor = (providerId: string) => {
   if (!sources.some(id => id === providerId)) throw new Error("This measure does not have an approved complete business view contract yet.");

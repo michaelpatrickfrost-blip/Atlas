@@ -2,7 +2,7 @@ import { z } from "zod";
 import type { Session } from "@/core/auth/session";
 import type { Prisma } from "@/generated/prisma/client";
 import { checksum } from "../registry/contracts";
-import { configurationReferenceSchema, type ConfigurationReference } from "../record-types";
+import { configurationDependencyReferenceSchema, type ConfigurationDependencyReference } from "./dependency-reference";
 import { inspectRetainedConfigurationPin } from "./pins";
 
 const uuid = z.uuid().transform(value => value.toLowerCase());
@@ -21,7 +21,7 @@ type Version = Prisma.StudioDefinitionVersionGetPayload<{ select: typeof version
 type Edge = Prisma.StudioConfigurationDependencyGetPayload<{ select: typeof edgeSelect }>;
 export type ConfigurationUsageTarget = z.input<typeof targetSchema>;
 export type ConfigurationUsageRequest = z.input<typeof requestSchema>;
-export type ConfigurationUsage = ConfigurationReference & {
+export type ConfigurationUsage = ConfigurationDependencyReference & {
   name: string; activeVersionId: string | null; retiredAt: string | null; active: boolean;
   depth: number; activeAncestorVersionIds: string[];
 };
@@ -36,11 +36,11 @@ function definitionIdentity(organisationId: string, id: string, definition: Defi
   if (definition.activeVersion && (definition.activeVersion.id !== definition.activeVersionId
     || definition.activeVersion.definitionId !== id || definition.activeVersion.organisationId !== organisationId)) broken();
 }
-function key(reference: Pick<ConfigurationReference, "definitionId" | "versionId">) {
+function key(reference: Pick<ConfigurationDependencyReference, "definitionId" | "versionId">) {
   return `${reference.definitionId}@${reference.versionId}`;
 }
-function reference(version: Version): ConfigurationReference {
-  const parsed = configurationReferenceSchema.safeParse({ kind: version.definition.kind, definitionId: version.definitionId,
+function reference(version: Version): ConfigurationDependencyReference {
+  const parsed = configurationDependencyReferenceSchema.safeParse({ kind: version.definition.kind, definitionId: version.definitionId,
     versionId: version.id, schemaVersion: version.schemaVersion, checksum: version.checksum });
   if (!parsed.success) broken();
   return parsed.data;

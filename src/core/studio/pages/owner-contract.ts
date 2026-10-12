@@ -36,6 +36,8 @@ export const pageSourcePolicySchema = z.strictObject({
   metrics: z.array(z.strictObject({ metric: reference, query: reference, formFactors: forms })).max(50),
   surfaces: z.array(z.strictObject({ surface: reference, family: surfaceFamilySchema,
     queries: z.array(reference).max(4), formFactors: forms })).max(50),
+  // Explicit cross-owner opt-in, absent on every historic source policy.
+  embeddedViewSources: z.array(reference).max(4).optional(),
   maxQueryCost: z.number().int().min(1).max(64).default(24),
 }).superRefine((policy, context) => {
   for (const [name, keys] of [
@@ -44,6 +46,7 @@ export const pageSourcePolicySchema = z.strictObject({
     ["command", policy.commands.map(value => `${value.command.id}@${value.command.version}`)],
     ["metric", policy.metrics.map(value => `${value.metric.id}@${value.metric.version}`)],
     ["surface", policy.surfaces.map(value => `${value.surface.id}@${value.surface.version}`)],
+    ["embedded view source", (policy.embeddedViewSources ?? []).map(value => `${value.id}@${value.version}`)],
   ] as const) if (new Set(keys).size !== keys.length) context.addIssue({ code: "custom", message: `Duplicate page source ${name}.` });
   for (const query of policy.queries)
     if (new Set(query.columns.map(value => value.id)).size !== query.columns.length) context.addIssue({ code: "custom", message: "Duplicate page query column." });

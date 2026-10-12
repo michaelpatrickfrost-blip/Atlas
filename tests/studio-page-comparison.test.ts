@@ -5,7 +5,7 @@ import type { PagePayload } from "@/core/studio/pages/schema";
 const m = vi.hoisted(() => ({ stamp: vi.fn(), definition: vi.fn(), version: vi.fn(), seal: vi.fn(), compile: vi.fn(), catalog: vi.fn() }));
 vi.mock("@/core/auth/session", () => ({ sessionAuthorityStamp: m.stamp }));
 vi.mock("@/core/studio/configuration/pins", () => ({ loadSealedConfigurationVersion: m.seal }));
-vi.mock("@/core/studio/pages/definition-compiler", () => ({ compileStructuredPage: m.compile }));
+vi.mock("@/core/studio/pages/definition-compiler", () => ({ compileRetainedStructuredPage: m.compile }));
 vi.mock("@/core/studio/authoring/catalog", () => ({ pageEditorCatalogInTransaction: m.catalog }));
 import { comparePageVersionInTransaction } from "@/core/studio/authoring/page-comparison";
 const id = "80000000-0000-4000-8000-000000000001", versionId = "80000000-0000-4000-8000-000000000002";
@@ -52,5 +52,5 @@ it("returns the original shared inert sample model without any business query or
   expect(result).toMatchObject({ versionId, definitionRevision: 4, label: "Version 1", model: { formFactor: "desktop", variantId: null,
     sections: [{ label: "Earlier order design", components: [{ type: "instructions", text: "Earlier guidance" }] }] } });
   expect(m.seal).toHaveBeenCalledWith(authority.session, authority.transaction, { kind: "page", definitionId: id, versionId, schemaVersion: 1, checksum: seal });
-  expect(m.compile).toHaveBeenCalledWith(authority, payload); expect(m.catalog).toHaveBeenCalledWith(authority, payload);
+  expect(m.compile).toHaveBeenCalledWith(authority, { payload, compiledPlan: plan, checksum: seal }); expect(m.catalog).toHaveBeenCalledWith(authority, payload);
 });

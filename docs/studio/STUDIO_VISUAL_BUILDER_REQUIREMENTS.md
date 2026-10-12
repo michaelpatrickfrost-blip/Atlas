@@ -117,3 +117,31 @@ matching with save and bounded before/after preview. It deliberately labels page
 counts and preview-only status. Complete reviewed migration controls and compatible
 live browser verification remain required before Phase2 completion. Shared business
 dashboard owner compiler exists, but no live shared dashboard claim.
+
+
+12 October owner-surface source integration: Tickets Page source@2 adds read-only native status/service targets, conversation/history, evidence, linked records, outstanding existing linked work and existing native approval status/steps. Retained@1 policies/hashes stay unchanged; strict append-only compatibility retains all old ordered declarations and current owner grants. Native evidence filenames now follow the same INTERNAL receiving-team visibility as downloads before returning metadata. Pure customer panel renderer uses only approved shared Page outputs; design previews remain inert. All six panels keep current owner/private/module/record-anchor checks and bounded50 lists. No new process/task/approval engine, schema or domain write. Local source checks and actual compatible reader/browser gates remain distinct.
+
+### 12 October connected business dashboard and field controls (source)
+
+The standalone business dashboard library now opens the original native Analytics
+canvas with a complete selected-business adapter. It saves versioned drafts,
+requires saved review before Go live and confirmed restore, and exposes only
+approved registered measures. Published customer dashboards appear on Home and
+load current authorised figures; refresh clears them if access or exact live design
+changes. No personal board IDs/storage fallback or extra rendering engine.
+Friendly field-change screens now connect the explicit original review/conversion/
+publish/go-live/restore/finish controls. Resume URLs store only an opaque review ID;
+GET never opens support or queries migration values. Recovery options are explicit
+and metadata-only. Conditional-required rule authoring and embedded dashboard
+blocks remain active Phase2 workstreams. Actual compatible browser gates pending.
+
+
+## 12 October connected screen/dashboard/rule checkpoint
+
+Saved dashboards can be added from authorised published choices to opt-in Sales/
+Ticket screens. Exact saved versions are retained; later dashboard publication does
+not silently change a screen. Actual preview and customer display share the original
+Analytics chart adapter. Default-layout integration and actual compatible browser
+proof are still pending. The friendly required-detail editor saves plain conditions
+and connects the existing reviewed migration controls; current production readiness
+fences remain. Source implemented is distinct from Phase2 gate acceptance.

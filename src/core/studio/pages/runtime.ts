@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { prepareVisibleEmbeddedViews, readPreparedEmbeddedViews } from "./embedded-views";
 import type { Session } from "@/core/auth/session";
 import { sessionAuthorityStamp } from "@/core/auth/session";
 import { loadSealedConfigurationVersion } from "../configuration/pins";
@@ -41,7 +42,8 @@ export async function readPublishedPageInTransaction(authority: FieldRuntimeAuth
   if (!sessionAuthorityStamp(session) || sessionAuthorityStamp(session) !== authority.stamp) broken();
   const version = await loadSealedConfigurationVersion(session, transaction, request.page), stored = storedFrame.parse(version.compiledPlan);
   const approvals = await reconstructPageApprovalsInTransaction(authority, { sourcePage: exactRef(stored.approvals.sourcePage),
-    customFields: stored.approvals.customFields.map(field => field.reference) });
+    customFields: stored.approvals.customFields.map(field => field.reference),
+    ...(stored.approvals.embeddedViews ? { embeddedViews: stored.approvals.embeddedViews.map(view => view.reference) } : {}) });
   const plan = getCompiledPage({ organisationId: session.organisationId, versionId: version.id,
     checksum: version.checksum, payload: version.payload, approvals });
   return readPlanInTransaction(authority, plan, request);
@@ -71,11 +73,12 @@ async function readPlanInTransaction(authority: FieldRuntimeAuthority, plan: Com
   }
   const facts = new Map<string, PageScalar>(), outputs = new Map<string, PageQueryOutput>(), attempted = new Set<string>();
   const context = { capabilities: session.capabilities, recordTypeDefinitionId, facts };
-  let cost = 0;
+  let cost = 0, queryCount = 0;
   const load = async (query: CompiledPagePlan["approvals"]["queries"][number], pageSize: number, cursor: z.infer<typeof pageQueryRequestSchema>["cursor"]) => {
     const key = pageQueryKey(query), cacheKey = `${key}:${pageSize}:${JSON.stringify(cursor)}`;
     if (attempted.has(cacheKey)) return outputs.get(cacheKey);
     attempted.add(cacheKey);
+    queryCount++;
     cost += ({ low: 1, medium: 3, high: 8 } as const)[query.costClass];
     if (cost > plan.approvals.maxQueryCost) throw new Error("Page read budget exceeded.");
     const result = await registry.invokePageRead({ session, transaction }, plan.approvals.sourcePage, request.request,
@@ -100,6 +103,25 @@ async function readPlanInTransaction(authority: FieldRuntimeAuthority, plan: Com
   const layout = resolvePageVariant(plan, context, request.formFactor), componentOutputs = new Map<string, PageQueryOutput>();
   const visibleIds = new Set(layout.sections.flatMap(section => section.components.filter(component => component.type === "queryList").map(component => component.id)));
   if (Object.keys(request.cursors).some(id => !visibleIds.has(id))) throw new Error("Invalid page cursor target.");
+  const embedded = await prepareVisibleEmbeddedViews(authority, layout.sections.flatMap(section => section.components), plan.approvals);
+  // Reserve every actual visible nested request before any nested provider and
+  // account for remaining Page queries (including differing list cursors).
+  const pendingQueries = new Map<string, CompiledPagePlan["approvals"]["queries"][number]>();
+  for (const read of layout.reads) {
+    const component = layout.sections.flatMap(section => section.components).find(value => value.id === read.componentId)!;
+    for (const ref of read.queries) {
+      const query = plan.approvals.queries.find(value => samePageReference(value, ref)); if (!query) broken();
+      const size = component.type === "queryList" ? component.pageSize : Math.min(query.maxCardinality, 50);
+      const cursor = component.type === "queryList" ? request.cursors[component.id] ?? null : null;
+      const key = `${pageQueryKey(query)}:${size}:${JSON.stringify(cursor)}`;
+      if (!attempted.has(key)) pendingQueries.set(key, query);
+    }
+  }
+  if (embedded.prepared.length && (queryCount + pendingQueries.size + embedded.queryCount > 32
+    || cost + [...pendingQueries.values()].reduce((sum, query) => sum + ({ low: 1, medium: 3, high: 8 } as const)[query.costClass], 0) + embedded.queryCost > plan.approvals.maxQueryCost))
+    throw new Error("Page read budget exceeded.");
+  cost += embedded.queryCost; queryCount += embedded.queryCount;
+  const embeddedOutputs = await readPreparedEmbeddedViews(authority, embedded.prepared);
   for (const read of layout.reads) {
     const component = layout.sections.flatMap(section => section.components).find(component => component.id === read.componentId)!;
     for (const ref of read.queries) { const query = plan.approvals.queries.find(query => samePageReference(query, ref)); if (!query) broken();
@@ -143,7 +165,7 @@ async function readPlanInTransaction(authority: FieldRuntimeAuthority, plan: Com
     }
     fields.set(current.definition.id, { label: current.payload.field.label, value });
   }
-  const model = createPageDisplayModel(plan, layout, request.formFactor, outputs, native, facts, fields, componentOutputs);
+  const model = createPageDisplayModel(plan, layout, request.formFactor, outputs, native, facts, fields, componentOutputs, embeddedOutputs);
   for (const section of model.sections) for (const component of section.components) if (component.type === "queryList") {
     const authored = layout.sections.flatMap(section => section.components).find(value => value.id === component.id);
     component.recordNavigation = authored?.type === "queryList" && source.policy.queries.some(query => query.scope === "list"

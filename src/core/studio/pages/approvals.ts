@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { referenceSchema } from "../compiler/reference";
+import { viewVersionReferenceSchema } from "../views/schema";
 import { customFieldReferenceSchema } from "../record-types/schema";
 import { formFactorSchema, pageNodeIdSchema, surfaceFamilySchema } from "./schema";
 import { pageMoneyFormatSchema } from "./owner-contract";
@@ -14,6 +15,13 @@ export const pageRegistryApprovalSchema = referenceSchema.extend({
 });
 const property = { id: pageNodeIdSchema, label: z.string().trim().min(1).max(200).optional(), classification, capability: capability.optional() };
 const sourceEntityId = z.string().regex(/^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+$/);
+export const pageDependencySchema = pageRegistryApprovalSchema.omit({ capability: true });
+export const embeddedViewApprovalSchema = z.strictObject({
+  reference: viewVersionReferenceSchema, sourceView: pageRegistryApprovalSchema.extend({ kind: z.literal("surface") }),
+  dependencies: z.array(pageDependencySchema).min(1).max(17),
+  queryCount: z.number().int().min(1).max(8), queryCost: z.number().int().min(1).max(64),
+}).refine(value => value.queryCost >= value.queryCount && value.queryCost <= value.queryCount * 8, "Invalid view query cost.")
+  .refine(value => new Set(value.dependencies.map(dep => `${dep.id}@${dep.version}`)).size === value.dependencies.length, "Duplicate embedded registry dependency.");
 const queryApprovalSchema = pageRegistryApprovalSchema.extend({
   kind: z.literal("query"), sourceEntityId,
   purpose: z.enum(["list", "fact", "metric", "surface", "preview"]),
@@ -49,6 +57,7 @@ export const pageApprovalsSchema = z.strictObject({
     query: referenceSchema, formFactors: forms })).max(50),
   surfaces: z.array(pageRegistryApprovalSchema.extend({ kind: z.literal("surface"), sourceEntityId,
     family: surfaceFamilySchema, queries: z.array(referenceSchema).max(4), formFactors: forms })).max(50),
+  embeddedViews: z.array(embeddedViewApprovalSchema).max(4).optional(),
   maxQueryCost: z.number().int().min(1).max(64).default(24),
 });
 export type PageApprovals = z.input<typeof pageApprovalsSchema>;

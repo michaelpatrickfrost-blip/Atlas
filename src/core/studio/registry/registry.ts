@@ -1,3 +1,4 @@
+import { isAppendOnlyPageSourceExtension } from "../pages/source-compatibility";
 import { z } from "zod";
 import { sessionAuthorityStamp, type Session } from "@/core/auth/session";
 import { assertCapability, can } from "@/core/permissions/check";
@@ -257,10 +258,29 @@ export class CapabilityRegistry {
   /** Internal metadata-only entry. Caller owns fresh identity locks and the
    * Serializable transaction; no native/provider query or command can run here. */
   async compileViewSourceInTransaction(context: RecordContext, reference: ContractReference, content: unknown) {
+    return this.compileViewSource(context, reference, content, "authoring");
+  }
+  /** Metadata seal reconstruction only, deliberately independent of native Read
+   * and Manage. It cannot execute a query and grants no source visibility. */
+  async reconstructViewSourceMetadataInTransaction(context: RecordContext, reference: ContractReference, content: unknown) {
+    return this.compileViewSource(context, reference, content, "metadata");
+  }
+  /** Customer read preflight: all native/independent source grants, no Studio or
+   * owning Manage requirement. Every query is preflighted before any provider. */
+  async authoriseViewReadInTransaction(context: RecordContext, reference: ContractReference, content: unknown) {
+    return this.compileViewSource(context, reference, content, "read");
+  }
+  private async compileViewSource(context: RecordContext, reference: ContractReference, content: unknown, mode: "authoring" | "read" | "metadata") {
     this.genuinePageContext(context);
+    const metadataAvailable = async (metadata: ContractMetadata) => {
+      if (!await this.available(context.session, metadata.ownerModuleId)) throw new Error("DEPENDENCY_BROKEN: view source module unavailable");
+      if (metadata.lifecycle === "deprecated" && Date.parse(metadata.supportedUntil!) <= Date.now())
+        throw new Error("DEPENDENCY_BROKEN: contract support window expired");
+    };
+    const check = (metadata: ContractMetadata) => mode !== "metadata" ? this.allowed(context.session, metadata) : metadataAvailable(metadata);
     const resolved = this.describeViewSource(reference);
-    await this.allowed(context.session, resolved.metadata); await this.allowed(context.session, resolved.currentMetadata);
-    assertCapability(context.session, resolved.policy.authoringCapability);
+    await check(resolved.metadata); await check(resolved.currentMetadata);
+    if (mode === "authoring") assertCapability(context.session, resolved.policy.authoringCapability);
     for (const moduleId of resolved.policy.requiredModules) if (!await this.available(context.session, moduleId))
       throw new Error(`DEPENDENCY_BROKEN: module ${moduleId} unavailable`);
     const prepared = preparedViewSchema.parse(resolved.callbacks.prepare(viewJsonSchema.parse(content)));
@@ -287,8 +307,8 @@ export class CapabilityRegistry {
         || !currentQuery || currentQuery.kind !== query.kind || currentQuery.capability !== query.capability
         || currentQuery.schemaHash !== query.schemaHash || checksum(currentQuery.details) !== checksum(query.details))
         throw new Error("DEPENDENCY_BROKEN: the registered metric/query approval changed.");
-      for (const contract of [source, currentSource, query, currentQuery]) await this.allowed(context.session, contract);
-      for (const capability of policy.requiredCapabilities) assertCapability(context.session, capability);
+      for (const contract of [source, currentSource, query, currentQuery]) await check(contract);
+      if (mode !== "metadata") for (const capability of policy.requiredCapabilities) assertCapability(context.session, capability);
       for (const moduleId of policy.requiredModules) if (!await this.available(context.session, moduleId))
         throw new Error(`DEPENDENCY_BROKEN: module ${moduleId} unavailable`);
       const exact = (metadata: ContractMetadata) => ({ id: metadata.id, version: metadata.version, schemaHash: metadata.schemaHash, contractHash: metadata.contractHash });
@@ -334,9 +354,10 @@ export class CapabilityRegistry {
     const current = [...this.items.values()].filter(item => item.metadata.id === metadata.id).sort((a, b) => b.metadata.version - a.metadata.version)[0];
     const policy = pageSourcePolicySchema.parse(metadata.details.pageSource);
     // Never fall back to an older supported policy. Label/version-only releases
-    // can retain exact historical pages; a changed policy requires republishing.
+    // and appended query/surface-only releases retain exact historical policies;
+    // any replacement/removal or other policy change requires republishing.
     if (!current?.pageSource || current.metadata.details.pageSource === undefined
-      || checksum(pageSourcePolicySchema.parse(current.metadata.details.pageSource)) !== checksum(policy))
+      || !isAppendOnlyPageSourceExtension(policy, current.metadata.details.pageSource))
       throw new Error("DEPENDENCY_BROKEN: current page source requires republishing.");
     const source = this.describe(policy.entity.id, policy.entity.version);
     if (source.kind !== "entity" || source.ownerModuleId !== metadata.ownerModuleId || source.capability !== metadata.capability)

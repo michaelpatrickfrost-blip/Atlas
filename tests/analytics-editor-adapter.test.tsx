@@ -64,3 +64,44 @@ it("refuses incomplete selected adapters and external/query-bearing workspace ov
     expect(() => render(<Studio {...props} workspaceHref={href}/>)).toThrow("internal dashboard");
   expect(m.nativeData).not.toHaveBeenCalled(); expect(m.nativeSave).not.toHaveBeenCalled();
 });
+it("saves a business draft with its exact revision, retaining failed edits and avoiding personal persistence", async () => {
+  const saveDraft = vi.fn().mockRejectedValueOnce(new Error("The saved draft changed"))
+    .mockResolvedValueOnce({ definitionId: "owned", revision: 4 });
+  const dirty = vi.fn();
+  render(<Studio {...props} selectedId="owned" startEditing serverActions={actions}
+    workspaceHref="/design-studio/dashboards" businessDraft={{ definitionId: "owned", revision: 3,
+      maxWidgets: 8, business: "selected business", saveDraft, onDirtyChange: dirty }}/>);
+  expect(screen.queryByRole("button", { name: "Monitor" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "Save a copy" })).toBeNull();
+  expect(screen.queryByRole("link", { name: "Open source for widget 1" })).toBeNull();
+  fireEvent.change(screen.getByRole("textbox", { name: "Dashboard name" }), { target: { value: "Business overview" } });
+  await waitFor(() => expect(dirty).toHaveBeenLastCalledWith(true));
+  fireEvent.click(screen.getByRole("button", { name: "Save draft" }));
+  await screen.findByText("The saved draft changed");
+  expect(screen.getByRole("textbox", { name: "Dashboard name" })).toHaveProperty("value", "Business overview");
+  expect(m.refresh).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "Save draft" }));
+  await screen.findByText("Draft saved. Review it before making it live for your business.");
+  expect(saveDraft).toHaveBeenLastCalledWith(expect.objectContaining({ revision: 3, name: "Business overview", widgets: board.widgets }));
+  expect(m.refresh).toHaveBeenCalledOnce(); expect(m.save).not.toHaveBeenCalled(); expect(m.nativeSave).not.toHaveBeenCalled();
+  await waitFor(() => expect(dirty).toHaveBeenLastCalledWith(false));
+  fireEvent.click(screen.getByRole("button", { name: /Business dashboards/ }));
+  expect(m.push).toHaveBeenCalledWith("/design-studio/dashboards?business=selected%20business");
+});
+it("does not accept a mismatched business save receipt or silently fall back to a personal dashboard", async () => {
+  const saveDraft = vi.fn().mockResolvedValue({ definitionId: "another", revision: 4 });
+  render(<Studio {...props} selectedId="owned" startEditing serverActions={actions}
+    businessDraft={{ definitionId: "owned", revision: 3, maxWidgets: 8, saveDraft }}/>);
+  fireEvent.change(screen.getByRole("textbox", { name: "Dashboard name" }), { target: { value: "Keep these changes" } });
+  fireEvent.click(screen.getByRole("button", { name: "Save draft" }));
+  await screen.findByText("This saved draft changed. Your entries are still here; reopen it to compare.");
+  expect(screen.getByRole("textbox", { name: "Dashboard name" })).toHaveProperty("value", "Keep these changes");
+  expect(m.refresh).not.toHaveBeenCalled(); expect(m.save).not.toHaveBeenCalled(); expect(m.nativeSave).not.toHaveBeenCalled();
+});
+it("requires the complete saved business adapter and respects the approved widget bound", () => {
+  const businessDraft = { definitionId: "owned", revision: 3, maxWidgets: 1, saveDraft: vi.fn() };
+  expect(() => render(<Studio {...props} selectedId="owned" businessDraft={businessDraft}/>)).toThrow("complete saved-draft adapter");
+  render(<Studio {...props} selectedId="owned" startEditing serverActions={actions} businessDraft={businessDraft}/>);
+  expect(screen.getByRole("button", { name: "Add widget" }).hasAttribute("disabled")).toBe(true);
+  expect(screen.getByText("1/1 widgets")).toBeTruthy();
+});

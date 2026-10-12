@@ -1,17 +1,23 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { z } from "zod";
 import { requireSession } from "@/core/auth/session";
 import { STUDIO_CAPABILITIES as CAP } from "@/core/studio/permissions";
 import { withStudioAuthoringAuthority } from "@/core/studio/authoring/context";
 import { getSetupCatalogInTransaction } from "@/core/studio/authoring/configuration";
 import { readAdditionalFieldMigrationSetup } from "@/core/studio/authoring/field-migration-preview";
 import { FieldChangeEditor } from "@/components/studio/field-change-editor";
-import { saveFieldChange, previewFieldChange } from "../../actions";
+import { saveFieldChange, previewFieldChange, prepareFieldChange, collectFieldChange, sealFieldChange,
+  readFieldChangeStatus, readFieldChangeRecovery, publishFieldChange, startFieldChange, executeFieldChange,
+  applyFieldChange, cancelFieldChange, rollbackFieldChange, finalizeFieldChange } from "../../actions";
 
 export default async function FieldChange({ params, searchParams }: {
-  params: Promise<{ definitionId: string }>; searchParams: Promise<{ business?: string }>;
+  params: Promise<{ definitionId: string }>; searchParams: Promise<{ business?: string; review?: string }>;
 }) {
-  const actor = await requireSession(), { definitionId } = await params, { business } = await searchParams;
+  const actor = await requireSession(), { definitionId } = await params, { business, review } = await searchParams;
+  // The URL is only a saved review identity. Reading this page never opens a
+  // support window, reads migration values, or advances the migration engine.
+  const initialPreparationId = z.uuid().optional().parse(review);
   const setup = await readAdditionalFieldMigrationSetup(actor, business, { definitionId });
   const catalogue = await withStudioAuthoringAuthority(actor, CAP.edit, business, async authority => ({
     ...await getSetupCatalogInTransaction(authority), name: authority.session.organisationName,
@@ -26,6 +32,14 @@ export default async function FieldChange({ params, searchParams }: {
     </header>
     <FieldChangeEditor key={`${business ?? "own"}:${setup.definitionId}:${setup.definitionRevision}:${setup.draftRevision}`}
       initial={setup} fieldTypes={catalogue.fieldTypes} referenceTargets={catalogue.referenceTargets} canPreview={catalogue.canPreview}
+      migration={{ initialPreparationId, callbacks: {
+        prepare: prepareFieldChange.bind(null, business), collect: collectFieldChange.bind(null, business),
+        seal: sealFieldChange.bind(null, business), status: readFieldChangeStatus.bind(null, business),
+        recoveryStatus: readFieldChangeRecovery.bind(null, business), publish: publishFieldChange.bind(null, business),
+        start: startFieldChange.bind(null, business), execute: executeFieldChange.bind(null, business),
+        cutover: applyFieldChange.bind(null, business), cancel: cancelFieldChange.bind(null, business),
+        rollback: rollbackFieldChange.bind(null, business), finalize: finalizeFieldChange.bind(null, business),
+      } }}
       callbacks={{ save: saveFieldChange.bind(null, business), preview: previewFieldChange.bind(null, business) }}/>
   </div>;
 }

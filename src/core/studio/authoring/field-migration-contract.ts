@@ -4,6 +4,7 @@ import { additionalFieldSetupSchema } from "./field-setup-contract";
 import { fieldFormValueSchema } from "../fields/value-schema";
 
 const revision = z.number().int().nonnegative().max(2147483646);
+const savedRevision = z.number().int().nonnegative().max(2147483647);
 const uuid = z.uuid().transform(value => value.toLowerCase());
 const cursor = z.string().regex(/^[a-zA-Z0-9_-]{1,100}$/);
 const page = { cursor: cursor.optional(), limit: z.number().int().min(1).max(50).default(25) };
@@ -11,13 +12,13 @@ export const additionalFieldMigrationPreviewRequestSchema = z.strictObject({ def
   definitionRevision: revision, draftRevision: revision, sourceVersionId: uuid,
   conversion: friendlyFieldConversionSchema, ...page });
 export const additionalFieldMigrationDetailRequestSchema = z.strictObject({ definitionId: uuid, preparationId: uuid, ...page });
-const issue = z.enum(["INVALID_SOURCE", "INVALID_TARGET", "UNMAPPED_VALUE", "LOSS_REQUIRES_REVIEW", "FIELD_STORAGE_INVALID"]);
+const issue = z.enum(["INVALID_SOURCE", "INVALID_TARGET", "UNMAPPED_VALUE", "LOSS_REQUIRES_REVIEW", "FIELD_STORAGE_INVALID", "FIELD_REQUIRED"]);
 export const fieldMigrationExampleSchema = z.strictObject({ label: z.string().min(1).max(30),
   before: fieldFormValueSchema.nullable(), after: fieldFormValueSchema.nullable(),
   beforeDisplay: z.string().min(1).max(4000), afterDisplay: z.string().min(1).max(4000),
   result: z.enum(["ready", "loss", "invalid"]), issue: issue.nullable() });
-export const additionalFieldMigrationPreviewSchema = z.strictObject({ definitionId: uuid, definitionRevision: revision,
-  draftRevision: revision, sourceVersionId: uuid, fieldLabel: z.string().min(1).max(200),
+export const additionalFieldMigrationPreviewSchema = z.strictObject({ definitionId: uuid, definitionRevision: savedRevision,
+  draftRevision: savedRevision, sourceVersionId: uuid, fieldLabel: z.string().min(1).max(200),
   affectedCount: z.number().int().nonnegative(), countsScope: z.literal("this_page"),
   pageCounts: z.strictObject({ valid: revision, invalid: revision, lossy: revision }),
   examples: z.array(fieldMigrationExampleSchema).max(50), nextCursor: cursor.nullable(),
@@ -27,7 +28,7 @@ export const additionalFieldMigrationPreviewSchema = z.strictObject({ definition
 });
 export type AdditionalFieldMigrationPreview = z.infer<typeof additionalFieldMigrationPreviewSchema>;
 export const additionalFieldMigrationDetailSchema = z.strictObject({ definitionId: uuid, preparationId: uuid,
-  revision, state: z.enum(["PREPARING", "REVIEWED", "CANCELLED"]), fieldLabel: z.string().min(1).max(200),
+  revision: savedRevision, state: z.enum(["PREPARING", "REVIEWED", "CANCELLED"]), fieldLabel: z.string().min(1).max(200),
   currentAffectedCount: revision, review: z.strictObject({ checksum: z.string().regex(/^[a-f0-9]{64}$/),
     affectedCount: revision, valid: revision, invalid: revision, lossy: revision }).nullable(),
   rows: z.array(z.strictObject({ label: z.string().min(1).max(30), result: z.enum(["ready", "loss", "invalid"]), issue: issue.nullable() })).max(50),
@@ -41,8 +42,8 @@ const settingsProjection = z.discriminatedUnion("kind", [
   z.strictObject({ kind: z.literal("read_only"), reason: z.string().min(1).max(500) }),
 ]);
 export const additionalFieldMigrationSetupRequestSchema = z.strictObject({ definitionId: uuid });
-export const additionalFieldMigrationSetupSchema = z.strictObject({ definitionId: uuid, definitionRevision: revision,
-  draftRevision: revision, sourceVersionId: uuid, source: settingsProjection, target: settingsProjection,
+export const additionalFieldMigrationSetupSchema = z.strictObject({ definitionId: uuid, definitionRevision: savedRevision,
+  draftRevision: savedRevision, sourceVersionId: uuid, source: settingsProjection, target: settingsProjection,
   sourceChoiceLabels: z.array(z.string().min(1).max(200)).max(200),
   targetChoiceSourceIndexes: z.array(z.number().int().min(0).max(199).nullable()).max(200),
 });

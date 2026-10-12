@@ -24,7 +24,9 @@ export default async function StudioWorkspace({ searchParams }: { searchParams: 
       canDesignDocuments: authority.session.capabilities.has("core.contract.manage") && !!await authority.transaction.moduleState.findFirst({
         where: { organisationId: authority.session.organisationId, moduleId: "templates", enabled: true, entitled: true }, select: { id: true } }),
       canSetupTickets: authority.session.capabilities.has("tickets.ticket.read") && authority.session.capabilities.has("tickets.ticket.manage")
-        && !!await authority.transaction.moduleState.findFirst({ where: { organisationId: authority.session.organisationId, moduleId: "tickets", enabled: true, entitled: true }, select: { id: true } }) };
+        && !!await authority.transaction.moduleState.findFirst({ where: { organisationId: authority.session.organisationId, moduleId: "tickets", enabled: true, entitled: true }, select: { id: true } }),
+      canDesignDashboards: authority.session.capabilities.has("analytics.dashboard.read") && authority.session.capabilities.has("analytics.dashboard.manage")
+        && !!await authority.transaction.moduleState.findFirst({ where: { organisationId: authority.session.organisationId, moduleId: "analytics", enabled: true, entitled: true }, select: { id: true } }) };
   });
   const suffix = business ? `?business=${encodeURIComponent(business)}` : "";
   const back = actor.capabilities.has(ATLAS_CAPABILITIES.staff) ? `/atlas/studio/${business}` : "/home";
@@ -58,7 +60,8 @@ export default async function StudioWorkspace({ searchParams }: { searchParams: 
       {workspace.canDesignDocuments && <Link href={`/design-studio/documents${suffix}`} className="group rounded-3xl border border-slate-200 bg-white p-6 transition hover:border-blue-300">
         <FileText className="h-5 w-5 text-blue-600"/><h2 className="mt-3 font-semibold">Document templates</h2><p className="mt-2 text-sm leading-6 text-slate-500">Design business documents, arrange their sections and preview them with the existing Templates editor.</p><span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-blue-700">Open document designer<ArrowUpRight className="h-4 w-4"/></span>
       </Link>}
-      {[{ icon: LayoutDashboard, title: "Business dashboards", text: "Your existing Analytics dashboards are available in the business workspace.", href: "/analytics" }].map(({ icon: Icon, title, text, href }) => <div key={title} className="rounded-3xl border border-slate-200 bg-white p-6"><Icon className="h-5 w-5 text-blue-600"/><h2 className="mt-3 font-semibold">{title}</h2><p className="mt-2 text-sm leading-6 text-slate-500">{text}</p>
-        {business ? <p className="mt-4 text-xs font-medium text-slate-500">Open this business&apos;s workspace from Atlas Admin to use its existing editor.</p> : <Link href={href} className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-blue-700">Open {title.toLowerCase()}<ArrowUpRight className="h-4 w-4"/></Link>}</div>)}</div>
+      {workspace.canDesignDashboards && <Link href={`/design-studio/dashboards${suffix}`} className="group rounded-3xl border border-slate-200 bg-white p-6 transition hover:border-blue-300">
+        <LayoutDashboard className="h-5 w-5 text-blue-600"/><h2 className="mt-3 font-semibold">Business dashboards</h2><p className="mt-2 text-sm leading-6 text-slate-500">Arrange charts and key numbers, choose colours and layouts, then make your saved design live on this business&apos;s Home.</p>
+        <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-blue-700">Open dashboard designer<ArrowUpRight className="h-4 w-4"/></span></Link>}</div>
   </div>;
 }

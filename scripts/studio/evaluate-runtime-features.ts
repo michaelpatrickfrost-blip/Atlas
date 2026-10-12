@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { resolve } from "node:path";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
 
 /** Executed in EACH actual runtime by that runtime's own tsx loader. No database,
@@ -40,14 +41,137 @@ async function evaluate() {
   const features = ["literalFieldDefaults.v1"];
   // Absence is only a negative compatibility check. Existing modules must run
   // their actual strict parsers/engines; import or semantic failures are fatal.
-  if (await pages(root, source, uuid, hash)) features.push("structuredPages.v1");
+  if (await pages(root, source, uuid, hash)) {
+    features.push("structuredPages.v1");
+    if (await ticketPanels(root, source)) features.push("ticketRecordPanels.v1");
+    if (await salesMetrics(root, source)) features.push("salesPageMetrics.v1");
+  }
   if (await profiles(root, source, uuid, hash)) {
     features.push("recordProfiles.v1");
     if (await typeForms(root, source, uuid, hash, receipt, saved)) features.push("recordTypeForms.v1");
   }
+  if (await businessViews(root, source)) {
+    features.push("analyticsBusinessViews.v1");
+    if (features.includes("structuredPages.v1") && await embeddedPages(root, source, uuid)) features.push("pageEmbeddedAnalytics.v1");
+  }
   return features;
 }
 function available(root: string, paths: string[]) { return paths.every(path => existsSync(resolve(root, path))); }
+async function businessViews(root: string, source: (path: string) => string): Promise<boolean> {
+  if (!available(root, ["src/core/studio/views/runtime.ts", "src/modules/analytics/services/studio-business-view.ts",
+    "src/modules/analytics/services/business-view-contract.ts", "src/modules/analytics/components/business-view-charts.tsx"])) return false;
+  const [runtime, owner, schema, contracts, registryModule, sales, products, compiler, react, server] = await Promise.all([
+    import(source("src/core/studio/views/runtime.ts")), import(source("src/modules/analytics/services/studio-business-view.ts")),
+    import(source("src/modules/analytics/services/business-view-contract.ts")), import(source("src/modules/analytics/services/studio-view.ts")),
+    import(source("src/core/studio/registry/registry.ts")), import(source("src/modules/sales/services/studio-analytics.ts")),
+    import(source("src/modules/products/services/studio-analytics.ts")), import(source("src/core/studio/views/definition-compiler.ts")),
+    import(source("node_modules/react/index.js")), import(source("node_modules/react-dom/server.node.js")),
+  ]);
+  if (typeof runtime.readPublishedViewInTransaction !== "function" || typeof owner.readPublishedAnalyticsViewInTransaction !== "function") return false;
+  const registry = new registryModule.CapabilityRegistry(async () => true);
+  registry.register("analytics", contracts.analyticsBusinessViewContract); registry.register("sales", sales.salesAnalyticsStudioContract); registry.register("products", products.productsAnalyticsStudioContract);
+  const metadata = registry.describe("analytics.dashboard.view", 1), sourceView = { id: metadata.id, version: metadata.version, schemaHash: metadata.schemaHash, contractHash: metadata.contractHash };
+  const content = schema.businessViewCreateSchema.parse({ name: "Readiness <dashboard>", period: "all", refreshSeconds: 0,
+    widgets: [{ id: "orders", metricId: "sales.orders", visual: "kpi", wide: false, minimum: 0 }] });
+  assert.equal(content.widgets[0].wide, false); assert.equal(content.refreshSeconds, 0);
+  assert.equal(schema.businessViewCreateSchema.safeParse({ ...content, organisationId: "foreign" }).success, false);
+  assert.equal(schema.businessViewCreateSchema.safeParse({ ...content, widgets: [{ ...content.widgets[0], data: { dataset: "finance.documents" } }] }).success, false);
+  const resolved = registry.describeViewSource(sourceView), prepared = resolved.callbacks.prepare(content), native = registry.describe("sales.orders.metric", 1), query = registry.describe("sales.orders.metric.read", 1);
+  const exact = (value: { id: string; version: number; schemaHash: string; contractHash: string }) => ({ id: value.id, version: value.version, schemaHash: value.schemaHash, contractHash: value.contractHash });
+  const compiled = resolved.callbacks.compile(prepared.content, Object.freeze([{ source: exact(native), metadata: native, query: exact(query), queryMetadata: query,
+    policy: native.details.analyticsSource }]));
+  const plan = compiler.materialiseCompiledView({ schemaVersion: 1, sourceView, content }, { ...compiled, dependencies: [metadata, native, query].map(value => ({ ...exact(value),
+    ownerModuleId: value.ownerModuleId, kind: value.kind, classification: value.classification })) });
+  assert.deepEqual(plan.plan.requests[0].input, { period: "all", dimension: "status" });
+  const access = denyAccess(), authority = { session: forgedSession(), stamp: {}, transaction: access.blocked, registry: access.blocked };
+  await assert.rejects(() => runtime.readPublishedViewInTransaction(authority, { definitionId: "00000000-0000-4000-8000-000000000001" }, "analytics.dashboard.view"), /FORBIDDEN/);
+  await assert.rejects(() => owner.readPublishedAnalyticsViewInTransaction(authority, { definitionId: "00000000-0000-4000-8000-000000000001" }), /FORBIDDEN/);
+  assert.equal(access.accesses(), 0);
+  // Probe-only CSS token loader: actual styles are read, not executed. Restore
+  // before returning. This validates real JSX/native-chart semantics, never CSS
+  // layout; the original production build and browser gates prove that separately.
+  const require = createRequire(resolve(root, "package.json")), previous = require.extensions[".css"];
+  require.extensions[".css"] = (module, filename) => {
+    const text = readFileSync(filename, "utf8"), names = [...text.matchAll(/\.([a-zA-Z_][a-zA-Z0-9_-]*)/g)].map(match => match[1]);
+    module.exports = Object.fromEntries(names.map(name => [name, name]));
+  };
+  try {
+    const renderer = await import(source("src/modules/analytics/components/business-view-charts.tsx"));
+    if (typeof renderer.BusinessViewCharts !== "function") return false;
+    const metric = { id: "sales.orders", name: "Orders <safe>", subject: "Sales", definition: "Complete count", grain: "Record", snapshot: false, href: "/sales/orders", unit: "count",
+      points: [{ label: "DRAFT", value: 0 }] };
+    const html = server.renderToStaticMarkup(react.createElement(renderer.BusinessViewCharts, { view: { content, dataByWidget: { orders: metric } } }));
+    assert(html.includes("Orders &lt;safe&gt;")); assert(html.includes(">0<")); assert(!html.includes("<form")); assert(!html.includes("<script"));
+  } finally { if (previous) require.extensions[".css"] = previous; else delete require.extensions[".css"]; }
+  return true;
+}
+async function embeddedPages(root: string, source: (path: string) => string, uuid: string): Promise<boolean> {
+  if (!available(root, ["src/core/studio/pages/embedded-views.ts", "src/core/studio/views/runtime.ts", "src/modules/analytics/components/embedded-business-view.tsx"])) return false;
+  const [pages, tickets, salesPages, sales, analytics, measures, products, registryModule, compiler, selection, display, viewCompiler, viewRuntime, pageRuntime, schema, contracts] = await Promise.all([
+    import(source("src/core/service-work/studio-pages.ts")), import(source("src/core/service-work/studio.ts")),
+    import(source("src/modules/sales/services/studio-pages.ts")), import(source("src/modules/sales/services/studio.ts")),
+    import(source("src/modules/analytics/services/studio-view.ts")), import(source("src/modules/sales/services/studio-analytics.ts")),
+    import(source("src/modules/products/services/studio-analytics.ts")), import(source("src/core/studio/registry/registry.ts")),
+    import(source("src/core/studio/pages/compiler.ts")), import(source("src/core/studio/pages/selection.ts")),
+    import(source("src/core/studio/pages/render-model.ts")), import(source("src/core/studio/views/definition-compiler.ts")),
+    import(source("src/core/studio/views/runtime.ts")), import(source("src/core/studio/pages/runtime.ts")),
+    import(source("src/modules/analytics/services/business-view-contract.ts")), import(source("src/core/studio/registry/contracts.ts")),
+  ]);
+  // Old owner families are unsupported before attempting the new composition;
+  // file presence alone cannot declare immutable embedded reader compatibility.
+  if (!pages.ticketPageEmbeddedPolicy || !salesPages.salesOrderEmbeddedPagePolicy
+    || typeof viewRuntime.inspectSealedViewForReadInTransaction !== "function" || typeof viewRuntime.readSealedViewInTransaction !== "function") return false;
+  const registry = new registryModule.CapabilityRegistry(async () => true);
+  registry.register("analytics", analytics.analyticsBusinessViewContract);
+  registry.register("sales", { contributions: [...sales.salesStudioContract.contributions, ...measures.salesAnalyticsStudioContract.contributions, ...salesPages.salesOrderPageContract.contributions] });
+  registry.register("products", products.productsAnalyticsStudioContract);
+  registry.register("tickets", { contributions: [...tickets.ticketStudioContract.contributions, ...pages.ticketPageContract.contributions] });
+  const exact = (value: { id: string; version: number; schemaHash: string; contractHash: string }) => ({ id: value.id, version: value.version, schemaHash: value.schemaHash, contractHash: value.contractHash });
+  const approve = (value: { id: string; version: number; schemaHash: string; contractHash: string; ownerModuleId: string; kind: string; classification: string; capability: string }) => ({ ...exact(value), ownerModuleId: value.ownerModuleId, kind: value.kind, classification: value.classification, capability: value.capability });
+  const descriptor = registry.describe("analytics.dashboard.view", 1), resolved = registry.describeViewSource(exact(descriptor));
+  const content = schema.businessViewCreateSchema.parse({ name: "Embedded <overview>", period: "all", refreshSeconds: 0, widgets: [{ id: "orders", metricId: "sales.orders", title: "Order <summary>", visual: "kpi", wide: false }] });
+  const prepared = resolved.callbacks.prepare(content), metric = registry.describe("sales.orders.metric", 1), query = registry.describe("sales.orders.metric.read", 1);
+  const compiled = resolved.callbacks.compile(prepared.content, [{ source: exact(metric), metadata: metric, query: exact(query), queryMetadata: query, policy: metric.details.analyticsSource }]);
+  const dependencies = [descriptor, metric, query].map(value => { const { capability, ...dependency } = approve(value); void capability; return dependency; });
+  const sealed = viewCompiler.materialiseCompiledView({ schemaVersion: 1, sourceView: exact(descriptor), content }, { ...compiled, dependencies });
+  const pin = { kind: "view", definitionId: uuid, versionId: "00000000-0000-4000-8000-000000000003", schemaVersion: 1, checksum: sealed.checksum };
+  const forms = ["desktop", "tablet", "phone"], widgetData = { orders: [{ label: "DRAFT", value: 0 }] };
+  const access = denyAccess(), authority = { session: forgedSession(), stamp: {}, transaction: access.blocked, registry: access.blocked };
+  for (const family of ["sales.order.page", "tickets.ticket.page"]) {
+    const owner = registry.describePageSource(exact(registry.describe(family, 3))), prior = registry.describePageSource(exact(registry.describe(family, 2)));
+    assert.deepEqual(owner.policy, { ...prior.policy, embeddedViewSources: [{ id: descriptor.id, version: 1 }], maxQueryCost: 64 });
+    const entity = registry.describe(owner.policy.entity.id, owner.policy.entity.version);
+    const payload = { schemaVersion: 1, entity: exact(entity), formFactors: forms, variants: [], sections: [{ id: "overview", label: "Overview", help: "", formFactors: forms, columns: { desktop: 2, tablet: 2, phone: 1 }, components: [{ id: "analytics", type: "analyticsView", view: pin, formFactors: forms }] }] };
+    const plan = compiler.compilePage(payload, { entity: approve(entity), sourcePage: approve(owner.metadata), variants: owner.policy.variants, fieldSourceVersions: owner.policy.fieldSourceVersions,
+      nativeFields: [], customFields: [], facts: [], contracts: [], queries: [], commands: [], metrics: [], surfaces: [], maxQueryCost: owner.policy.maxQueryCost,
+      embeddedViews: [{ reference: pin, sourceView: approve(descriptor), dependencies, queryCount: 1, queryCost: 8 }] });
+    assert.equal(plan.base.queryCost, 8); assert.equal(plan.base.queryCount, 1); assert.deepEqual(plan.configurationDependencies, [pin]);
+    const digest = contracts.checksum(plan); assert.equal(digest, contracts.checksum(compiler.compilePage(payload, plan.approvals)));
+    const layout = selection.resolvePageVariant(plan, { capabilities: new Set([entity.capability, descriptor.capability]), recordTypeDefinitionId: null, facts: new Map() }, "phone");
+    const output = { view: pin, sourceView: exact(descriptor), content, dataByWidget: widgetData };
+    const model = display.createPageDisplayModel(plan, layout, "phone", new Map(), new Map(), new Map(), new Map(), new Map(), new Map([["analytics", output]]));
+    assert.equal(model.sections[0].columns, 1); assert.deepEqual(model.sections[0].components[0].output, output);
+    await assert.rejects(() => pageRuntime.readPublishedPageInTransaction(authority, { page: { kind: "page", definitionId: "00000000-0000-4000-8000-000000000004", versionId: "00000000-0000-4000-8000-000000000005", schemaVersion: 1, checksum: digest }, request: { kind: "record", recordId: "readiness" }, formFactor: "phone", cursors: {} }), /DEPENDENCY_BROKEN/);
+  }
+  await assert.rejects(() => viewRuntime.inspectSealedViewForReadInTransaction(authority, pin, descriptor.id), /FORBIDDEN/);
+  await assert.rejects(() => viewRuntime.readSealedViewInTransaction(authority, pin, descriptor.id), /FORBIDDEN/);
+  assert.equal(access.accesses(), 0);
+  const require = createRequire(resolve(root, "package.json")), previous = require.extensions[".css"];
+  require.extensions[".css"] = (module, filename) => {
+    const names = [...readFileSync(filename, "utf8").matchAll(/\.([a-zA-Z_][a-zA-Z0-9_-]*)/g)].map(match => match[1]);
+    module.exports = Object.fromEntries(names.map(name => [name, name]));
+  };
+  try {
+    const [adapter, react, server] = await Promise.all([import(source("src/modules/analytics/components/embedded-business-view.tsx")), import(source("node_modules/react/index.js")), import(source("node_modules/react-dom/server.node.js"))]);
+    if (typeof adapter.embeddedBusinessViewDisplay !== "function" || typeof adapter.EmbeddedBusinessView !== "function") return false;
+    const output = { view: pin, sourceView: exact(descriptor), content, dataByWidget: widgetData };
+    assert.equal(adapter.embeddedBusinessViewDisplay(output).dataByWidget.orders.points[0].value, 0);
+    assert.throws(() => adapter.embeddedBusinessViewDisplay({ ...output, dataByWidget: { ...widgetData, forbidden: [] } }));
+    const html = server.renderToStaticMarkup(react.createElement(adapter.EmbeddedBusinessView, { output }));
+    assert(html.includes("Order &lt;summary&gt;")); assert(html.includes(">0<")); assert(!html.includes("<form")); assert(!html.includes("<script"));
+  } finally { if (previous) require.extensions[".css"] = previous; else delete require.extensions[".css"]; }
+  return true;
+}
 const denyAccess = () => {
   let accesses = 0;
   const blocked = new Proxy({}, { get() { accesses++; throw new Error("Readiness must not access records or transactions."); } });
@@ -90,6 +214,99 @@ async function pages(root: string, source: (path: string) => string, uuid: strin
   const access = denyAccess(), authority = { session: forgedSession(), stamp: {}, transaction: access.blocked, registry: access.blocked };
   await assert.rejects(() => runtime.readPublishedPageInTransaction(authority, { page: { kind: "page", definitionId: uuid, versionId: uuid, schemaVersion: 1, checksum: hash },
     request: { kind: "record", recordId: "readiness" }, formFactor: "phone", cursors: {} }), /DEPENDENCY_BROKEN/);
+  assert.equal(access.accesses(), 0);
+  return true;
+}
+async function ticketPanels(root: string, source: (path: string) => string): Promise<boolean> {
+  // A predecessor with generic Page support lacks this exact owner/renderer
+  // family. Missing optional files are unsupported; broken present imports fail.
+  if (!available(root, ["src/core/service-work/page-panel-contract.ts", "src/core/service-work/studio-page-surfaces.ts",
+    "src/core/service-work/studio-pages.ts", "src/components/service-work/ticket-record-panels.tsx"])) return false;
+  const [panels, pages, tickets, registryModule, display, react, server] = await Promise.all([
+    import(source("src/core/service-work/page-panel-contract.ts")), import(source("src/core/service-work/studio-pages.ts")),
+    import(source("src/core/service-work/studio.ts")), import(source("src/core/studio/registry/registry.ts")),
+    import(source("src/components/service-work/ticket-record-panels.tsx")), import(source("node_modules/react/index.js")),
+    import(source("node_modules/react-dom/server.node.js")),
+  ]);
+  if (typeof display.TicketRecordSurface !== "function") return false;
+  const registry = new registryModule.CapabilityRegistry(async () => true);
+  if (pages.ticketPageEmbeddedPolicy) { const analytics = await import(source("src/modules/analytics/services/studio-view.ts")); registry.register("analytics", analytics.analyticsBusinessViewContract); }
+  registry.register("tickets", tickets.ticketStudioContract); registry.register("tickets", pages.ticketPageContract);
+  const exact = (version: number) => { const value = registry.describe("tickets.ticket.page", version);
+    return { id: value.id, version: value.version, schemaHash: value.schemaHash, contractHash: value.contractHash }; };
+  const retained = registry.describePageSource(exact(1)), current = registry.describePageSource(exact(2));
+  assert.equal(retained.policy.entity.id, "tickets.ticket"); assert.equal(current.policy.entity.version, 9);
+  assert.equal(retained.metadata.version, 1); assert.equal(current.metadata.version, 2);
+  assert.equal(current.policy.queries.length, retained.policy.queries.length + 6);
+  assert.equal(current.policy.surfaces.length, retained.policy.surfaces.length + 6);
+  assert.deepEqual(panels.ticketPanelKinds, ["status", "activity", "documents", "relationships", "outstanding_work", "approval"]);
+  for (const kind of panels.ticketPanelKinds) {
+    const queryRef = panels.ticketPanelQuery(kind), surfaceRef = panels.ticketPanelSurface(kind);
+    const query = registry.describe(queryRef.id, queryRef.version), surface = registry.describe(surfaceRef.id, surfaceRef.version);
+    assert.equal(query.kind, "query"); assert.equal(query.ownerModuleId, "tickets"); assert.equal(query.details.transaction, "required");
+    assert.equal(query.details.pagination, kind === "status" ? "none" : "page"); assert.equal(query.details.maxCardinality, kind === "status" ? 1 : 50);
+    assert.equal(surface.kind, "surface"); assert.equal(surface.ownerModuleId, "tickets");
+    assert(current.policy.queries.some((entry: { query: { id: string; version: number } }) => entry.query.id === queryRef.id && entry.query.version === 1));
+    assert(current.policy.surfaces.some((entry: { surface: { id: string; version: number } }) => entry.surface.id === surfaceRef.id && entry.surface.version === 1));
+  }
+  const time = "2026-10-12T00:00:00.000Z";
+  const document = { rows: [{ id: "readiness-file", values: { name: "Readiness <file>", size: 0, mime: "text/plain", created_at: time } }], nextCursor: null };
+  assert.equal(panels.parseTicketPanel("documents", document)[0].values.size, 0);
+  const status = { rows: [{ id: "readiness", values: { status: "NEW", owner: "Readiness", reopen_count: 0, first_response_state: "PAUSED",
+    first_response_due: null, resolution_state: "PAUSED", resolution_due: null } }], nextCursor: null };
+  assert.equal(panels.parseTicketPanel("status", status)[0].values.reopen_count, 0);
+  const render = (kind: string, output: object) => server.renderToStaticMarkup(react.createElement(display.TicketRecordSurface,
+    { surface: panels.ticketPanelSurface(kind), outputs: [output] }));
+  const html = render("documents", document);
+  assert(html.includes('/api/service-files/readiness-file')); assert(html.includes("Readiness &lt;file&gt;")); assert(!html.includes("<form"));
+  assert(render("status", status).includes("Reopened 0 times"));
+  assert.throws(() => render("documents", { ...document, rows: [{ ...document.rows[0], id: "https://foreign.example/file" }] }));
+  const access = denyAccess();
+  await assert.rejects(() => registry.invokePageRead({ session: forgedSession(), transaction: access.blocked }, exact(2),
+    { kind: "record", recordId: "readiness" }, { query: panels.ticketPanelQuery("status"), pageSize: 1, cursor: null }), /genuine/);
+  assert.equal(access.accesses(), 0);
+  return true;
+}
+async function salesMetrics(root: string, source: (path: string) => string): Promise<boolean> {
+  if (!available(root, ["src/modules/sales/services/studio-pages.ts", "src/modules/sales/services/studio.ts", "src/core/studio/pages/render-model.ts"])) return false;
+  const [pages, sales, registryModule, compiler, display, selection] = await Promise.all([
+    import(source("src/modules/sales/services/studio-pages.ts")), import(source("src/modules/sales/services/studio.ts")),
+    import(source("src/core/studio/registry/registry.ts")), import(source("src/core/studio/pages/compiler.ts")),
+    import(source("src/core/studio/pages/render-model.ts")), import(source("src/core/studio/pages/selection.ts")),
+  ]);
+  const registry = new registryModule.CapabilityRegistry(async () => true);
+  if (pages.salesOrderEmbeddedPagePolicy) { const analytics = await import(source("src/modules/analytics/services/studio-view.ts")); registry.register("analytics", analytics.analyticsBusinessViewContract); }
+  registry.register("sales", sales.salesStudioContract); registry.register("sales", pages.salesOrderPageContract);
+  const legacy = registry.describe("sales.order.page", 1);
+  // Older actual runtime has ordinary Pages but no exact new owner family.
+  if (!pages.salesOrderMetricPagePolicy) return false;
+  const metadata = registry.describe("sales.order.page", 2), entity = registry.describe("sales.order", 1);
+  const exact = (entry: { id: string; version: number; schemaHash: string; contractHash: string }) => ({ id: entry.id, version: entry.version, schemaHash: entry.schemaHash, contractHash: entry.contractHash });
+  const current = registry.describePageSource(exact(metadata)), retained = registry.describePageSource(exact(legacy));
+  assert.equal(current.policy.queries.length, retained.policy.queries.length + 1);
+  assert.equal(retained.policy.metrics.length, 0); assert.equal(current.policy.metrics.length, 1);
+  const metric = registry.describe("sales.order.page.total_metric", 1), query = registry.describe("sales.order.page.total", 1);
+  assert.equal(query.kind, "query"); assert.equal(query.details.transaction, "required"); assert.equal(query.details.pagination, "none");
+  assert.equal(query.details.maxCardinality, 1); assert.equal(query.details.costClass, "low");
+  const owned = current.policy.queries.find((entry: { query: { id: string } }) => entry.query.id === query.id);
+  assert(owned); assert.equal(owned.scope, "record"); assert.equal(owned.purpose, "metric");
+  assert.deepEqual(owned.columns.map((entry: { id: string }) => entry.id), ["gross_amount", "currency"]);
+  assert.deepEqual(owned.columns[0].format, { kind: "money_minor", currencyColumnId: "currency" });
+  const approve = (entry: { id: string; version: number; schemaHash: string; contractHash: string; ownerModuleId: string; kind: string; classification: string; capability: string }) => ({ ...exact(entry), ownerModuleId: entry.ownerModuleId, kind: entry.kind, classification: entry.classification, capability: entry.capability });
+  const forms = ["desktop", "tablet", "phone"];
+  const payload = { schemaVersion: 1, entity: exact(entity), formFactors: forms, variants: [], sections: [{ id: "total", label: "Order", help: "", formFactors: forms,
+    columns: { desktop: 1, tablet: 1, phone: 1 }, components: [{ id: "value", type: "metric", metric: exact(metric), formFactors: forms }] }] };
+  const plan = compiler.compilePage(payload, { entity: approve(entity), sourcePage: approve(metadata), variants: true, fieldSourceVersions: [],
+    nativeFields: [], customFields: [], facts: [], contracts: [], commands: [], surfaces: [], maxQueryCost: current.policy.maxQueryCost,
+    queries: [{ ...approve(query), sourceEntityId: entity.id, purpose: "metric", pagination: "none", maxCardinality: 1, costClass: "low", columns: owned.columns.map((column: { id: string; label?: string; classification: string; capability?: string; format?: object }) => ({ id: column.id, ...(column.label ? { label: column.label } : {}), classification: column.classification, ...(column.capability ? { capability: column.capability } : {}), ...(column.format ? { format: column.format } : {}) })) }],
+    metrics: [{ ...approve(metric), sourceEntityId: entity.id, query: exact(query), formFactors: forms }] });
+  const layout = selection.resolvePageVariant(plan, { capabilities: new Set(["sales.order.read"]), recordTypeDefinitionId: null, facts: new Map() }, "desktop");
+  const outputs = new Map([[display.pageQueryKey(query), { rows: [{ id: "readiness", values: { gross_amount: 0, currency: "GBP" } }], nextCursor: null }]]);
+  const model = display.createPageDisplayModel(plan, layout, "desktop", outputs);
+  assert.equal(model.sections[0].components[0].type, "metric"); assert.equal(model.sections[0].components[0].cells[0].text, "£0.00");
+  const access = denyAccess();
+  await assert.rejects(() => registry.invokePageRead({ session: forgedSession(), transaction: access.blocked }, exact(metadata),
+    { kind: "record", recordId: "readiness" }, { query: { id: query.id, version: query.version }, pageSize: 1, cursor: null }), /genuine/);
   assert.equal(access.accesses(), 0);
   return true;
 }

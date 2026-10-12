@@ -7,6 +7,8 @@ import { AppDirectory } from "@/components/shell/app-directory";
 import { GoalMeter } from "@/modules/kpis/components/goal-meter";
 import { loadGoalWorkspace } from "@/modules/kpis/services/workspace";
 import { listCustomerScreens } from "@/core/studio/pages/customer-catalog";
+import { withFieldRuntimeAuthority } from "@/core/studio/fields/runtime-authority";
+import { listPublishedBusinessViewsInTransaction } from "@/modules/analytics/services/studio-business-view";
 
 const PANEL = "rounded-2xl border border-black/[0.06] bg-white";
 const DOT = { critical: "bg-[#d12b45]", warning: "bg-[#c9820a]", info: "bg-[#c7c7cc]" } as const;
@@ -17,6 +19,8 @@ export default async function HomePage() {
   const goalBoard = enabled.has("kpis") ? await loadGoalWorkspace(session).catch(() => null) : null;
   const highlights = goalBoard?.goals.filter((goal) => goal.status === "ACTIVE").slice(0, 4) ?? [];
   const screens = await listCustomerScreens(session);
+  const businessDashboards = enabled.has("analytics") && session.capabilities.has("analytics.dashboard.read")
+    ? await withFieldRuntimeAuthority(session, authority => listPublishedBusinessViewsInTransaction(authority)) : [];
   return (
     <div className="mx-auto flex max-w-[1440px] flex-col gap-5">
       <section id="your-apps" aria-labelledby="launcher-title" className="relative isolate scroll-mt-5 overflow-hidden rounded-[26px] border border-white bg-white/55 p-3 shadow-[0_10px_50px_-30px_rgba(64,98,151,0.25)] sm:p-5 lg:p-7">
@@ -34,6 +38,11 @@ export default async function HomePage() {
       {screens.length > 0 && <section aria-label="Your business screens" className={`${PANEL} px-5 py-5 sm:px-6`}>
         <h2 className="text-sm font-semibold">Your business screens</h2><p className="mt-1 text-xs text-slate-500">Layouts published for {session.organisationName}.</p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{screens.map(screen => <Link key={screen.id} href={`/screens/${screen.id}`} className="rounded-xl border border-blue-100 bg-blue-50/40 px-4 py-3 text-sm font-medium text-blue-700 hover:bg-blue-50">{screen.name}</Link>)}</div>
+      </section>}
+      {businessDashboards.length > 0 && <section aria-label="Your business dashboards" className={`${PANEL} px-5 py-5 sm:px-6`}>
+        <h2 className="text-sm font-semibold">Your business dashboards</h2><p className="mt-1 text-xs text-slate-500">Published views for {session.organisationName}.</p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{businessDashboards.map(dashboard => <Link key={dashboard.definitionId}
+          href={`/business-dashboards/${dashboard.definitionId}`} className="rounded-xl border border-teal-100 bg-teal-50/40 px-4 py-3 text-sm font-medium text-teal-700 hover:bg-teal-50">{dashboard.name}</Link>)}</div>
       </section>}
       <div className={`grid gap-5 ${highlights.length > 0 ? "lg:grid-cols-2" : ""}`}>
         <section aria-label="Needs attention" className={`${PANEL} px-5 py-4 sm:px-6`}>

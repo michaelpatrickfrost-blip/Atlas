@@ -10,15 +10,19 @@ import { additionalFieldEvolutionDraftSchema } from "@/core/studio/authoring/fie
 import { additionalFieldMigrationSetupSchema, additionalFieldMigrationPreviewSchema,
   type AdditionalFieldMigrationSetup, type AdditionalFieldMigrationPreview } from "@/core/studio/authoring/field-migration-contract";
 import { fieldChangeConversion, fieldChangeChoices } from "./field-change-model";
+import { FieldMigrationControls, type FieldMigrationControlsProps } from "./field-migration-controls";
+import type { FriendlyFieldConversion } from "@/core/studio/authoring/field-evolution-contract";
 
 export type FieldChangeEditorProps = Pick<AdditionalFieldSetupProps, "fieldTypes" | "referenceTargets"> & {
   initial: AdditionalFieldMigrationSetup; canPreview: boolean;
   callbacks: { save(input: unknown): Promise<AdditionalFieldMigrationSetup>; preview(input: unknown): Promise<AdditionalFieldMigrationPreview> };
+  migration?: { initialPreparationId?: string; callbacks: FieldMigrationControlsProps["callbacks"] };
 };
 const choices = (setup: AdditionalFieldMigrationSetup) => setup.target.kind === "editable" &&
   (setup.target.initial.type === "enum" || setup.target.initial.type === "multi_enum") ? setup.target.initial.settings.choices : [];
 const resultLabel = { ready: "Ready", loss: "Needs loss review", invalid: "Needs attention" };
 const issueLabel = { INVALID_SOURCE: "The current value needs correction.", INVALID_TARGET: "The new settings cannot accept this value.",
+  FIELD_REQUIRED: "This record needs a value under the new required-field rule.",
   UNMAPPED_VALUE: "Choose how to map this existing value.", LOSS_REQUIRES_REVIEW: "This change would remove information.", FIELD_STORAGE_INVALID: "The saved value needs its existing support workflow." };
 function message(error: unknown) {
   if (error instanceof Error && error.name === "ZodError") return "Check the field settings and conversion choices, then try again.";
@@ -26,11 +30,12 @@ function message(error: unknown) {
   if (error instanceof Error && /FORBIDDEN|UNAUTHORI|CAPABILITY|RESTRICTED|ACCESS_DENIED/.test(error.message)) return "Your current access does not allow this field change or preview. Your live field is unchanged.";
   return error instanceof Error ? error.message : "The field change could not be completed. Your entries are still here.";
 }
-export function FieldChangeEditor({ initial, fieldTypes, referenceTargets, canPreview, callbacks }: FieldChangeEditorProps) {
+export function FieldChangeEditor({ initial, fieldTypes, referenceTargets, canPreview, callbacks, migration }: FieldChangeEditorProps) {
   const [saved, setSaved] = useState(initial), [dirty, setDirty] = useState(false), [error, setError] = useState(""), [notice, setNotice] = useState("");
   const [preview, setPreview] = useState<AdditionalFieldMigrationPreview | null>(null), [pending, start] = useTransition();
   const [targetType, setTargetType] = useState(initial.target.kind === "editable" ? initial.target.initial.type : "string");
   const [targetChoices, setTargetChoices] = useState(choices(initial)), [mappingRows, setMappingRows] = useState(1);
+  const [savedConversion, setSavedConversion] = useState<FriendlyFieldConversion | null>(null);
   const form = useRef<HTMLFormElement>(null), change = useRef(0);
   if (saved.source.kind !== "editable" || saved.target.kind !== "editable") return <section className="rounded-3xl border border-slate-200 bg-white p-7">
     <h2 className="text-xl font-semibold">Keep this field in its reviewed workflow</h2>
@@ -54,7 +59,7 @@ export function FieldChangeEditor({ initial, fieldTypes, referenceTargets, canPr
           if (next.definitionId !== saved.definitionId || next.definitionRevision !== saved.definitionRevision || next.sourceVersionId !== saved.sourceVersionId || next.draftRevision !== saved.draftRevision + 1)
             throw new Error("The saved field changed. Reopen it before continuing.");
           if (token !== change.current) return;
-          setSaved(next); setDirty(false); setTargetChoices(choices(next)); setNotice("New settings saved as a draft. The live field is unchanged.");
+          setSaved(next); setSavedConversion(rule); setDirty(false); setTargetChoices(choices(next)); setNotice("New settings saved as a draft. The live field is unchanged.");
         } else {
           const next = additionalFieldMigrationPreviewSchema.parse(await callbacks.preview({ definitionId: saved.definitionId,
             definitionRevision: saved.definitionRevision, draftRevision: saved.draftRevision, sourceVersionId: saved.sourceVersionId,
@@ -72,7 +77,7 @@ export function FieldChangeEditor({ initial, fieldTypes, referenceTargets, canPr
         change.current++; setPreview(null); setError(""); setNotice("");
         const element = event.target;
         if (!(element instanceof HTMLInputElement || element instanceof HTMLSelectElement || element instanceof HTMLTextAreaElement)) return;
-        if (!element.name.startsWith("conversion.")) setDirty(true);
+        setDirty(true);
         if (element.name === "type") setTargetType(element.value as typeof targetType);
         if (element.name === "setting.choices") setTargetChoices(element.value.split(/\r?\n/).map(value => value.trim()).filter(Boolean));
       }} className="space-y-6"><fieldset disabled={pending} className="contents">
@@ -87,12 +92,12 @@ export function FieldChangeEditor({ initial, fieldTypes, referenceTargets, canPr
           {source.type === targetType ? <p className="text-sm leading-6 text-slate-600">Keep the current kind of detail and validate values against your new settings.</p>
             : source.type === "integer" && targetType === "decimal" ? <p className="text-sm leading-6 text-slate-600">Whole numbers keep their value and can use decimal places.</p>
             : source.type === "date" && targetType === "datetime" ? <p className="text-sm leading-6 text-slate-600">Each date becomes midnight in UTC. Existing days stay the same.</p>
-            : source.type === "datetime" && targetType === "date" ? <><p className="text-sm leading-6 text-slate-600">Use the date in UTC. A time other than midnight needs explicit loss review.</p><label className="flex gap-2 text-sm"><input name="conversion.allowTimeLoss" type="checkbox"/>Allow the time of day to be removed in the review</label></>
+            : source.type === "datetime" && targetType === "date" ? <><p className="text-sm leading-6 text-slate-600">Use the date in UTC. A time other than midnight needs explicit loss review.</p><label className="flex gap-2 text-sm"><input name="conversion.allowTimeLoss" type="checkbox" defaultChecked={savedConversion?.kind === "datetime_to_date" && savedConversion.loss === "allow_time_loss"}/>Allow the time of day to be removed in the review</label></>
             : source.type === "string" && targetType === "enum" ? <><p className="text-sm leading-6 text-slate-600">Match each existing text exactly to its new choice.</p>
-              {Array.from({ length: mappingRows }, (_, index) => <div key={index} className="grid gap-3 sm:grid-cols-2"><label className="grid gap-2 text-sm font-medium">Existing text {index + 1}<input name="conversion.from" className={inputClass} maxLength={4000}/></label>
-                <label className="grid gap-2 text-sm font-medium">Change to choice {index + 1}<select name="conversion.to" className={inputClass}>{targetChoices.map((label, ordinal) => <option key={ordinal} value={ordinal}>{label}</option>)}</select></label></div>)}
+              {Array.from({ length: mappingRows }, (_, index) => <div key={index} className="grid gap-3 sm:grid-cols-2"><label className="grid gap-2 text-sm font-medium">Existing text {index + 1}<input name="conversion.from" className={inputClass} maxLength={4000} defaultValue={savedConversion?.kind === "string_to_enum" ? savedConversion.mapping[index]?.from : undefined}/></label>
+                <label className="grid gap-2 text-sm font-medium">Change to choice {index + 1}<select name="conversion.to" className={inputClass} defaultValue={savedConversion?.kind === "string_to_enum" ? savedConversion.mapping[index]?.toChoice : undefined}>{targetChoices.map((label, ordinal) => <option key={ordinal} value={ordinal}>{label}</option>)}</select></label></div>)}
               <Button type="button" disabled={mappingRows >= 1000} onClick={() => setMappingRows(count => count + 1)}>Add text mapping</Button>
-              <label className="grid gap-2 text-sm font-medium">Other text values<select name="conversion.unmapped" className={inputClass}><option value="reject">Require attention before publishing</option><option value="empty">Review clearing unmatched values</option></select></label>
+              <label className="grid gap-2 text-sm font-medium">Other text values<select name="conversion.unmapped" className={inputClass} defaultValue={savedConversion?.kind === "string_to_enum" ? savedConversion.unmapped : undefined}><option value="reject">Require attention before publishing</option><option value="empty">Review clearing unmatched values</option></select></label>
             </> : <p role="status" className="text-sm leading-6 text-amber-800">There is no approved conversion for this change. Choose the current kind or an available conversion.</p>}
         </fieldset>
         <div className="flex flex-wrap gap-3"><Button type="submit" variant="primary"><Save className="h-4 w-4"/>{pending ? "Working…" : "Save new settings"}</Button>
@@ -111,6 +116,18 @@ export function FieldChangeEditor({ initial, fieldTypes, referenceTargets, canPr
         <p className="mt-5 text-xs leading-5 text-slate-500">{preview.impact.uniquenessCheck && "The complete review also checks duplicate values. "}A return to previous settings after new values have been saved requires another reviewed conversion.</p>
         <p className="mt-3 text-sm font-medium text-blue-900">Preview only. Collect and seal the complete review before publishing.</p>
       </section>}
+      {canPreview && migration && <FieldMigrationControls definitionId={saved.definitionId}
+        initialPreparationId={migration.initialPreparationId} disabled={dirty || pending}
+        callbacks={migration.callbacks} prepareInput={() => {
+          if (!form.current || !form.current.reportValidity()) throw new Error("Check the saved field settings.");
+          return { operationId: crypto.randomUUID(), definitionId: saved.definitionId,
+            definitionRevision: saved.definitionRevision, draftRevision: saved.draftRevision,
+            sourceVersionId: saved.sourceVersionId, conversion: conversion() };
+        }} onPreparationChange={id => {
+          const url = new URL(window.location.href);
+          if (id) url.searchParams.set("review", id); else url.searchParams.delete("review");
+          window.history.replaceState(null, "", `${url.pathname}${url.search}`);
+        }}/>}
     </aside>
   </div>;
 }

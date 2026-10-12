@@ -18,3 +18,11 @@ export const viewJsonSchema: z.ZodType<ViewJson> = z.json().superRefine((value, 
 });
 export const viewPayloadSchema = z.strictObject({ schemaVersion: z.literal(1), sourceView: referenceSchema, content: viewJsonSchema });
 export type ViewPayload = z.infer<typeof viewPayloadSchema>;
+
+/** Immutable business-view pin, intentionally outside profile eligibility.
+ * The pin alone grants no embedding: an explicit Page-owner opt-in and exact
+ * sealed configuration graph edge are separately required. */
+export const viewVersionReferenceSchema = z.strictObject({ kind: z.literal("view"),
+  definitionId: z.uuid().transform(value => value.toLowerCase()), versionId: z.uuid().transform(value => value.toLowerCase()),
+  schemaVersion: z.literal(1), checksum: z.string().regex(/^[a-f0-9]{64}$/) });
+export type ViewVersionReference = z.infer<typeof viewVersionReferenceSchema>;

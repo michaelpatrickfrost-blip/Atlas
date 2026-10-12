@@ -12,8 +12,8 @@ Atlas console without the business app/tool shell, and the modern Atlas UI.
 | 2D5 | Native record selects its current profile's exact retained Page, reusing existing visible controls and full owning Ticket form; depends on profiles070/Pages | pages/record-default, customer-selection, screens routes/actions, WorkDetail | None | IMPLEMENTED source; reader/control148/6 PASS, final integrated route/build/live pending |
 | 2E8 | Safely edit never-published all15 field settings and defaults; depends on friendly creation/CAS/compiler | configuration, field-setup-projection, AdditionalFieldSetup, setup editor/actions | None | IMPLEMENTED source; integrated183/5 scoped assertions PASS, actual friendly browser gate added but not run |
 | 2C3 | Genuine initial type choice and atomic original form receipt2; depends on native whole-form receipts/association070 | field-forms, native creator, receipt contract/guard, original profile checker/probe | Additive080 replaces original receipt guard; no new table/reset | IMPLEMENTED source1960; original packet1 compatibility;080 central rehearsal PASS/ROLLBACK; actual gated acceptance pending |
-| 2E9 | Reuse Analytics authoring/query/editor with genuine selected-business authority; shared immutable publication designed separately | Analytics services/editor, Core optional transaction metadata seams | Prerequisite none; publication proposal pending | IN PROGRESS; personal board is not business-wide publication |
-| 2E10 | Visual published field-change target, then authorised bounded review/control through existing migration engine | friendly evolution contracts/configuration, later preview/panel/actions | Existing generation/migration tables; no new DDL expected | IMPLEMENTED target818, preview52 and prepare/collect/seal a8; reachable friendly target/save/preview UI IMPLEMENTED source; full controls/actual gates pending; conditional guards remain |
+| 2E9 | Reuse Analytics authoring/query/editor with genuine selected-business authority; shared immutable publication designed separately | Analytics services/editor, Core optional transaction metadata seams | Existing immutable definition/version graph; reader no new DDL | IMPLEMENTED source: original publisher + selected-business native designer/current customer reader; actual browser gate registered, candidate/public pending |
+| 2E10 | Visual published field-change target, then authorised bounded review/control through existing migration engine | friendly evolution contracts/configuration, later preview/panel/actions | Existing generation/migration tables; no new DDL expected | IMPLEMENTED target818, preview52 and prepare/collect/seal a8; reachable friendly target/save/preview UI IMPLEMENTED source; full explicit controls + metadata-only recovery UI IMPLEMENTED source, actual gates pending; conditional guards remain |
 
 Each checkpoint updates the permanent ledger; no Phase3 feature or duplicate engine.
 
@@ -50,10 +50,10 @@ Studio/Admin, Home and Reports acceptance; visible browser UI checked).
 | --- | --- | --- | --- | --- | --- |
 | 2A | Owner-approved entity/extension contracts; inspect existing fields/page/settings before adding systems. Depends on Phase 1 registry. | core/studio/registry, owner manifests/services, contract inventory, MODULE_SPEC | None for contracts | Unique IDs, schema/hash compatibility, tenant and native access, protected native fields | VERIFIED; candidate/public owner checks PASS |
 | 2B | Versioned custom-field definitions, typed values, lifecycle/validation and indexed/unique strategies. Depends on 2A and metadata kernel. | core/studio/fields, compiler dispatch, schema/migration | Additive tenant-owned field/value models, stable identity/history, relational/index constraints; no canonical entity copy | Types/required/uniqueness, two tenants, access, retirement/history, atomic writes | IN PROGRESS; 2B1/2B2 and review/batches/receipt storage verified live; authorised cutover/rollback/finalization and ordinary current/history reads verified live53c05ae; atomic ordinary saves verified62201ae; required native hooks remain |
-| 2C | Record types and shallow deterministic configuration resolution. Depends on 2A–B. | core/studio/definitions, compiler, record-type policies | Versioned metadata; canonical record associations only where approved | Base + one overlay, deterministic precedence/conflict rejection, incompatible references | NOT STARTED |
-| 2D | Structured page schemas/compiler, variants, dependency impact and validation. Depends on 2A–C. | core/studio/pages, compiler, compatibility | Published metadata/dependency graph | Safe components/references, mobile representation, permission visibility, no arbitrary scripts/SQL | NOT STARTED |
-| 2E | Modern customer builders and generated list/detail/form runtime at approved record surfaces; staff setup stays Admin. Depends on 2B–D. | modules/studio, customer Studio routes, owning record surfaces, design primitives | No independent business datastore | Real create/edit/read, field permissions, hidden components not queried, native domain rules retained, desktop/tablet/phone | NOT STARTED |
-| 2F | Gate/release and representative native/customer integration. Depends on 2A–E. | tests, scripts/studio, documentation/ledger | Backed-up additive central migration; retained history | Contract/property/security/runtime regression, production build, candidate then public live acceptance | NOT STARTED |
+| 2C | Record types and shallow deterministic configuration resolution. Depends on 2A–B. | core/studio/definitions, compiler, record-type policies | Versioned metadata; canonical record associations only where approved | Base + one overlay, deterministic precedence/conflict rejection, incompatible references | IN PROGRESS; exact immutable base/type compiler/resolver and native assignment/receipt are implemented; current live visual/profile gate pending |
+| 2D | Structured page schemas/compiler, variants, dependency impact and validation. Depends on 2A–C. | core/studio/pages, compiler, compatibility | Published metadata/dependency graph | Safe components/references, mobile representation, permission visibility, no arbitrary scripts/SQL | IN PROGRESS; shared compiler/selection/runtime plus visual facts/tables/variants/retained compilation implemented; immutable Analytics embed and actual gates pending |
+| 2E | Modern customer builders and generated list/detail/form runtime at approved record surfaces; staff setup stays Admin. Depends on 2B–D. | modules/studio, customer Studio routes, owning record surfaces, design primitives | No independent business datastore | Real create/edit/read, field permissions, hidden components not queried, native domain rules retained, desktop/tablet/phone | IN PROGRESS; standalone native-page and business dashboard designers, customer Home/screens, typed forms, field controls implemented source; full actual compatible candidate/public visual gates pending |
+| 2F | Gate/release and representative native/customer integration. Depends on 2A–E. | tests, scripts/studio, documentation/ledger | Backed-up additive central migration; retained history | Contract/property/security/runtime regression, production build, candidate then public live acceptance | IN PROGRESS |
 
 Each workstream must be reviewed, tested and checkpointed before the next begins.
 
@@ -87,7 +87,7 @@ not Studio edit permission. Future field storage is separate from protected nati
 columns, with transactions/expected native revision supported by the owner contract.
 No fields/record-type/page persistence or later engines are part of 2A.
 
-## Visual designer integration within 2E — Michael's clarification
+## Historical 10 October visual workstream breakdown — superseded by current dashboard
 
 The intended product is a bespoke business design studio, not a catalogue of
 technical references. 2E is split before implementation into these dependencies:
@@ -398,3 +398,18 @@ No Phase3 engines, alternate converter, publisher, query cache or ad-hoc dump.
 exact chosen-index assertion. Actual eligibility now checks genuine PG catalogue;
 bounded ANALYZE/result/permission checks stay.080 was APPLIED by that candidate.
 Fresh lastlivec385/rollback5b unchanged; disabled feature evidence remains DEFERRED.
+
+## 12 October current connected visual checkpoints
+
+Native Ticket panels, genuine Sales total KPI, original business View publisher/
+reader, customer Home discovery, selected-business native Analytics draft designer
+and guided field review/conversion/settlement/recovery are integrated source.
+Component devices and conditional presentation patches remain typed and use the
+existing compiler.100/6 service/control integration,10/2 connected UI,35/2 Page
+UI/conditions and39/2 early visual-checker gate cases PASS. Production build PASS;
+strict PASS after catalogue/test type corrections; scoped lint PASS (existing Home
+image warning). These are source checkpoints, not actual runtime acceptance.
+Original75977 bridge retry is running after corrected Finance and dated MRP checker
+assertions; feature families absent from rollback stay DEFERRED, never VERIFIED.
+Immutable Page/View embed/graph CHECK and friendly conditional-required draft
+adapter are separate current workstreams; no later-phase engines.

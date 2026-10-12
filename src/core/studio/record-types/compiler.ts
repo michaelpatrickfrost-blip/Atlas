@@ -12,7 +12,7 @@ import { assertFieldAccess } from "../fields/validation";
 import { assertFieldBinding } from "../fields/binding";
 import { entityProfilePayloadSchema, recordTypePayloadSchema, type ConfigurationReference, type EntityProfilePayload, type RecordTypePayload, type EntityProfile } from "./schema";
 import { normaliseConfigurationReferences, resolveEntityProfile, resolveRecordTypeProfile, type ResolvedEntityProfile } from "./resolver";
-import { compileStructuredPage } from "../pages/definition-compiler";
+import { compileRetainedStructuredPage } from "../pages/definition-compiler";
 
 type Dependency = Pick<ContractMetadata, "id" | "version" | "schemaHash" | "contractHash" | "ownerModuleId" | "kind" | "classification">;
 type CompileContext = { session: Session; transaction: Prisma.TransactionClient; registry: CapabilityRegistry; definitionId: string };
@@ -70,7 +70,7 @@ export async function compileRecordProfile(context: CompileContext, kind: "entit
     const page = await loadSealedConfigurationVersion(session, transaction, resolved.profile.page);
     const stamp = sessionAuthorityStamp(session);
     if (!stamp) throw new Error("FORBIDDEN: Page references require genuine current authoring authority.");
-    const compiledPage = await compileStructuredPage({ session, transaction, registry, stamp }, page.payload);
+    const compiledPage = await compileRetainedStructuredPage({ session, transaction, registry, stamp }, page);
     if (compiledPage.checksum !== page.checksum || compiledPage.payload.entity.id !== resolved.entity.id) unavailable();
     for (const dependency of compiledPage.plan.dependencies) await add(dependency);
     compiledPage.warnings.forEach(warning => warnings.add(warning));

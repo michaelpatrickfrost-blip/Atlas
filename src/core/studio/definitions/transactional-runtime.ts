@@ -1,3 +1,5 @@
+import { viewVersionReferenceSchema } from "../views/schema";
+import { inspectPublishedViewInTransaction } from "../views/seal";
 import { z } from "zod";
 import type { Session } from "@/core/auth/session";
 import { sessionAuthorityStamp } from "@/core/auth/session";
@@ -14,11 +16,11 @@ import { checksum } from "../registry/contracts";
 import { pagePayloadSchema } from "../pages/schema";
 import { compilePage } from "../pages/compiler";
 import { pageApprovalsSchema } from "../pages/approvals";
-import { authoredPageFieldPins } from "../pages/definition-compiler";
+import { authoredPageFieldPins, authoredPageViewPins } from "../pages/definition-compiler";
 import { reconstructPageMetadataInTransaction } from "../pages/server-approvals";
 
 const uuid = z.uuid().transform(value => value.toLowerCase());
-const kindSchema = z.enum(["page", "entityProfile", "recordType"]);
+const kindSchema = z.enum(["page", "entityProfile", "recordType", "view"]);
 const dependencySchema = referenceSchema.extend({ ownerModuleId: z.string(),
   kind: z.enum(["entity", "query", "command", "event", "surface", "decisionFact", "template", "metric", "integration"]),
   classification: z.enum(["public_internal", "confidential", "restricted"]) });
@@ -54,7 +56,7 @@ async function inspectPlan(authority: FieldRuntimeAuthority, pin: z.infer<typeof
     const source = pageFrame.parse(version.compiledPlan).approvals.sourcePage;
     const approvals = await reconstructPageMetadataInTransaction(authority, {
       sourcePage: { id: source.id, version: source.version, schemaHash: source.schemaHash, contractHash: source.contractHash },
-      customFields: authoredPageFieldPins(payload),
+      customFields: authoredPageFieldPins(payload), embeddedViews: authoredPageViewPins(payload),
     });
     plan = compilePage(payload, approvals);
     if (checksum(plan) !== pin.checksum) broken();
@@ -78,7 +80,7 @@ async function inspectPlan(authority: FieldRuntimeAuthority, pin: z.infer<typeof
   return { version, plan };
 }
 
-/** Original activeDefinition dispatch for transactional Page/profile kinds.
+/** Original activeDefinition dispatch for transactional Page/profile/view kinds.
  * Fresh signed identity, module state and immutable seals are checked together;
  * metadata access needs Studio Read, never the author's native/field grants. */
 export async function readActiveTransactionalDefinition(authenticated: Session, input: unknown) {
@@ -100,9 +102,10 @@ export async function readActiveTransactionalDefinitionInTransaction(authority: 
   const current = await transaction.studioDefinitionVersion.findFirst({ where: { id: definition.activeVersionId,
     definitionId, organisationId: session.organisationId }, select: { id: true, version: true, schemaVersion: true, checksum: true } });
   if (!current || current.id !== definition.activeVersionId) broken();
-  const pin = configurationReferenceSchema.parse({ kind, definitionId, versionId: current.id,
-    schemaVersion: current.schemaVersion, checksum: current.checksum });
-  const { plan } = await inspectPlan(authority, pin);
+  const reference = { kind, definitionId, versionId: current.id, schemaVersion: current.schemaVersion, checksum: current.checksum };
+  const { plan } = kind === "view"
+    ? await inspectPublishedViewInTransaction(authority, viewVersionReferenceSchema.parse(reference))
+    : await inspectPlan(authority, configurationReferenceSchema.parse(reference));
   return { versionId: current.id, version: current.version, plan };
 }
 
@@ -120,7 +123,7 @@ export async function assertTransactionalDefinitionCanBeRemovedInTransaction(aut
   const initial = await load();
   if (!initial || initial.id !== request.definitionId || initial.organisationId !== session.organisationId
     || initial.revision !== request.revision) conflict();
-  const kind = kindSchema.parse(initial.kind);
+  const kind = z.enum(["page", "entityProfile", "recordType"]).parse(initial.kind);
   // Read only immutable metadata to choose the shared entity key before any
   // definition/native tuple mutation. Inactive published designs use the latest
   // sealed version. Draft-only retirement needs the original service's separate

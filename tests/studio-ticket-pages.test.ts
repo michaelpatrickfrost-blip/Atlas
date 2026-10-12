@@ -1,3 +1,4 @@
+import { analyticsBusinessViewContract } from "@/modules/analytics/services/studio-view";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Prisma } from "@/generated/prisma/client";
 const mock = vi.hoisted(() => ({ membership: vi.fn(), refresh: vi.fn() }));
@@ -21,6 +22,7 @@ async function actor(grants = [cap]) { mock.membership.mockResolvedValueOnce(mem
 function fixture() {
   const storage = { moduleState: { findFirst: vi.fn().mockResolvedValue({ id: "tickets" }) }, serviceWorkItem: { findFirst: vi.fn().mockResolvedValue(row()), findMany: vi.fn().mockResolvedValue([row()]) } };
   const transaction = storage as unknown as Prisma.TransactionClient, available = vi.fn(async () => true), registry = new CapabilityRegistry(available);
+  registry.register("analytics", analyticsBusinessViewContract);
   registry.register("tickets", { contributions: [...ticketStudioContract.contributions, ...ticketPageContract.contributions] });
   return { storage, transaction, available, registry, source: registry.describe("tickets.ticket.page", 1), callbacks: ticketPageContract.contributions.at(-1)!.pageSource! };
 }

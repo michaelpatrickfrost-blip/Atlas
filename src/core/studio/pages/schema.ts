@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { referenceSchema } from "../compiler/reference";
+import { viewVersionReferenceSchema } from "../views/schema";
 import { customFieldReferenceSchema } from "../record-types/schema";
 
 export const pageNodeIdSchema = z.string().regex(/^[a-z][a-z0-9_]{0,39}$/);
@@ -57,6 +58,7 @@ export const pageComponentSchema = z.discriminatedUnion("type", [
   z.strictObject({ ...component, type: z.literal("facts"), factIds: z.array(pageNodeIdSchema).min(1).max(20) }),
   z.strictObject({ ...component, type: z.literal("queryList"), query: referenceSchema, pageSize: z.number().int().min(1).max(50), columns: z.array(pageNodeIdSchema).min(1).max(12) }),
   z.strictObject({ ...component, type: z.literal("metric"), metric: referenceSchema }),
+  z.strictObject({ ...component, type: z.literal("analyticsView"), view: viewVersionReferenceSchema }),
   z.strictObject({ ...component, type: z.literal("instructions"), text: z.string().min(1).max(2000) }),
   z.strictObject({ ...component, type: z.literal("callout"), text: z.string().min(1).max(1000), tone: z.enum(["info", "success", "warning"]) }),
   z.strictObject({ ...component, type: z.literal("action"), command: referenceSchema,

@@ -1,3 +1,4 @@
+import type { EmbeddedViewOutput } from "./embedded-views";
 import { formatMoney } from "@/core/shared/money";
 import type { ContractReference } from "../registry/types";
 import type { FieldValue } from "../fields/schema";
@@ -13,6 +14,7 @@ export type PageDisplayComponent = { id: string; label: string; help: string } &
   | { type: "queryList"; columns: string[]; rows: { id: string; cells: PageDisplayCell[] }[]; nextCursor: PageQueryOutput["nextCursor"]; recordNavigation?: boolean }
   | { type: "instructions" | "callout"; text: string; tone: "info" | "success" | "warning" }
   | { type: "action"; command: ContractReference; confirm: boolean; preview: boolean }
+  | { type: "analyticsView"; output: EmbeddedViewOutput | null }
   | { type: "surface"; family: string; surface?: ContractReference; outputs: PageQueryOutput[] }
 );
 export type PageDisplayModel = { variantId: string | null; formFactor: "desktop" | "tablet" | "phone"; sections: {
@@ -38,7 +40,7 @@ function fieldText(value: FieldValue | null | undefined): string {
  * owning reads. No conditions, approval graph, private facts or executors leave
  * this function. Money predicates retain their original numeric meaning. */
 export function createPageDisplayModel(plan: CompiledPagePlan, layout: VisiblePageLayout, formFactor: PageDisplayModel["formFactor"],
-  outputs: ReadonlyMap<string, PageQueryOutput>, nativeValues: ReadonlyMap<string, { value: PageScalar | undefined; values: Record<string, PageScalar> }> = new Map(), facts: ReadonlyMap<string, PageScalar> = new Map(), fieldValues: ReadonlyMap<string, { label: string; value: FieldValue | null }> = new Map(), componentOutputs: ReadonlyMap<string, PageQueryOutput> = new Map()): PageDisplayModel {
+  outputs: ReadonlyMap<string, PageQueryOutput>, nativeValues: ReadonlyMap<string, { value: PageScalar | undefined; values: Record<string, PageScalar> }> = new Map(), facts: ReadonlyMap<string, PageScalar> = new Map(), fieldValues: ReadonlyMap<string, { label: string; value: FieldValue | null }> = new Map(), componentOutputs: ReadonlyMap<string, PageQueryOutput> = new Map(), embeddedOutputs: ReadonlyMap<string, EmbeddedViewOutput> = new Map()): PageDisplayModel {
   return { variantId: layout.variantId, formFactor, sections: layout.sections.map(section => ({ id: section.id, label: section.label, help: section.help,
     columns: section.columns[formFactor], components: section.components.map(component => {
       const base = { id: component.id, label: component.label ?? "", help: component.help ?? "" };
@@ -61,6 +63,7 @@ export function createPageDisplayModel(plan: CompiledPagePlan, layout: VisiblePa
         return { ...base, type: "metric", cells: query.columns.map(column => cell(column.label ?? friendly(column.id), output?.rows[0]?.values[column.id], column.format, output?.rows[0]?.values)) }; }
       if (component.type === "instructions" || component.type === "callout") return { ...base, type: component.type, text: component.text, tone: component.type === "callout" ? component.tone : "info" };
       if (component.type === "action") return { ...base, type: "action", command: component.command, confirm: component.confirm, preview: component.preview };
+      if (component.type === "analyticsView") return { ...base, type: "analyticsView", output: embeddedOutputs.get(component.id) ?? null };
       const surface = plan.approvals.surfaces.find(value => samePageReference(value, component.surface))!;
       return { ...base, type: "surface", family: component.family, surface: component.surface, outputs: surface.queries.flatMap(query => { const output = outputs.get(pageQueryKey(query)); return output ? [output] : []; }) };
     }) })) };

@@ -6,6 +6,8 @@ import { pageSource } from "@/core/studio/registry/page-contracts";
 import type { Context, RecordContext, StudioModuleContract } from "@/core/studio/registry/types";
 import { pageProjectionSchema, pageReadRequestSchema, pageReadAnchorSchema, pageQueryRequestSchema, type PageReadAnchor, type PageSourcePolicy } from "@/core/studio/pages/owner-contract";
 import { workScope } from "./access";
+import { ticketPanelContract, ticketPanelInputSchema, ticketPanelPolicies, ticketPanelSurfaces } from "./studio-page-surfaces";
+import { ticketPanelKinds, ticketPanelQuery, parseTicketPanel } from "./page-panel-contract";
 
 const identity = { version: 1, capability: "tickets.ticket.read", lifecycle: "active" as const, classification: "confidential" as const };
 const headerRef = { id: "tickets.ticket.page.header", version: 1 }, listRef = { id: "tickets.ticket.page.list", version: 1 };
@@ -61,7 +63,7 @@ export const ticketPagePolicy: PageSourcePolicy = {
   commands: [], metrics: [], surfaces: [{ surface: { id: "tickets.ticket.progress_form", version: 1 }, family: "module", queries: [],
     formFactors: ["desktop", "tablet", "phone"] }], maxQueryCost: 12,
 };
-export const ticketPageContract: StudioModuleContract = { contributions: [
+const legacyTicketPageContract: StudioModuleContract = { contributions: [
   declarative({ ...identity, id: "tickets.ticket.progress_form", label: "Edit ticket", kind: "surface", capability: "tickets.ticket.manage",
     schema: z.strictObject({ recordId }), references: ["tickets.ticket"] }),
   query({ ...identity, ...headerRef, kind: "query", label: "Ticket screen details", transaction: "required", pagination: "none", maxCardinality: 1,
@@ -118,4 +120,43 @@ export const ticketPageContract: StudioModuleContract = { contributions: [
       return listOutput.parse(output);
     },
   } }),
+] };
+
+// Preserve every historical Page@1 descriptor/hash/callback. New surfaces opt in
+// through a distinct source version; saved old pages are never silently upgraded.
+const legacyCallbacks = legacyTicketPageContract.contributions.at(-1)!.pageSource!;
+export const ticketPageSurfacePolicy: PageSourcePolicy = { ...ticketPagePolicy,
+  queries: [...ticketPagePolicy.queries, ...ticketPanelPolicies], surfaces: [...ticketPagePolicy.surfaces, ...ticketPanelSurfaces], maxQueryCost: 24 };
+const retainedTicketPageContract: StudioModuleContract = { contributions: [
+  ...legacyTicketPageContract.contributions, ...ticketPanelContract.contributions,
+  pageSource({ ...identity, id: "tickets.ticket.page", version: 2, label: "Ticket screen", policy: ticketPageSurfacePolicy, callbacks: {
+    authoriseRead: legacyCallbacks.authoriseRead,
+    async bindQueryInput(context, supplied, input) {
+      const request = pageQueryRequestSchema.parse(input), kind = ticketPanelKinds.find(kind => request.query.id === ticketPanelQuery(kind).id && request.query.version === 1);
+      if (!kind) return legacyCallbacks.bindQueryInput(context, supplied, input);
+      const { anchor, record } = await checkedAnchor(context, supplied);
+      if (anchor.kind !== "record" || !record || request.cursor !== null) throw new Error("FORBIDDEN: Ticket panels require the current owning record scope.");
+      return ticketPanelInputSchema.parse({ recordId: record.id, expectedRevision: record.version, expectedUpdatedAt: record.updatedAt.toISOString(), pageSize: request.pageSize });
+    },
+    async projectQueryOutput(context, supplied, input, output) {
+      const request = pageQueryRequestSchema.parse(input), kind = ticketPanelKinds.find(kind => request.query.id === ticketPanelQuery(kind).id && request.query.version === 1);
+      if (!kind) return legacyCallbacks.projectQueryOutput(context, supplied, input, output);
+      const { anchor } = await checkedAnchor(context, supplied);
+      if (anchor.kind !== "record") throw new Error("FORBIDDEN: Ticket panels require the current owning record scope.");
+      const rows = parseTicketPanel(kind, output);
+      if (rows.length > request.pageSize || (kind === "status" && (rows.length !== 1 || rows[0].id !== anchor.recordId)))
+        throw new Error("FORBIDDEN: Ticket panel projection changed.");
+      return { rows, nextCursor: null };
+    },
+  } }),
+] };
+
+/** Explicit additive analytics opt-in. Retained @1/@2 policy and callbacks stay
+ * exact; native-only @3 screens impose no unused Analytics data grants. */
+export const ticketPageEmbeddedPolicy: PageSourcePolicy = { ...ticketPageSurfacePolicy,
+  embeddedViewSources: [{ id: "analytics.dashboard.view", version: 1 }], maxQueryCost: 64 };
+export const ticketPageContract: StudioModuleContract = { contributions: [
+  ...retainedTicketPageContract.contributions,
+  pageSource({ ...identity, id: "tickets.ticket.page", version: 3, label: "Ticket screen", policy: ticketPageEmbeddedPolicy,
+    callbacks: retainedTicketPageContract.contributions.at(-1)!.pageSource! }),
 ] };

@@ -1,3 +1,4 @@
+import { viewSourcePolicySchema } from "../views/owner-contract";
 import { checksum } from "../registry/contracts";
 import { entityDetailsSchema } from "../registry/entities";
 import type { ContractMetadata, Contribution } from "../registry/types";
@@ -26,6 +27,11 @@ export function validatePageSourceRegistration(metadata: ContractMetadata, callb
   const source = requireContract(policy.entity, ["entity"]);
   if (source.capability !== metadata.capability || classificationRank[metadata.classification] < classificationRank[source.classification])
     throw new Error("Page source must preserve its native read capability and classification.");
+  for (const approved of policy.embeddedViewSources ?? []) {
+    const view = lookup(approved.id, approved.version);
+    if (!view || view.kind !== "surface" || !viewSourcePolicySchema.safeParse(view.details.viewSource).success)
+      throw new Error("Page analytics views need an explicitly registered owning View source.");
+  }
   const fields = entityDetailsSchema.parse(source.details).fields;
   for (const version of policy.fieldSourceVersions) {
     const retained = requireContract({ id: policy.entity.id, version }, ["entity"]), details = entityDetailsSchema.parse(retained.details);

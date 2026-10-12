@@ -3,11 +3,12 @@ import type { Prisma } from "@/generated/prisma/client";
 import { assertCapability } from "@/core/permissions/check";
 import { writeAudit } from "@/core/audit/log";
 import { STUDIO_CAPABILITIES } from "../permissions";
+import { loadSealedViewVersion } from "../views/seal";
 import { assertFieldBinding } from "../fields/binding";
 import { checksum } from "../registry/contracts";
 import type { ReviewedCompiledDefinition } from "./publication";
 import { lockFieldEntitiesInTransaction } from "../fields/entity-lock";
-import { assertStudioRuntimeFeatureEnabled, studioRuntimeFeaturesForPayload } from "../runtime-features";
+import { assertStudioRuntimeFeatureEnabled, studioRuntimeFeaturesForCompiledDefinition } from "../runtime-features";
 import { inspectConfigurationGraph } from "../configuration/pins";
 import { assertProfileBinding } from "../record-types/binding";
 import { validateCandidateRecordProfileCoverage } from "../record-types/coverage";
@@ -28,7 +29,10 @@ export async function activateCompiledVersionInTransaction(tx: Prisma.Transactio
     throw new Error("FORBIDDEN: this Studio version is unavailable in the current company.");
   if (version.checksum !== checksum(version.compiledPlan) || version.checksum !== compiled.checksum)
     throw new Error("DEPENDENCY_BROKEN: published Studio plan changed or is incompatible");
-  for (const feature of studioRuntimeFeaturesForPayload(compiled.plan.kind, compiled.plan.payload)) assertStudioRuntimeFeatureEnabled(feature);
+  for (const feature of studioRuntimeFeaturesForCompiledDefinition(compiled.plan.kind, compiled.plan.payload, compiled.plan)) assertStudioRuntimeFeatureEnabled(feature);
+  if (compiled.plan.kind === "view")
+    await loadSealedViewVersion(session, tx, { kind: "view", definitionId, versionId: version.id,
+      schemaVersion: compiled.plan.schemaVersion, checksum: compiled.checksum });
   const modules = [...new Set(compiled.plan.dependencies.map(d => d.ownerModuleId))];
   if (await tx.moduleState.count({ where: { organisationId: session.organisationId, moduleId: { in: modules }, enabled: true, entitled: true } }) !== modules.length)
     throw new Error("DEPENDENCY_BROKEN: source module unavailable");

@@ -23,11 +23,12 @@ import { renderTemplate } from "../../src/core/templates/service";
 import { parseBlocks } from "../../src/core/templates/domain";
 import { TICKETING_CAPABILITIES } from "../../src/core/permissions/capabilities";
 import { checkVisualRecordLayouts } from "./check-visual-record-layouts";
+import { checkVisualBusinessDashboards } from "./check-visual-business-dashboards";
 
 const responseSchema = z.object({ error: z.string().optional(), redirect: z.string().optional(), value: z.unknown().optional() });
 const userSelect = { id: true, name: true, email: true, authVersion: true, createdAt: true, updatedAt: true } as const;
 const nativeGrants = ["core.profile.self", "customers.read", "customers.create", "sales.order.read", "sales.order.create", "sales.order.price_override"];
-const authorGrants = [...nativeGrants, "core.contract.manage", TICKETING_CAPABILITIES.ticketRead, TICKETING_CAPABILITIES.ticketManage,
+const authorGrants = [...nativeGrants, "core.contract.manage", "analytics.dashboard.read", "analytics.dashboard.manage", "sales.quote.read", TICKETING_CAPABILITIES.ticketRead, TICKETING_CAPABILITIES.ticketManage,
   TICKETING_CAPABILITIES.ticketCreate, TICKETING_CAPABILITIES.queueManage, ...Object.values(CAP)];
 
 /** Original BOTH-lock central driver only. Compatibility and target revision
@@ -68,7 +69,7 @@ export async function checkVisualPages(base: string, browser: Browser, managerSy
         kind: "CUSTOMER", status: "ACTIVE", isTest: true }, select: { id: true, slug: true } });
       cleanupCompanyIds.push(company.id); companies.push(company);
       assert(await db.organisation.findFirst({ where: { ...company, kind: "CUSTOMER", status: "ACTIVE", archivedAt: null, isTest: true } }));
-      await db.moduleState.createMany({ data: ["studio", "sales", "tickets", "templates"].map(moduleId => ({ organisationId: company.id, moduleId, enabled: true, entitled: true })) });
+      await db.moduleState.createMany({ data: ["studio", "sales", "tickets", "templates", "analytics"].map(moduleId => ({ organisationId: company.id, moduleId, enabled: true, entitled: true })) });
       members.push(await db.membership.create({ data: { organisationId: company.id, userId: user.id, grantedCapabilities: authorGrants },
         select: { id: true, organisationId: true, userId: true, sessionVersion: true } }));
     }
@@ -360,6 +361,8 @@ export async function checkVisualPages(base: string, browser: Browser, managerSy
     await db.moduleState.update({ where: { organisationId_moduleId: { organisationId: a.id, moduleId: "studio" } }, data: { enabled: true } });
     await checkVisualRecordLayouts(base, page, { organisationId: a.id, slug: a.slug, userId: user.id,
       membershipId: membership.id, grantedCapabilities: authorGrants, foreignOrganisationId: b.id, freshSession: fresh, call });
+    await checkVisualBusinessDashboards(base, page, { organisationId: a.id, slug: a.slug, userId: user.id,
+      membershipId: membership.id, grantedCapabilities: authorGrants, foreignOrganisationId: b.id, freshSession: fresh });
     // Screenshots are exactly three, only in the original private release evidence
     // directory. Device canvas width and page geometry are checked, not inferred.
     await page.goto(`${base}/design-studio/${definitionId}`);

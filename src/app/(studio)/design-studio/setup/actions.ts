@@ -12,6 +12,12 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { FormFeedback } from "@/core/shared/form-feedback";
 import { readAdditionalFieldSetup } from "@/core/studio/authoring/field-form-input";
+import { prepareAdditionalFieldMigration, collectAdditionalFieldMigration,
+  sealAdditionalFieldMigration } from "@/core/studio/authoring/field-migration-lifecycle";
+import { readAdditionalFieldMigrationStatus, readAdditionalFieldMigrationRecoveryStatus, publishAdditionalFieldMigration,
+  startAdditionalFieldMigrationExecution, executeAdditionalFieldMigrationBatch,
+  cutoverAdditionalFieldMigration, cancelAdditionalFieldMigration,
+  rollbackAdditionalFieldMigration, finalizeAdditionalFieldMigration } from "@/core/studio/authoring/field-migration-control";
 
 const text = (form: FormData, name: string) => String(form.get(name) ?? "");
 const business = (form: FormData) => z.string().min(1).max(100).optional().parse(text(form, "business") || undefined);
@@ -85,4 +91,84 @@ export async function previewFieldChange(target: string | undefined, input: unkn
   const { resolveAdditionalFieldMigrationContext, previewAdditionalFieldMigration } = await import("@/core/studio/authoring/field-migration-preview");
   const context = await resolveAdditionalFieldMigrationContext(actor, selected);
   return previewAdditionalFieldMigration(context.session, context.principal, input);
+}
+
+export async function saveFieldRequirementChange(target: string | undefined, input: unknown) {
+  const actor = await requireSession();
+  assertCapability(actor, CAP.edit);
+  const selected = z.string().min(1).max(100).optional().parse(target);
+  const { saveAdditionalFieldRequirementEvolutionSchema } = await import("@/core/studio/authoring/field-requirement-input");
+  const { saveAdditionalFieldRequirementEvolutionDraftInTransaction, readAdditionalFieldRequirementEvolutionInTransaction }
+    = await import("@/core/studio/authoring/field-requirement-authoring");
+  const request = saveAdditionalFieldRequirementEvolutionSchema.parse(input);
+  const saved = await withStudioAuthoringAuthority(actor, CAP.edit, selected, async authority => {
+    await saveAdditionalFieldRequirementEvolutionDraftInTransaction(authority, request);
+    return readAdditionalFieldRequirementEvolutionInTransaction(authority, { definitionId: request.definitionId });
+  });
+  refresh(); return saved;
+}
+
+export async function prepareFieldChange(target: string | undefined, input: unknown) {
+  const actor = await requireSession();
+  assertCapability(actor, CAP.publish);
+  return prepareAdditionalFieldMigration(actor, target, input);
+}
+export async function collectFieldChange(target: string | undefined, input: unknown) {
+  const actor = await requireSession();
+  assertCapability(actor, CAP.publish);
+  return collectAdditionalFieldMigration(actor, target, input);
+}
+export async function sealFieldChange(target: string | undefined, input: unknown) {
+  const actor = await requireSession();
+  assertCapability(actor, CAP.publish);
+  return sealAdditionalFieldMigration(actor, target, input);
+}
+export async function readFieldChangeStatus(target: string | undefined, input: unknown) {
+  const actor = await requireSession();
+  assertCapability(actor, CAP.publish);
+  return readAdditionalFieldMigrationStatus(actor, target, input);
+}
+export async function readFieldChangeRecovery(target: string | undefined, input: unknown) {
+  const actor = await requireSession();
+  assertCapability(actor, CAP.publish);
+  return readAdditionalFieldMigrationRecoveryStatus(actor, target, input);
+}
+export async function publishFieldChange(target: string | undefined, input: unknown) {
+  const actor = await requireSession();
+  assertCapability(actor, CAP.publish);
+  return publishAdditionalFieldMigration(actor, target, input);
+}
+export async function startFieldChange(target: string | undefined, input: unknown) {
+  const actor = await requireSession();
+  assertCapability(actor, CAP.publish);
+  return startAdditionalFieldMigrationExecution(actor, target, input);
+}
+export async function executeFieldChange(target: string | undefined, input: unknown) {
+  const actor = await requireSession();
+  assertCapability(actor, CAP.publish);
+  return executeAdditionalFieldMigrationBatch(actor, target, input);
+}
+export async function applyFieldChange(target: string | undefined, input: unknown) {
+  const actor = await requireSession();
+  assertCapability(actor, CAP.publish);
+  const result = await cutoverAdditionalFieldMigration(actor, target, input);
+  refresh();
+  return result;
+}
+export async function cancelFieldChange(target: string | undefined, input: unknown) {
+  const actor = await requireSession();
+  assertCapability(actor, CAP.publish);
+  return cancelAdditionalFieldMigration(actor, target, input);
+}
+export async function rollbackFieldChange(target: string | undefined, input: unknown) {
+  const actor = await requireSession();
+  assertCapability(actor, CAP.publish);
+  const result = await rollbackAdditionalFieldMigration(actor, target, input);
+  refresh();
+  return result;
+}
+export async function finalizeFieldChange(target: string | undefined, input: unknown) {
+  const actor = await requireSession();
+  assertCapability(actor, CAP.publish);
+  return finalizeAdditionalFieldMigration(actor, target, input);
 }

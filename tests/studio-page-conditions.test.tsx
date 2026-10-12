@@ -62,6 +62,14 @@ describe('approved visual conditions and alternate layouts', () => {
     expect(f.save.mock.calls[0][0].sections[0].label).toBe('Ticket overview'); expect(f.save.mock.calls[0][0].variants[0].label).toBe('Closed ticket summary');
     choose('Screen layout', ''); expect((screen.getByLabelText('Display name') as HTMLInputElement).value).toBe('Ticket overview');
   });
+  it('keeps device changes in an alternate component presentation patch, preserving the base layout', () => {
+    const f = mount(); fireEvent.click(button('Add conditional layout'));
+    fireEvent.click(within(screen.getByTestId('canvas')).getByRole('button', { name: 'Next steps' }));
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Phone' }));
+    expect(f.value().sections[0].components[0].formFactors).toEqual(forms);
+    expect(variantDesignPage(f.value(), 'variant_1').sections[0].components[0].formFactors).toEqual(['desktop', 'tablet']);
+    expect(f.value().variants[0].patches).toContainEqual({ operation: 'setComponent', componentId: 'guide', properties: { formFactors: ['desktop', 'tablet'] } });
+  });
   it('reorders unique priorities and confirms removing an alternate layout while retaining the default', () => {
     const f = mount(); fireEvent.click(button('Add conditional layout')); choose('Layout name', 'First'); fireEvent.click(button('Add conditional layout')); choose('Layout name', 'Second');
     fireEvent.click(button('Use after other layouts')); expect([...f.value().variants].sort((a, b) => b.priority - a.priority).map(value => value.label)).toEqual(['First', 'Second']);

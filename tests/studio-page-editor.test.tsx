@@ -71,6 +71,17 @@ describe('controlled business page design workspace', () => {
     expect(screen.getByText('Unsaved changes')).toBeTruthy();
     expect((screen.getByRole('button', { name: 'Review & publish' }) as HTMLButtonElement).disabled).toBe(true);
   });
+  it('edits component device visibility without removing the last representation or changing the business field', () => {
+    const view = mount(); chooseCanvas('Next steps');
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Phone' }));
+    expect(view.value().sections[0].components[1].formFactors).toEqual(['desktop', 'tablet']);
+    expect(view.value().sections[0].components[0].formFactors).toEqual(forms);
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Tablet' }));
+    expect(screen.getByRole('checkbox', { name: 'Desktop' }).hasAttribute('disabled')).toBe(true);
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Phone' }));
+    expect(view.value().sections[0].components[1].formFactors).toEqual(['desktop', 'phone']);
+    expect(view.value().sections[0].components[1]).toMatchObject({ text: 'Review the order before confirming.' });
+  });
   it('adds only a supplied library item to the selected section and edits its text', () => {
     const view = mount(); chooseCanvas('Delivery');
     fireEvent.click(screen.getByRole('button', { name: 'Add Instructions' }));

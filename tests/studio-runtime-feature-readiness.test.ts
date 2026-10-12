@@ -129,3 +129,18 @@ describe("metadata-only reader compatibility independent of authoring marker", (
     expect(await scanStudioRuntimeFeatureCompatibility(client, [FEATURE])).toEqual([]);
   });
 });
+
+it("view publication and activation remain closed in the bridge and retained business-view metadata blocks an unsupported reader downgrade", async () => {
+  const feature = "analyticsBusinessViews.v1" as const, root = tree(revision); marker(root, evidence([]));
+  vi.spyOn(process, "cwd").mockReturnValue(root); vi.stubEnv("ATLAS_RELEASE_REVISION", revision);
+  expect(() => assertStudioRuntimeFeatureEnabled(feature)).toThrow("UNAVAILABLE");
+  const payload = { schemaVersion: 1, sourceView: { id: "analytics.dashboard.view", version: 1, schemaHash: "a".repeat(64), contractHash: "b".repeat(64) }, content: {} };
+  expect(studioRuntimeFeaturesForPayload("view", payload)).toEqual([feature]);
+  // Every retained published version requires the reader, independent of the
+  // active pointer and marker. Active real and unsuspended Test tenants count.
+  const make = (id: string, isTest: boolean, status: string) => ({ id, definitionId: "definition", payload, definition: { kind: "view", organisation: { isTest, status } } });
+  const findMany = vi.fn().mockResolvedValueOnce([make("1", false, "ACTIVE"), make("2", true, "ACTIVE"), make("3", true, "SUSPENDED")]).mockResolvedValueOnce([]);
+  const client = { studioDefinitionVersion: { findMany } } as unknown as PrismaClient;
+  expect(await scanStudioRuntimeFeatureCompatibility(client, [])).toEqual(expect.arrayContaining([expect.stringContaining("definition@1"), expect.stringContaining("definition@2")]));
+  expect(JSON.stringify(findMany.mock.calls)).not.toMatch(/fieldValue|serviceWorkItem|auditEntry/);
+});

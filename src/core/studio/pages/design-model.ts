@@ -38,6 +38,7 @@ export function createDesignPageDisplayModel(input: unknown, presentation: PageP
           rows: [{ id: "studio_sample", cells: columns.map(sample) }], nextCursor: null }; }
       if (component.type === "instructions" || component.type === "callout") return { ...base, type: component.type, text: component.text, tone: component.type === "callout" ? component.tone : "info" };
       if (component.type === "action") return { ...base, type: "action", label: component.label ?? match(catalog.actions, component.command)?.label ?? "Action", command: component.command, confirm: component.confirm, preview: component.preview };
+      if (component.type === "analyticsView") return { ...base, type: "analyticsView", label: component.label ?? "Analytics view", output: null };
       return { ...base, type: "surface", label: component.label ?? match(catalog.surfaces, component.surface)?.label ?? "App area", family: component.family, surface: component.surface, outputs: [] };
     }),
   })) };

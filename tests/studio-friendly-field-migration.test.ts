@@ -1,20 +1,25 @@
 import { beforeEach, expect, it, vi } from "vitest";
 import type { Session } from "@/core/auth/session";
 const m = vi.hoisted(() => ({ transaction: vi.fn(), resolve: vi.fn(), capture: vi.fn(), support: vi.fn(), authoring: vi.fn(), enabled: vi.fn(),
-  raw: vi.fn(), member: vi.fn(), module: vi.fn(), company: vi.fn(), definition: vi.fn(), generation: vi.fn(), version: vi.fn(),
-  native: vi.fn(), natives: vi.fn(), count: vi.fn(), extension: vi.fn(), value: vi.fn(), preparation: vi.fn(), archive: vi.fn(), write: vi.fn() }));
+  refresh: vi.fn(), raw: vi.fn(), member: vi.fn(), module: vi.fn(), company: vi.fn(), definition: vi.fn(), generation: vi.fn(), versions: vi.fn(), version: vi.fn(),
+  native: vi.fn(), natives: vi.fn(), count: vi.fn(), extension: vi.fn(), value: vi.fn(), publication: vi.fn(), preparation: vi.fn(), archive: vi.fn(), write: vi.fn() }));
 vi.mock("@/core/db/client", () => ({ db: { $transaction: m.transaction } }));
 vi.mock("@/core/studio/fields/principal", () => ({ resolveFieldMigrationPrincipal: m.resolve,
   captureCustomerFieldMigrationPrincipal: m.capture, openFieldMigrationSupportContext: m.support }));
 vi.mock("@/core/studio/authoring/context", () => ({ withStudioAuthoringAuthority: m.authoring }));
+vi.mock("@/core/studio/fields/runtime-authority", () => ({ fieldRuntimeAuthorityInTransaction: m.refresh }));
 vi.mock("@/core/modules/access", () => ({ assertModuleEnabled: m.enabled }));
 vi.mock("@/core/studio/registry/runtime", () => ({ studioRegistry: () => registry }));
 import { CapabilityRegistry } from "@/core/studio/registry/registry";
 import { ticketStudioContract } from "@/core/service-work/studio";
 import { compileCustomField } from "@/core/studio/compiler/fields";
+import { compileFieldMigrationMetadata } from "@/core/studio/fields/migrations/metadata";
+import { conditionalFieldPayloadSchema, versionedFieldPayloadSchema, type VersionedFieldPayload } from "@/core/studio/fields/required-contract";
 import { customFieldPayloadSchema } from "@/core/studio/fields/schema";
 import { checksum } from "@/core/studio/registry/contracts";
 import { encodeFieldValue } from "@/core/studio/fields/codec";
+import { sealRequiredFieldMigrationIntent, sealRequiredFieldMigrationReview } from "@/core/studio/fields/migrations/required-contracts";
+import { inspectRequiredFieldMigrationRecord } from "@/core/studio/fields/migrations/observation";
 import { sealFieldMigrationIntent, sealFieldMigrationReview, type FieldMigrationObservation } from "@/core/studio/fields/migrations/contracts";
 import { previewAdditionalFieldMigration, readAdditionalFieldMigrationDetail, resolveAdditionalFieldMigrationContext, readAdditionalFieldMigrationSetup } from "@/core/studio/authoring/field-migration-preview";
 import type { FieldMigrationPrincipal } from "@/core/studio/fields/principal-contract";
@@ -33,10 +38,11 @@ const source = customFieldPayloadSchema.parse({ schemaVersion: 1, entity: ref(2)
 const target = customFieldPayloadSchema.parse({ ...source, entity: ref(9), storageGeneration: uuid(2), field: { ...source.field, storage: { type: "decimal" } } });
 const request = { definitionId: uuid(4), definitionRevision: 7, draftRevision: 9, sourceVersionId: uuid(6), conversion: { kind: "integer_to_decimal" }, limit: 2 };
 const tx = { $queryRaw: m.raw, membership: { findFirst: m.member }, moduleState: { findFirst: m.module }, organisation: { findFirst: m.company },
-  studioDefinition: { findFirst: m.definition, create: m.write, update: m.write }, studioDefinitionVersion: { findFirst: m.version, create: m.write },
+  studioDefinition: { findFirst: m.definition, create: m.write, update: m.write }, studioDefinitionVersion: { findFirst: m.version, findMany: m.versions, create: m.write },
   studioDraft: { update: m.write }, studioFieldGeneration: { findFirst: m.generation, create: m.write },
   serviceWorkItem: { findFirst: m.native, findMany: m.natives, count: m.count, create: m.write, update: m.write },
   studioExtensionRecord: { findFirst: m.extension, create: m.write }, studioFieldValue: { findFirst: m.value, create: m.write },
+  studioFieldMigrationPublication: { findFirst: m.publication },
   studioFieldMigrationPreparation: { findFirst: m.preparation, create: m.write, update: m.write }, studioFieldMigrationObservation: { findMany: m.archive, create: m.write },
   auditEntry: { create: m.write } };
 let sourceVersion: Awaited<ReturnType<typeof makeVersion>>;
@@ -66,6 +72,7 @@ async function preparation() {
 }
 beforeEach(async () => {
   vi.restoreAllMocks(); vi.clearAllMocks(); m.transaction.mockImplementation(async (run: (tx: unknown) => Promise<unknown>) => run(tx));
+  m.refresh.mockImplementation(async selected => ({ session: selected, transaction: tx, registry, stamp: principal }));
   m.resolve.mockResolvedValue(session); m.enabled.mockResolvedValue(undefined); m.capture.mockResolvedValue(principal);
   m.authoring.mockImplementation(async (_a, _cap, _target, run) => run({ session, transaction: tx, registry })); m.support.mockResolvedValue({ session, principal: { ...principal, authority: "staff_support", auditId: "audit" } });
   m.raw.mockImplementation(async (s: TemplateStringsArray) => s.join("?").includes("SHOW transaction_isolation") ? [{ transaction_isolation: "serializable" }] : []);
@@ -75,9 +82,9 @@ beforeEach(async () => {
     draft: { id: uuid(5), definitionId: uuid(4), organisationId: "business", revision: 9, payload: structuredClone(target) } };
   m.definition.mockImplementation(async ({ where }) => where.organisationId === "business" && where.id === uuid(4)
     && (where.revision === undefined || where.revision === definition.revision) ? definition : null);
-  m.version.mockResolvedValue(sourceVersion); m.generation.mockResolvedValue({ id: uuid(1) }); m.count.mockResolvedValue(3);
+  m.publication.mockResolvedValue(null); m.versions.mockResolvedValue([]); m.version.mockResolvedValue(sourceVersion); m.generation.mockResolvedValue({ id: uuid(1) }); m.count.mockResolvedValue(3);
   m.native.mockImplementation(async ({ where, select }) => Object.keys(select).length === 1 ? null
-    : { id: recordId(where), organisationId: "business", version: 1, status: "NEW", mergedIntoId: null, queueId: "q", queue: { restricted: false } });
+    : { id: recordId(where), organisationId: "business", version: 1, status: "NEW", priority: "NORMAL", mergedIntoId: null, queueId: "q", queue: { restricted: false } });
   m.natives.mockResolvedValue([{ id: "a", organisationId: "business", version: 1 }, { id: "b", organisationId: "business", version: 1 }, { id: "c", organisationId: "business", version: 1 }]);
   const encoded = encodeFieldValue(source.field, 0); metadata = { id: uuid(9), revision: 1, versionId: uuid(6), fingerprint: encoded.fingerprint, schemaVersion: sourceVersion };
   storedValue = { ...encoded, ...metadata };
@@ -138,9 +145,10 @@ it.each(["revoked", "native_read", "native_manage", "source_field", "written_fie
   expect(m.value.mock.calls.some(([args]) => !args.select)).toBe(false); expect(m.write).not.toHaveBeenCalled();
   if (mode === "private") { expect(m.count).not.toHaveBeenCalled(); expect(m.natives).not.toHaveBeenCalled(); }
 });
-it("rejects conditional source/target explicitly before count or values; no schema1 fallback", async () => {
+it("rejects malformed conditional source/target before count or values; no schema1 fallback", async () => {
   definition.draft.payload = { ...target, schemaVersion: 2, requiredIf: {} };
-  await expect(previewAdditionalFieldMigration(session, principal, request)).rejects.toThrow("not supported"); expect(m.count).not.toHaveBeenCalled(); expect(m.value).not.toHaveBeenCalled();
+  await expect(previewAdditionalFieldMigration(session, principal, request)).rejects.toThrow();
+  expect(m.count).not.toHaveBeenCalled(); expect(m.value).not.toHaveBeenCalled(); expect(m.count).not.toHaveBeenCalled(); expect(m.value).not.toHaveBeenCalled();
 });
 it("reads retained classifications with a different current actor without resolving or borrowing the original creator", async () => {
   const other = { ...session, userId: "settler", membershipId: "other" }, current = { ...principal, userId: "settler", membershipId: "other" };
@@ -223,7 +231,7 @@ it("reference display stays neutral; separate referenced-record private access i
   expect(result.examples[0]).toMatchObject({ beforeDisplay: "Linked record", afterDisplay: "Linked record" });
   expect(m.native.mock.calls.some(([args]) => recordId(args.where) === "linked_secret_id")).toBe(true);
   m.native.mockImplementation(async ({ where, select }) => Object.keys(select).length === 1 ? null : recordId(where) === "linked_secret_id" ? null
-    : { id: recordId(where), organisationId: "business", version: 1, status: "NEW", mergedIntoId: null, queueId: "q", queue: { restricted: false } });
+    : { id: recordId(where), organisationId: "business", version: 1, status: "NEW", priority: "NORMAL", mergedIntoId: null, queueId: "q", queue: { restricted: false } });
   await expect(previewAdditionalFieldMigration(session, principal, { ...request, conversion: { kind: "same_type" } })).rejects.toThrow();
 });
 it("empty cohorts remain fully authorised, and cursor advances canonical scanned rows only", async () => {
@@ -303,4 +311,89 @@ it.each(["intent", "source_mirror", "review", "foreign_archive", "unknown_state"
     entityId: "tickets.ticket", sourceGenerationId: uuid(1), recordId: "a", nativeRevision: 1, observation: archiveObservation }]);
   await expect(readAdditionalFieldMigrationDetail(session, principal, { definitionId: uuid(4), preparationId: uuid(3) })).rejects.toThrow();
   expect(m.value).not.toHaveBeenCalled(); expect(m.write).not.toHaveBeenCalled();
+});
+
+// Conditional source/metadata/row/fact/codec/converter paths are real. Fresh
+// runtime authority issuance and SQL rows are explicit collaborators, not SQL or
+// genuine cookie/session proof; original required runtime suites cover those.
+async function conditionalTarget() {
+  const payload = conditionalFieldPayloadSchema.parse({ ...source, entity: ref(9), storageGeneration: uuid(2), schemaVersion: 2,
+    requiredIf: { match: "all", predicates: [{ source: { kind: "native", fieldId: "status" }, operator: "equals", value: { type: "enum", value: "NEW" } }] } });
+  Object.assign(definition, { organisationId: "business", kind: "customField", key: "tickets.ticket.count", retiredAt: null });
+  definition.draft.payload = payload;
+  return { ...request, conversion: { kind: "same_type" } };
+}
+it("previews a real optional1→conditional2 draft through original conditional facts/conversion; zero is present", async () => {
+  const input = await conditionalTarget();
+  const result = await previewAdditionalFieldMigration(session, principal, input);
+  expect(result).toMatchObject({ affectedCount: 3, pageCounts: { valid: 2, invalid: 0, lossy: 0 } });
+  expect(result.examples).toHaveLength(2);
+  for (const example of result.examples) expect(example).toMatchObject({ before: { type: "integer", value: 0 }, after: { type: "integer", value: 0 }, result: "ready" });
+  expect(m.refresh).toHaveBeenCalled(); expect(m.native.mock.calls.some(([args]) => args.select?.priority)).toBe(true);
+  expect(m.write).not.toHaveBeenCalled();
+});
+it("conditional missing source values become FIELD_REQUIRED only after real target condition evaluation, never a default fill", async () => {
+  const input = await conditionalTarget(); m.extension.mockResolvedValue(null);
+  const result = await previewAdditionalFieldMigration(session, principal, input);
+  expect(result.pageCounts).toEqual({ valid: 0, invalid: 2, lossy: 0 });
+  for (const example of result.examples) expect(example).toMatchObject({ before: null, after: null, issue: "FIELD_REQUIRED", result: "invalid" });
+  expect(m.write).not.toHaveBeenCalled();
+});
+it("condition false permits null; corrupt actual fact/revision fails before source typed columns", async () => {
+  const input = await conditionalTarget(); m.extension.mockResolvedValue(null);
+  const native = m.native.getMockImplementation()!;
+  m.native.mockImplementation(async (...args) => { const row = await native(...args); return row ? { ...row, status: "IN_PROGRESS" } : row; });
+  expect((await previewAdditionalFieldMigration(session, principal, input)).pageCounts).toEqual({ valid: 2, invalid: 0, lossy: 0 });
+  m.native.mockImplementation(async (...args) => { const row = await native(...args); return row && args[0].select?.priority ? { ...row, version: 99 } : row; });
+  await expect(previewAdditionalFieldMigration(session, principal, input)).rejects.toThrow();
+  expect(m.value.mock.calls.some(([args]) => !args.select)).toBe(false);
+});
+it.each(["private", "current_field", "written_field", "module", "stamp"])("conditional %s denial keeps counts/provider/typed values behind their owning gates", async mode => {
+  const input = await conditionalTarget();
+  if (mode === "private") m.native.mockResolvedValue({ id: "private" });
+  if (mode === "current_field") definition.draft.payload = { ...(definition.draft.payload as VersionedFieldPayload), field: { ...source.field, writeCapability: "private.manage" } };
+  if (mode === "written_field") metadata.schemaVersion = await makeVersion({ ...source, field: { ...source.field, readCapability: "private.read" } });
+  if (mode === "module") m.module.mockResolvedValue(null);
+  if (mode === "stamp") m.member.mockResolvedValue({ sessionVersion: 3, user: { authVersion: 1 } });
+  await expect(previewAdditionalFieldMigration(session, principal, input)).rejects.toThrow();
+  expect(m.value.mock.calls.some(([args]) => !args.select)).toBe(false); expect(m.write).not.toHaveBeenCalled();
+  if (mode !== "written_field") expect(m.count).not.toHaveBeenCalled();
+});
+it("closed2 source→closed1 removal remains explicit required protocol; saved conditional source is reconstructed exactly", async () => {
+  const input = await conditionalTarget(), proposed = definition.draft.payload;
+  const original = sourceVersion;
+  const conditionalSource = { ...(proposed as VersionedFieldPayload), storageGeneration: uuid(1) };
+  const compiled = await compileFieldMigrationMetadata({ session, transaction: tx as never }, registry,
+    { id: "business", kind: "CUSTOMER", status: "ACTIVE", archivedAt: null, isTest: true }, uuid(4), conditionalSource);
+  const version = { ...original, schemaVersion: 2, payload: compiled.payload, compiledPlan: compiled.plan, checksum: compiled.checksum };
+  definition.activeVersion = version as typeof original; sourceVersion = version as typeof original;
+  definition.draft.payload = { ...source, entity: ref(9), storageGeneration: uuid(2) };
+  metadata.schemaVersion = original;
+  expect((await previewAdditionalFieldMigration(session, principal, input)).pageCounts.valid).toBe(2);
+});
+
+it("required detail reads actual sealed2 observation classifications, not schema1 projections or live examples", async () => {
+  await conditionalTarget();
+  const targetPayload = versionedFieldPayloadSchema.parse(definition.draft.payload);
+  const compiled = await compileFieldMigrationMetadata({ session, transaction: tx as never }, registry,
+    { id: "business", kind: "CUSTOMER", status: "ACTIVE", archivedAt: null, isTest: true }, uuid(4), targetPayload);
+  const query = registry.describe("tickets.ticket.field_migration", 4), intent = sealRequiredFieldMigrationIntent({
+    schemaVersion: 2, id: uuid(3), organisationId: "business", definitionId: uuid(4), definitionRevision: 7, principal,
+    source: { versionId: sourceVersion.id, versionChecksum: sourceVersion.checksum, payload: sourceVersion.payload },
+    target: { draftId: uuid(5), draftRevision: 9, compiledChecksum: compiled.checksum, payload: compiled.payload },
+    conversion: { kind: "same_type" }, ownerQuery: { id: query.id, version: query.version, schemaHash: query.schemaHash, contractHash: query.contractHash } });
+  const observed = await inspectRequiredFieldMigrationRecord({ session, transaction: tx as never }, intent.intent,
+    { recordId: "a", organisationId: "business", revision: 1 });
+  const reviewed = sealRequiredFieldMigrationReview({ ...intent.intent, cohort: { recordCount: 1, observationDigest: "a".repeat(64) }, summary: { validCount: 1, invalidCount: 0, lossyCount: 0 } });
+  const previous = await m.preparation();
+  m.preparation.mockResolvedValue({ ...previous, intent: intent.intent, intentChecksum: intent.checksum, state: "REVIEWED",
+    review: { id: uuid(3), organisationId: "business", definitionId: uuid(4), review: reviewed.review, checksum: reviewed.checksum } });
+  m.archive.mockResolvedValue([{ organisationId: "business", definitionId: uuid(4), preparationId: uuid(3), entityId: "tickets.ticket",
+    sourceGenerationId: uuid(1), recordId: "a", nativeRevision: 1, observation: observed.observation }]);
+  const result = await readAdditionalFieldMigrationDetail(session, principal, { definitionId: uuid(4), preparationId: uuid(3) });
+  expect(result).toMatchObject({ review: { affectedCount: 1, valid: 1 }, rows: [{ label: "Record 1", result: "ready", issue: null }] });
+  expect(JSON.stringify(result)).not.toMatch(/requirement|fingerprint|predicates|authVersion/); expect(m.write).not.toHaveBeenCalled();
+  m.archive.mockResolvedValue([{ organisationId: "business", definitionId: uuid(4), preparationId: uuid(3), entityId: "tickets.ticket",
+    sourceGenerationId: uuid(1), recordId: "a", nativeRevision: 1, observation: { ...observed.observation, requirement: undefined } }]);
+  await expect(readAdditionalFieldMigrationDetail(session, principal, { definitionId: uuid(4), preparationId: uuid(3) })).rejects.toThrow();
 });

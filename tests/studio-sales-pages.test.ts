@@ -1,14 +1,24 @@
+import { analyticsBusinessViewContract } from "@/modules/analytics/services/studio-view";
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import type { Prisma } from '@/generated/prisma/client';
 const mocks = vi.hoisted(() => ({ membership: vi.fn(), refresh: vi.fn(), oldModule: vi.fn() }));
 vi.mock('@/core/db/client', () => ({ db: { membership: { findUnique: mocks.membership } } }));
 vi.mock('@/core/modules/access', () => ({ assertModuleEnabled: mocks.oldModule }));
 vi.mock('@/core/studio/fields/runtime-authority', () => ({ nativeFieldMutationSessionInTransaction: mocks.refresh }));
-import { sessionForUser, type Session } from '@/core/auth/session';
+import { sessionForUser, sessionAuthorityStamp, type Session } from '@/core/auth/session';
 import { CapabilityRegistry } from '@/core/studio/registry/registry';
 import { salesStudioContract } from '@/modules/sales/services/studio';
-import { salesOrderPageContract, salesOrderPagePolicy } from '@/modules/sales/services/studio-pages';
+import { salesOrderPageContract, salesOrderPagePolicy, salesOrderMetricPagePolicy } from '@/modules/sales/services/studio-pages';
+import { pageSource } from '@/core/studio/registry/page-contracts';
 import { formatMoney } from '@/core/shared/money';
+import { checksum } from '@/core/studio/registry/contracts';
+import { reconstructPageApprovalsInTransaction } from '@/core/studio/pages/server-approvals';
+import { compilePage } from '@/core/studio/pages/compiler';
+import { resolvePageVariant } from '@/core/studio/pages/selection';
+import { createPageDisplayModel, pageQueryKey } from '@/core/studio/pages/render-model';
+import { PageRenderer } from '@/components/studio/page-renderer';
 
 // Real opaque Session issuance, contract factories and registry/gateway. Current
 // authority refresh and Prisma reads are explicit unit collaborators: this suite
@@ -30,6 +40,7 @@ function setup() {
   const storage = { moduleState: { findFirst: vi.fn().mockResolvedValue({ id: 'sales' }) }, salesOrder: { findFirst: vi.fn().mockResolvedValue(header()), findMany: vi.fn().mockResolvedValue([header()]) },
     salesOrderLine: { findFirst: vi.fn().mockResolvedValue({ id: 'line', lineNumber: 1 }), findMany: vi.fn().mockResolvedValue([line()]) } };
   const transaction = storage as unknown as Prisma.TransactionClient, availability = vi.fn(async () => true), registry = new CapabilityRegistry(availability);
+  registry.register('analytics', analyticsBusinessViewContract);
   registry.register('sales', { contributions: [...salesStudioContract.contributions, ...salesOrderPageContract.contributions] });
   const source = registry.describe('sales.order.page', 1), callbacks = salesOrderPageContract.contributions.at(-1)!.pageSource!;
   return { storage, transaction, availability, registry, source, callbacks };
@@ -145,4 +156,97 @@ describe('Sales ordinary-read page source', () => {
     await expect(f.registry.invoke(session, f.source, {})).rejects.toThrow('descriptive');
     expect(mocks.oldModule).not.toHaveBeenCalled(); // Preview acknowledgement/PDF never executed during page design reads.
   });
+});
+
+const ref = ({ id, version, schemaHash, contractHash }: { id: string; version: number; schemaHash: string; contractHash: string }) => ({ id, version, schemaHash, contractHash });
+const totalRequest = { query: { id: 'sales.order.page.total', version: 1 }, pageSize: 1, cursor: null };
+describe('Sales registered order-total KPI', () => {
+  it('retains exact Page1 metadata/hash and appends only its independent query/metric approvals in Page2', () => {
+    const f = setup(), source2 = f.registry.describe('sales.order.page', 2);
+    expect(f.source.schemaHash).toBe('208c4856bbaec5da38c8d09fb9405466bd0f85ae67429e3600ec0184cd7f5b18');
+    const { ownerModuleId, contractHash, ...historical } = f.source; void ownerModuleId; void contractHash;
+    expect(checksum(historical)).toBe('360afe1509556d9b9a15b106f479539c8c04de3285ada9e6d9fb41f4c22e7d04');
+    expect(f.registry.describePageSource(f.source).policy).toEqual(salesOrderPagePolicy);
+    expect(f.registry.describePageSource(source2).policy).toEqual(salesOrderMetricPagePolicy);
+    expect(salesOrderMetricPagePolicy.queries.slice(0, -1)).toEqual(salesOrderPagePolicy.queries);
+    expect({ ...salesOrderMetricPagePolicy, queries: salesOrderPagePolicy.queries, metrics: [], maxQueryCost: 12 }).toEqual(salesOrderPagePolicy);
+    expect(f.registry.describe('sales.order.page.total_metric', 1)).toMatchObject({ kind: 'metric', capability: cap,
+      details: { references: ['sales.order.page.total'] } });
+    expect(f.registry.describe('sales.order.page.total', 1)).toMatchObject({ kind: 'query', capability: cap,
+      details: { transaction: 'required', pagination: 'none', maxCardinality: 1, costClass: 'low' } });
+    expect(f.storage.salesOrder.findFirst).not.toHaveBeenCalled();
+  });
+  it('rejects a future removed/changed retained metric instead of rewriting sealed Page2 approval', () => {
+    for (const changed of [[], [{ ...salesOrderMetricPagePolicy.metrics[0], formFactors: ['desktop'] as const }]]) {
+      const f = setup(), source2 = f.registry.describe('sales.order.page', 2);
+      f.registry.register('sales', { contributions: [pageSource({ id: 'sales.order.page', version: 4, label: 'Sales order screen',
+        capability: cap, lifecycle: 'active', classification: 'confidential', policy: { ...salesOrderMetricPagePolicy, metrics: [...changed].map(value => ({ ...value, formFactors: [...value.formFactors] })) }, callbacks: f.callbacks })] });
+      expect(() => f.registry.describePageSource(source2)).toThrow('current');
+      expect(f.registry.describePageSource(f.source).policy).toEqual(salesOrderPagePolicy);
+    }
+  });
+  it('returns one anchored total with only genuine current native Read, exact minor units and currency', async () => {
+    const session = await actor(), f = setup(), source = f.registry.describe('sales.order.page', 2);
+    expect([...session.capabilities].filter(value => value !== 'core.profile.self')).toEqual([cap]);
+    f.storage.salesOrder.findFirst.mockResolvedValue({ ...header(), grossAmount: 1234, currency: 'KWD' });
+    const result = await f.registry.invokePageRead({ session, transaction: f.transaction }, source, record, totalRequest);
+    expect(result.output).toEqual({ rows: [{ id: 'order', values: { gross_amount: 1234, currency: 'KWD' } }], nextCursor: null });
+    const read = f.storage.salesOrder.findFirst.mock.calls.find(([args]) => args.select.grossAmount && !args.select.reference)?.[0];
+    expect(read).toEqual({ where: { AND: [{ AND: [{ organisationId: 'company' }, { party: { organisationId: 'company' } }] },
+      { id: 'order', revision: 3, updatedAt: date }] }, select: { id: true, grossAmount: true, currency: true } });
+    expect(mocks.refresh.mock.invocationCallOrder[0]).toBeLessThan(f.storage.salesOrder.findFirst.mock.invocationCallOrder[0]);
+    expect(f.storage.salesOrder.findMany).not.toHaveBeenCalled(); expect(mocks.oldModule).not.toHaveBeenCalled();
+  });
+  it('does not expose the new metric through retained Page1 or permit list/foreign/stale/cursor/override input', async () => {
+    const session = await actor(), f = setup(), context = { session, transaction: f.transaction }, source = f.registry.describe('sales.order.page', 2);
+    await expect(f.registry.invokePageRead(context, f.source, record, totalRequest)).rejects.toThrow();
+    expect(mocks.refresh).not.toHaveBeenCalled();
+    for (const [nativeRequest, queryRequest] of [[{ kind: 'list' }, totalRequest], [record, { ...totalRequest, cursor: { id: 'x' } }],
+      [record, { ...totalRequest, organisationId: 'foreign' }], [record, { ...totalRequest, orderId: 'foreign' }]] as const)
+      await expect(f.registry.invokePageRead(context, source, nativeRequest, queryRequest)).rejects.toThrow();
+    const anchor = await f.callbacks.authoriseRead(context, record);
+    await expect(f.callbacks.bindQueryInput(context, { ...anchor, organisationId: 'foreign' }, totalRequest)).rejects.toThrow('FORBIDDEN');
+    if (anchor.kind !== 'record') throw new Error('Missing anchor');
+    await expect(f.callbacks.bindQueryInput(context, { ...anchor, nativeRevision: 4 }, totalRequest)).rejects.toThrow('CONFLICT');
+    f.storage.salesOrder.findFirst.mockResolvedValue(null);
+    await expect(f.registry.invokePageRead(context, source, record, totalRequest)).rejects.toThrow('NOT_FOUND');
+    expect(f.storage.salesOrder.findMany).not.toHaveBeenCalled();
+  });
+  it('checks refreshed Read/module/session before any protected total query and rejects global transaction fallback', async () => {
+    const session = await actor(), revoked = await actor([]), f = setup(), context = { session, transaction: f.transaction }, source = f.registry.describe('sales.order.page', 2);
+    mocks.refresh.mockResolvedValue({ session: revoked });
+    await expect(f.registry.invokePageRead(context, source, record, totalRequest)).rejects.toThrow('FORBIDDEN');
+    expect(f.storage.salesOrder.findFirst).not.toHaveBeenCalled();
+    mocks.refresh.mockResolvedValue({ session }); f.storage.moduleState.findFirst.mockResolvedValue(null);
+    await expect(f.registry.invokePageRead(context, source, record, totalRequest)).rejects.toThrow('unavailable');
+    expect(f.storage.salesOrder.findFirst).not.toHaveBeenCalled();
+    mocks.refresh.mockRejectedValue(new Error('STALE_SESSION'));
+    await expect(f.registry.invokePageRead(context, source, record, totalRequest)).rejects.toThrow('STALE_SESSION');
+    const contribution = salesOrderPageContract.contributions.find(c => c.metadata.id === totalRequest.query.id)!;
+    await expect(contribution.run!({ session }, { orderId: 'order', expectedRevision: 3, expectedUpdatedAt: date.toISOString() })).rejects.toThrow('transaction');
+    expect(f.storage.salesOrder.findFirst).not.toHaveBeenCalled();
+  });
+  it('rejects fractional/unsafe/null/wider total projection and foreign records instead of coercion', async () => {
+    const session = await actor(), f = setup(), context = { session, transaction: f.transaction }, anchor = await f.callbacks.authoriseRead(context, record);
+    for (const amount of [null, 1.2, Number.MAX_SAFE_INTEGER + 1, Infinity])
+      await expect(f.callbacks.projectQueryOutput(context, anchor, totalRequest, { rows: [{ id: 'order', values: { gross_amount: amount, currency: 'GBP' } }], nextCursor: null })).rejects.toThrow();
+    for (const output of [{ rows: [{ id: 'foreign', values: { gross_amount: 0, currency: 'GBP' } }], nextCursor: null },
+      { rows: [{ id: 'order', values: { gross_amount: 0, currency: 'GBP', private: 'secret' } }], nextCursor: null },
+      { rows: [{ id: 'order', values: { gross_amount: 0, currency: null } }], nextCursor: null }, { rows: [], nextCursor: null }])
+      await expect(f.callbacks.projectQueryOutput(context, anchor, totalRequest, output)).rejects.toThrow();
+  });
+  it.each([[0, 'GBP', '£0.00'], [1234, 'KWD', '1.234'], [1234, 'JPY', '1,234'], [1234, 'ZZZ', 'Unavailable']] as const)
+    ('uses the existing compiler/display/renderer for total%s %s without authoring rights', async (amount, currency, expected) => {
+      const session = await actor(), f = setup(), source = f.registry.describe('sales.order.page', 2), stamp = sessionAuthorityStamp(session)!;
+      const approvals = await reconstructPageApprovalsInTransaction({ session, stamp, registry: f.registry, transaction: f.transaction }, { sourcePage: ref(source) });
+      const forms = ['desktop', 'tablet', 'phone'] as const;
+      const metric = f.registry.describe('sales.order.page.total_metric', 1);
+      const plan = compilePage({ schemaVersion: 1, entity: ref(approvals.entity), formFactors: [...forms], variants: [], sections: [{ id: 'main', label: 'Order summary', help: '', formFactors: [...forms],
+        columns: { desktop: 2, tablet: 1, phone: 1 }, components: [{ id: 'total', type: 'metric', metric: ref(metric), formFactors: [...forms] }] }] }, approvals);
+      const layout = resolvePageVariant(plan, { capabilities: session.capabilities, facts: new Map(), recordTypeDefinitionId: null }, 'phone');
+      const model = createPageDisplayModel(plan, layout, 'phone', new Map([[pageQueryKey(totalRequest.query), { rows: [{ id: 'order', values: { gross_amount: amount, currency } }], nextCursor: null }]]));
+      const html = renderToStaticMarkup(createElement(PageRenderer, { model, interaction: 'live' }));
+      expect(html).toContain(expected); expect(html).toContain('Order total'); expect(model.sections[0].columns).toBe(1);
+      expect(mocks.refresh).not.toHaveBeenCalled(); expect(f.storage.salesOrder.findFirst).not.toHaveBeenCalled();
+    });
 });

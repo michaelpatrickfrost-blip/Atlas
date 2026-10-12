@@ -1,17 +1,18 @@
+import { checksum as checksumPin } from "../registry/contracts";
 import { applyPagePatches } from "./patches";
 import type { z } from "zod";
 import { referenceSchema } from "../compiler/reference";
-import { normaliseConfigurationReferences, type ConfigurationReference } from "../record-types";
+import { normaliseConfigurationDependencyReferences, type ConfigurationDependencyReference } from "../configuration/dependency-reference";
 import { pageApprovalsSchema, type PageApprovals, type PageRegistryApproval, type PageRegistryDependency, type ValidatedPageApprovals } from "./approvals";
 import { pagePayloadSchema, pageSectionSchema, type PagePayload, type PageSection, type VisibilityPredicate } from "./schema";
 
 export type PageRegistryReference = z.infer<typeof referenceSchema>;
 export type PageReadRequest = { componentId: string; queries: PageRegistryReference[] };
-export type CompiledPageLayout = { sections: PageSection[]; reads: PageReadRequest[]; visibilityFacts: string[]; queryCost: number };
+export type CompiledPageLayout = { sections: PageSection[]; reads: PageReadRequest[]; visibilityFacts: string[]; queryCost: number; queryCount?: number };
 export type CompiledPagePlan = {
   kind: "page"; schemaVersion: 1; accessMode: "ordinary_read"; payload: PagePayload; base: CompiledPageLayout;
   variants: { id: string; priority: number; when: VisibilityPredicate; layout: CompiledPageLayout }[];
-  dependencies: PageRegistryDependency[]; configurationDependencies: ConfigurationReference[];
+  dependencies: PageRegistryDependency[]; configurationDependencies: ConfigurationDependencyReference[];
   /** Metadata only: runtime checks current permissions before fetching these facts. */
   approvals: ValidatedPageApprovals;
   warnings: string[];
@@ -69,7 +70,9 @@ export function compilePage(input: unknown, suppliedApprovals: PageApprovals): C
     contracts.set(refKey(contract), contract);
   }
   for (const values of [approvals.queries, approvals.commands, approvals.metrics, approvals.surfaces]) assertUnique(values.map(refKey), "typed contract approval");
-  const dependencies = new Map<string, PageRegistryDependency>(), fields: ConfigurationReference[] = [], warnings = new Set<string>();
+  assertUnique((approvals.embeddedViews ?? []).map(value => value.reference.definitionId), "approved analytics view");
+  const embeddedUsed = new Set<string>();
+  const dependencies = new Map<string, PageRegistryDependency>(), fields: ConfigurationDependencyReference[] = [], warnings = new Set<string>();
   const nativeUsed = new Set<string>(), factsReferenced = new Set<string>();
   const resolve = (ref: PageRegistryReference, kinds: readonly PageRegistryApproval["kind"][]) => {
     const approved = contracts.get(refKey(ref));
@@ -113,7 +116,7 @@ export function compilePage(input: unknown, suppliedApprovals: PageApprovals): C
   const layout = (sections: PageSection[], variantFacts: Set<string>): CompiledPageLayout => {
     assertLayout(sections, payload.formFactors);
     const factsUsed = new Set(variantFacts), reads: PageReadRequest[] = [];
-    let queryCost = 0;
+    let queryCost = 0, queryCount = 0, hasEmbeddedView = false;
     for (const section of sections) {
       if (section.visibleWhen) predicateFacts(section.visibleWhen, factsUsed);
       for (const component of section.components) {
@@ -162,6 +165,19 @@ export function compilePage(input: unknown, suppliedApprovals: PageApprovals): C
           const approved = approvals.metrics.find(value => samePageReference(value, component.metric));
           if (!approved || approved.sourceEntityId !== payload.entity.id || component.formFactors.some(form => !approved.formFactors.includes(form))) throw new Error("Metric presentation is not approved.");
           query(approved.query, "metric"); queries.push(approved.query);
+        } else if (component.type === "analyticsView") {
+          const view = approvals.embeddedViews?.find(value => checksumPin(value.reference) === checksumPin(component.view));
+          if (!view) throw new Error("Embedded analytics view is not an exact owner-approved immutable pin.");
+          const sourceDependency = view.dependencies.find(dep => samePageReference(dep, view.sourceView));
+          if (!sourceDependency || sourceDependency.kind !== "surface" || sourceDependency.ownerModuleId !== view.sourceView.ownerModuleId
+            || sourceDependency.classification !== view.sourceView.classification) throw new Error("Embedded view lost its approved owning source.");
+          for (const dependency of view.dependencies) {
+            const prior = dependencies.get(refKey(dependency));
+            if (prior && checksumPin(prior) !== checksumPin(dependency)) throw new Error("Conflicting embedded view registry dependency.");
+            dependencies.set(refKey(dependency), dependency);
+          }
+          fields.push(component.view); embeddedUsed.add(component.view.definitionId); hasEmbeddedView = true;
+          queryCost += view.queryCost; queryCount += view.queryCount;
         } else if (component.type === "surface") {
           resolve(component.surface, ["surface"]);
           const approved = approvals.surfaces.find(value => samePageReference(value, component.surface));
@@ -169,14 +185,17 @@ export function compilePage(input: unknown, suppliedApprovals: PageApprovals): C
           approved.queries.forEach(ref => { query(ref, "surface"); queries.push(ref); });
         }
         const unique = [...new Map(queries.map(ref => [refKey(ref), ref])).values()];
+        queryCount += unique.length;
         queryCost += unique.reduce((sum, ref) => sum + readCost(ref), 0);
         reads.push({ componentId: component.id, queries: unique });
       }
     }
     const visibilityQueries = new Map([...factsUsed].map(id => { const approved = fact(id); return [refKey(approved.query), approved.query]; }));
     queryCost += [...visibilityQueries.values()].reduce((sum, ref) => sum + readCost(ref), 0);
+    queryCount += visibilityQueries.size;
+    if (hasEmbeddedView && queryCount > 32) throw new Error("Page exceeds its combined analytics request budget.");
     if (queryCost > approvals.maxQueryCost) throw new Error("Page exceeds its owner query-cost budget.");
-    return { sections, reads, visibilityFacts: [...factsUsed].sort(compare), queryCost };
+    return { sections, reads, visibilityFacts: [...factsUsed].sort(compare), queryCost, ...(hasEmbeddedView ? { queryCount } : {}) };
   };
   // Selecting the winning variant can require facts from every higher-priority
   // candidate. Count that whole bounded selector set, not only the winning rule.
@@ -186,7 +205,7 @@ export function compilePage(input: unknown, suppliedApprovals: PageApprovals): C
   const variants = payload.variants.map(variant => {
     return { id: variant.id, priority: variant.priority, when: variant.when, layout: layout(applyPagePatches(payload.sections, variant.patches), selectorFacts) };
   });
-  const configurationDependencies = normaliseConfigurationReferences(fields);
+  const configurationDependencies = normaliseConfigurationDependencyReferences(fields);
   const used = <T extends PageRegistryApproval>(values: T[]) => values.filter(value => dependencies.has(refKey(value)))
     .sort((left, right) => compare(left.id, right.id) || left.version - right.version);
   const runtimeApprovals: ValidatedPageApprovals = {
@@ -198,6 +217,8 @@ export function compilePage(input: unknown, suppliedApprovals: PageApprovals): C
       .sort((left, right) => compare(left.reference.definitionId, right.reference.definitionId)),
     facts: approvals.facts.filter(value => factsReferenced.has(value.id)).sort((left, right) => compare(left.id, right.id)),
     contracts: used(approvals.contracts), queries: used(approvals.queries), commands: used(approvals.commands),
+    ...(embeddedUsed.size ? { embeddedViews: approvals.embeddedViews!.filter(view => embeddedUsed.has(view.reference.definitionId))
+      .sort((a, b) => compare(a.reference.definitionId, b.reference.definitionId)) } : {}),
     metrics: used(approvals.metrics), surfaces: used(approvals.surfaces), maxQueryCost: approvals.maxQueryCost,
   };
   if (dependencies.size > 100) throw new Error("Page exceeds its registry dependency budget.");

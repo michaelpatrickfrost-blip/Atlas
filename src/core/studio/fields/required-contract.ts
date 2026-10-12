@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { fieldKeySchema, customFieldSchema, customFieldPayloadSchema } from "./schema";
-import { referenceSchema } from "../compiler/kernel";
+import { referenceSchema } from "../compiler/reference";
 
 const digest = z.string().regex(/^[a-f0-9]{64}$/);
 /** Identifiers only. A compiler must resolve these through current tenant-owned

@@ -1,5 +1,44 @@
 ## 12 October 2026 — bridge0d80 stopped before activation on checker viewport sequencing
 
+## 12 October 2026 — MRP proposal acceptance correction (no app change)
+
+Original e3b3e024 release66634 EXIT1 before activation after native Ticket/Analytics,
+Home/Apps, Settings/Finance and Reports gates passed. MRP direct-denial/no-write,
+actual authorised single Run MRP and correct quantities/machine/duration passed;
+line185 incorrectly expected null proposal dates. Existing dated routing engine
+and finite-kiln regression evidence preserve ISO start/end for a dated forecast.
+Checker now requires exact startBy/neededBy ISO mirrors and a90-minute difference;
+no weakening of rights/no-write/native data checks and no domain change.
+Relevant29/2 regressions PASS; checker lint PASS. EvidenceOuJhU4 and mandatory
+002513/002701 backups retained. No activation, Phase2 gates still FAIL.
+Next original pinned retry with corrected checker; all future visual WIP excluded.
+
+
+## 12 October 2026 — connected visual dashboard and field controls (source)
+
+Integrated reviewed b45a72c8 original active/retained business View reader, pure
+Analytics DTO/charts and selected-business authoring, preserving receipt2/panel
+probe fixes. Sales@2 anchored zero-safe money KPI added behind independent actual
+reader family; strict owner policies and @1 retained hashes/budgets stay exact.
+Standalone /design-studio/dashboards library/designer uses original native Studio
+canvas, CAS saves, reviewed publishing/restoring; /business-dashboards customer
+reader and Home discovery independently reauthorise current used sources. Customer
+refresh clears figures on access/head failure. No personal-board persistence fallback.
+Friendly field change page now supplies explicit prepare/collect/seal/review/publish/
+convert/go-live/restore/finish and metadata-only recovery callbacks from b104/6bac.
+GET resumes only a review ID; no support window or business value read on mount.
+Settings/conversion edits invalidate review controls until saved.
+100/6 integrated focused tests PASS; connected dashboard/field editor10/2 PASS.
+Own-loader semantic probe includes real Sales zero-money display and business View
+reader/native chart/forged denial PASS. Full strict check found catalogue minimal
+entity ref typing; corrected to actual exact registry metadata, rerun pending.
+Build/lint/browser/live for this visual integration pending; Phase2 remains FAIL.
+Original e3b3 bridge candidate acceptance running with preserved001209/001359
+and new002513/002701 mandatory backups; no ad-hoc dumps or new worktrees.
+Next: strict/lint/production build, actual visual gates, immutable Page/View embedding
+and friendly conditional field authoring through original guarded dispatch.
+
+
 ## 12 October 2026 — original bridge acceptance: Finance checker correction
 
 Pinned b408c4fa original release26087 stopped before activation: candidate Home/Apps,

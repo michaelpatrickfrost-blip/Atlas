@@ -171,7 +171,7 @@ async function main() {
     assert.equal(run.triggeredByUserId, seeded.profiles[0].users[1].user.id); assert(run.finishedAt);
     assert.equal(run.suggestionCount, run.suggestions.length);
     const make = run.suggestions.find(row => row.productId === seeded.parent.id && row.kind === "MAKE"); assert(make); assert.equal(Number(make.quantity), 10);
-    const detail = make.pegging as unknown as { materials: { productId: string; quantity: number; requiredBy: string }[]; operations: { start: null; end: null; resourceId: string; durationMinutes: number }[] };
+    const detail = make.pegging as unknown as { materials: { productId: string; quantity: number; requiredBy: string }[]; operations: { start: string | null; end: string | null; resourceId: string; durationMinutes: number }[] };
     assert.equal(detail.materials.length, 2); assert.equal(detail.operations.length, 1);
     for (const [position, component] of seeded.components.entries()) {
       const material = detail.materials.find(row => row.productId === component.id); assert(material);
@@ -179,10 +179,13 @@ async function main() {
       assert(run.suggestions.some(row => row.productId === component.id && row.kind === "BUY" && Number(row.quantity) === (position + 1) * 10));
     }
     assert.equal(detail.operations[0].resourceId, seeded.machine.id);
-    // MRP proposals have routing duration but no committed schedule. Existing
-    // historical proposals above separately exercise ISO operation-date decoding.
+    // The existing MRP engine dates the proposal backwards from its requirement.
+    // These are proposal timings; no production order or resource booking is made.
     assert.equal(detail.operations[0].durationMinutes, 90);
-    assert.equal(detail.operations[0].start, null); assert.equal(detail.operations[0].end, null);
+    assert(make.startBy && make.neededBy, "Dated forecast retains proposal timing");
+    assert.equal(detail.operations[0].start, make.startBy.toISOString());
+    assert.equal(detail.operations[0].end, make.neededBy.toISOString());
+    assert.equal(make.neededBy.getTime() - make.startBy.getTime(), 90 * 60000);
     await page.reload({ waitUntil: "networkidle" }); await expect(page.getByRole("heading", { name: "Production planning", exact: true })).toBeVisible();
     if (reproduce) {
       phase = "original newly saved proposal failure";

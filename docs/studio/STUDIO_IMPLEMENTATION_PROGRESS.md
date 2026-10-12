@@ -4200,3 +4200,42 @@ evidenceVf7R1k retained. Visual future work excluded. Phase2 remains FAIL.
 Commit only the reviewed Finance checker and this memory, run the original pinned
 bridge release, restore future source after push, then integrate b45a72c8 and
 6bacbe10 and connect the business dashboard and field lifecycle visual routes.
+
+## 12 October visual integrations checkpoint (source, not live)
+
+Workstreams: native Ticket panels22b2 IMPLEMENTED; original View publisher692/reader
+b45 IMPLEMENTED; Sales metric4d627 IMPLEMENTED; field controlsb104/recovery6bac
+IMPLEMENTED. Root connected dashboard designer/customer Home/refresh and explicit
+field lifecycle callbacks IMPLEMENTED. Every family needs actual compatible release
+and browser gates. All old seals/source budgets and current grants retained.
+Files: standalone dashboards + customer business-dashboards routes, native Analytics
+Studio adapter, Home, field-change-editor/change route/actions, trusted catalogue/
+source selector, evaluator and focused tests. Database: none in these integrations.
+Tests:100/6 integrated PASS;10/2 connected UI PASS; own-loader PASS. Strict check
+found one catalogue ref type gap, corrected; rerun/build/lint pending.
+Known gaps: immutable embeds/graph CHECK, friendly conditional required field adapter,
+full Phase2 gates. No Phase3 feature, no new dependency/worktree/dump/local database.
+
+# Exact Next Action
+
+Run corrected strict typecheck, scoped lint and production build for the connected
+visual integration while original e3b3 bridge candidate/public acceptance finishes.
+Integrate the scoped immutable Page/View dependency work and conditional field
+authoring checkpoints, then run actual compatible candidate/public visual journeys.
+
+## 12 October original acceptance checkpoint: dated MRP proposals
+
+e3b3e024 original66634 EXIT1 beforeactivation. Native/Home/Settings/Reports passed;
+MRP directdenials and actual single native run/quantity/machine/duration passed.
+Old assertion185 expected null dates although current original engine retains
+dated forecast proposal routing. Checker now requires exact stored startBy/neededBy
+ISO mirrors +90min difference, retaining no-production-order/booking assertions.
+Relevant29/2 tests and scoped lint PASS. Mandatory002513/002701 backups +OuJhU4
+evidence retained. No ad-hoc dump, activation or complete Phase2 PASS.
+
+# Exact Next Action
+
+Commit the MRP checker correction with this memory, retry the original pinned bridge,
+then checkpoint tested visual integration separately. The current visual production
+build passed; corrected full strict passed; scoped lint passed with existing Home
+image warning;35/2 device editor and10/2 dashboard/field editor checks passed.

@@ -30,6 +30,10 @@ export function readAdditionalFieldSetup(form: FormData): AdditionalFieldSetup {
     } else if (value) settings[setting] = value;
   }
   const enabled = text('initialValueEnabled');
+  const indexed = text('indexed');
+  if (indexed && indexed !== 'on' && indexed !== 'off') throw new Error('Choose whether this detail is available in search.');
+  const unique = text('unique');
+  if (unique && unique !== 'on' && unique !== 'off') throw new Error('Choose whether this detail allows duplicate values.');
   if (enabled && enabled !== 'on') throw new Error('Choose whether this field has a starting value.');
   let initialValue: unknown;
   if (enabled === 'on') {
@@ -48,5 +52,7 @@ export function readAdditionalFieldSetup(form: FormData): AdditionalFieldSetup {
     } else initialValue = text('initialValue');
   }
   return additionalFieldSetupSchema.parse({ label: text('label'), help: text('help'), type, settings,
+    ...(indexed ? { indexed: indexed === 'on' } : {}),
+    ...(unique ? { unique: unique === 'on' } : {}),
     ...(enabled === 'on' ? { initialValue } : {}) });
 }

@@ -52,7 +52,7 @@ export function projectAdditionalFieldSetup(input: unknown, referenceTargets: re
     }
     case 'address': settings = { countries: storage.countries }; break;
   }
-  const friendly = additionalFieldSetupSchema.safeParse({ label: field.label, help: field.help, type: storage.type, settings,
+  const friendly = additionalFieldSetupSchema.safeParse({ label: field.label, help: field.help, indexed: field.indexed, unique: field.unique, type: storage.type, settings,
     ...(defaultValue !== undefined ? { initialValue } : {}) });
   return friendly.success ? { kind: 'editable', initial: friendly.data } : readOnly('These saved settings cannot be represented safely by the simple editor. Its rules are kept.');
 }

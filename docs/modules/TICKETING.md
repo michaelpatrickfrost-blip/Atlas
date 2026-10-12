@@ -1,5 +1,16 @@
 # Tickets
 
+## Studio additional-detail search — 12 October 2026
+
+Source integration adds an optional Find by additional details panel to the enabled
+customer Tickets list. It uses the original tickets.ticket.field_search query,
+typed scalar comparisons and bounded scanned-window continuation. Only current
+authorised indexed details are offered; current and written field/reference rights,
+native private-record access and tenant scope remain server-enforced. It needs
+native Ticket Read, not Studio authoring or Ticket Write. Queue/status filters are
+explicitly separate from this search. Actual browser/release acceptance is pending
+in the Studio ledger; no database or separate search engine is introduced.
+
 The implemented multi-department Tickets application is registered at `/tickets`. Customer cases remain in Customer Service; cross-team Queries retain their originating case or ticket. The previous Ticket/TicketQueue design in this document described a disabled prototype and is superseded by the shared `ServiceWorkItem` / `ServiceQueue` implementation.
 
 See [Connected service desk](SERVICE_WORK_DESK.md) for current routes, capabilities, ownership, data model, workflows, limits and migration details, and the preserved [source specification](../plans/CUSTOMER_SERVICE_TICKETS_QUERIES_SPEC.md) for the requested full scope.

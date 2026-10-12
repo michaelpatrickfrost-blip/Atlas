@@ -14,12 +14,19 @@ before the complete Phase2 gate passes. Foundation-first order remains authorise
 
 # Current Workstream
 
+Original5f1a45380 FAILED beforeactivation on configured-search default5s transaction
+expiry; required CONFLICT expectation unchanged. Profiles/visuals not reached.
+Customer search+initial search/duplicate-value, five-kind and native reference
+controls IMPLEMENTED source; actual verification IN PROGRESS. Logical type-condition
+impact IN PROGRESS as bounded metadata-only follow-up.
+
 2D/E visual Templates/type conditions/field+View reference inspection IMPLEMENTED;
 source checks PASS, actual verification IN PROGRESS. Current original actual document
 and type checkers retain native generation/tenant/permissions/CAS/Audit expectations.
 2F guard repair/release bridge IN PROGRESS: original533 stopped preactivation at070
 JSON grouping defect; additive12020000 exact function-only repair rehearsed under
-both locks PASS_ROLLBACK, forward NOT APPLIED. Live75977/rollbackc385 retained.
+both locks PASS_ROLLBACK; forward APPLIED in original5f1a bridge. Runtime gate FAILED
+earlier on search expiry, live75977/rollbackc385 retained.
 Customer field search and five-kind setup/type reference controls are bounded parallel
 workstreams. Whole Phase2 FAIL/incomplete, no Phase3 engine.
 
@@ -61,9 +68,9 @@ source coverage, phase plan and this ledger. No rewritten specification.
 
 Bounded visual closure workstreams (no metadata schema changes; separate exact SQL guard repair):
 
-- Reference navigation / Where used: IMPLEMENTED field/View source; five-kind setup/type controls IN PROGRESS; depends on original full seals/current Read policies and graph; owned read-only authoring wrapper, optional catalogue hrefs, standalone source/usage UI; tests current grants/retained metadata/foreign tenant/no provider access.
+- Reference navigation / Where used: IMPLEMENTED five-kind setup/type/native controls; logical type-condition impact IN PROGRESS. Exact retained pins/current Read/seals/original graph; only FORBIDDEN omitted, corruption fails closed. No provider access. Native usages25page/500scan and current exact query-column grants precede labels.
 - Record-type conditions: IMPLEMENTED source, actual verification IN PROGRESS; depends on original authorised choice resolver and canonical record assignment; friendly condition picker/catalogue, new-publication USED selector preflight; tests same tenant/entity/current required-field Read and retained seal stability.
-- Customer additional-field search: IN PROGRESS; depends on existing typed field_search registry/query; bounded customer Tickets consumer; tests current field/native/private access and typed results.
+- Customer additional-field search: IMPLEMENTED source; existing typed field_search registry/query, bounded customer Tickets consumer; current field/native/private access/typed result tests PASS; actual browser gate pending.
 - Document visual editing: IMPLEMENTED source, focused verification PASS, actual verification IN PROGRESS; depends on existing Templates parser/merge/provider/render and selected-business authority; protected friendly detail pieces, editable table cells, authorised actual source preview; existing save/version/Audit retained; tests hidden-token preservation, no preview writes, current source/tenant rights and original generated snapshots.
 
 
@@ -104,7 +111,7 @@ Matching CURRENT_STATE/DECISIONS/phase plan/visual and Analytics docs updated.
 
 # Database / Prisma Changes
 
-20261012020000 replaces ONLY original070 assignment INSERTguard function with explicit JSON extraction parentheses. Original applied070 untouched; exact full body retained apart from grouping. Actual central both-lock rehearsal43295 PASS_ROLLBACK: entire function set restored, constraints/triggers unchanged, assignment/extension/version/value counts unchanged; genuine four-key extraction empty and extra-key retained. Existing013014 recovery pg_restore --list verified; no additional dump. Forward NOT APPLIED. Evidence /tmp/atlas-assignment-guard-rehearsal-result.txt.
+20261012020000 replaces ONLY original070 assignment INSERTguard function with explicit JSON extraction parentheses. Original applied070 untouched; exact full body retained apart from grouping. Actual central both-lock rehearsal43295 PASS_ROLLBACK: entire function set restored, constraints/triggers unchanged, assignment/extension/version/value counts unchanged; genuine four-key extraction empty and extra-key retained. Existing013014 recovery pg_restore --list verified; no additional dump. Forward APPLIED in original5f1a bridge015623-migrate.log. Evidence /tmp/atlas-assignment-guard-rehearsal-result.txt.
 
 030/040/050/060/070/080 applied as recorded below. New20261012010000 widens only
 existing dependency target-kind CHECK to allow exact immutable View edges; all
@@ -115,7 +122,12 @@ Evidence /tmp/atlas-page-view-rehearsal-result.txt; no additional dump.
 
 # Migrations Applied
 
-20261012020000 NOT APPLIED; exact function-only source repair and actual rolled-back rehearsal passed. Forward original release migration pending.
+20261012020000 CONFIRMED APPLIED by original pinned5f1a45b9 bridge; successful
+mandatory015623-migrate.log. Candidate build PASS; runtime acceptance failed earlier
+on configured-search expiry before profile/visual checks.
+Prior NOT APPLIED lines below are dated checkpoint history.
+
+20261012020000 source repair and rolled-back rehearsal passed; forward application confirmed above. Original runtime association/public gates pending retry.
 
 20261012010000 CONFIRMED APPLIED by original147ed candidate build, successful
 mandatory /home/administrator/backups/atlas-pre-deploy-20261012-011303-migrate.log.
@@ -137,6 +149,17 @@ from mocked SQL/authority collaborators.
 
 # Tests Run
 
+Final source104/8 PASS85069 and actual-checker early gates57/3 PASS78972;
+native review helper29PASS +independent source-only review no further concrete defect.
+Root strict34126, scopedlint63085 and production32770 EXIT0. Final record-layout
+checker strict86970 EXIT0, lint8264 EXIT0. No SQL/browser/runtime PASS inferred.
+
+Latest search/runtime53/4 PASS30106 and initial typed settings165/4 PASS14766.
+Five-kind navigation integration210/7 PASS97277; narrow corruption21/2 PASS87430.
+Search integration lint89048/build89460 EXIT0. Standalone strict56592 found missing
+test-fixture help; corrected then strict4558 EXIT0. Final registered-query/native
+navigation/checker projections still require scoped checks and production build.
+
 Latest integrated visual closure105tests/8suites PASS63978; reference/type/guard89/7
 PASS18546; final saved-context/retired destination29/2 PASS31886; scopedlint84118 EXIT0.
 Strict88583 and production17803 EXIT0; final context/destination strict54090 and
@@ -152,6 +175,39 @@ Original75977 candidate+public ALL COMBINED PASS28119; new feature families DEFE
 against old paired reader, not verified. New dependency SQL rehearsal PASS_ROLLBACK.
 
 # Test Results
+
+## 12 October 2026 —5f1a bridge preactivation failure and search controls
+
+Original5f1a release45380 EXIT1 BEFORE activation. CandidateZ1TF6x original native
+forms/defaults PASS; production conditional DEFER before fixtures. Original configured
+search required CONFLICT denial encountered expired default5000ms transaction after
+6720ms instead; expectations remain mandatory. Record-profile and visual journeys
+were NOT reached on this candidate.12020000 forward APPLIED015623; no genuine
+assignment pass inferred. Live75977/rollbackc385 retained, recovery015623/fixture015820.
+
+Projectedf357a590 bounded customer search (original indexed query/cursor/current native,
+written/reference policies) source; helper40/3types/lint PASS, root integration pending.
+Root friendly initial field search/duplicate-value controls reuse original schema,
+keep scalar-only constraints, preserve omission for old clients, explicit unchanged
+published settings/current CAS/no silent index or uniqueness change.165/4 source tests
+PASS14766; actual new controls/browser journey pending. No DDL or new engine.
+Exact next: identify bounded search deadline/callsite without masking denial; finish
+config/native reference controls, check integrated source/build, original compatible
+release retry. No Phase3, wholePhase2 FAIL.
+
+
+## 12 October 2026 — pinned5f1a visual/assignment repair bridge running
+
+Original release45380 is pinned to5f1a45b98af753fce7d94a2be53f1e5ecd67d7ba;
+keep HEAD fixed. Mandatory recovery015623 retained, no adhoc dump. Original central
+Prisma015623-migrate.log confirms additive20261012020000 successfully APPLIED;
+immutable candidate production build completed successfully. Candidate/public
+acceptance still running; no activation/PASS inferred. Live75977 rollbackc385 at
+last pointer check. Server149GB free; original retention remains mandatory.
+Exact next: read actual candidate gate results, fix any concrete failure safely,
+then accepted bridge permits next compatible new-family positive release. Parallel
+customer-search/config/native-reference work remains bounded source-only.
+
 
 ## 12 October 2026 — visual Templates, type conditions and reference inspection checkpoint
 
@@ -245,7 +301,7 @@ Decisions and rationale recorded in .ai/DECISIONS.md; no silent source divergenc
 
 # Known Issues
 
-- Original533b bridge failed beforeactivation: applied070 assignmentguard extraction/subtraction operator precedence. Read-only SQL reproduced; additive function-only repair implemented, actual rehearsal PASS_ROLLBACK; forward/actual gates pending. No business rows/history altered.
+- Original533b bridge failed beforeactivation: applied070 assignmentguard extraction/subtraction operator precedence. Read-only SQL reproduced; additive function-only repair implemented, actual rehearsal PASS_ROLLBACK and forward APPLIED5f1a; actual gates pending. No business rows/history altered.
 
 WholePhase2 incomplete: compatible actual visual/profile/type/default/dashboard
 publication/runtime journeys pending; retained-default embedded approval omission
@@ -271,8 +327,7 @@ journeys mandatory. No later phase starts.
 
 # Exact Next Action
 
-Commit this reviewed visual/type/reference/additive guard checkpoint with paired
-memory, then run original pinned bridge release. Preserve
+Commit the reviewed connected source checkpoint and run original pinned compatible bridge candidate/public acceptance. Preserve
 all original recovery/locks/actual checks; new families deferred against75977 require
 next compatible pair positive candidate/public acceptance. Integrate bounded customer
 field-search and five-kind setup/type reference controls, then close the complete

@@ -2,6 +2,7 @@ import { createdTicketUrl } from "./ticket-urls";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import jwt from "jsonwebtoken";
+import { encodeWire, decodeWire } from "../../src/core/desktop/wire";
 import { expect, type Browser } from "@playwright/test";
 import { z } from "zod";
 import { db } from "../../src/core/db/client";
@@ -158,7 +159,16 @@ export async function checkFieldSearch(base: string, browser: Browser, existingS
       return result;
     }
     async function denied(session: Session, input: unknown, pattern: RegExp) {
-      const before = await snapshot(); await assert.rejects(() => studioRegistry().invoke(session, query, input), pattern);
+      const before = await snapshot(), started = Date.now(), callsite = new Error().stack?.split("\n")[2]?.trim();
+      try { await assert.rejects(() => studioRegistry().invoke(session, query, input), pattern); }
+      catch (error) {
+        const parsed = fieldSearchRequestSchema.safeParse(input);
+        console.error("Configured-search denial mismatch:", { callsite, elapsedMs: Date.now() - started, expected: pattern.source,
+          ...(parsed.success ? { definitionId: parsed.data.definitionId, operator: parsed.data.filter.operator,
+            limit: parsed.data.limit, hasCursor: !!parsed.data.cursor } : { malformedRequest: true }),
+          error: error instanceof Error ? error.message.slice(0, 1000) : "Non-Error failure" });
+        throw error; // Preserve timeout/permission/assertion identity; never map to conflict.
+      }
       assert.deepEqual(await snapshot(), before, "Denied search cannot mutate native/typed/configuration state or windows.");
     }
     const zero = await request(integer, { operator: "equals", value: { type: "integer", value: 0 } }, a.id, 2), customer = await readSession();
@@ -186,6 +196,53 @@ export async function checkFieldSearch(base: string, browser: Browser, existingS
     assert.deepEqual((await invoke(await fresh(b.id), await request(foreignInteger, zero.filter, b.id))).records.map(row => row.id), [foreignId]);
     await denied(customer, await request(reference, { operator: "equals", value: { type: "reference", value: privateId } }), /unavailable|FORBIDDEN/i);
     assert.deepEqual((await invoke(await fresh(), await request(reference, { operator: "equals", value: { type: "reference", value: privateId } }))).records.map(row => row.id), [records[2]]);
+    // Customer consumer proof reuses these exact existing native/typed fixtures.
+    // No new company, user, metadata, values, providers or screenshots are made.
+    const readMember = memberships.find(value => value.organisationId === a.id && value.userId === reader.id)!;
+    const currentReaderMembership = await db.membership.findFirstOrThrow({ where: { ...readMember, active: true } });
+    const readContext = await browser.newContext({ baseURL: base, viewport: { width: 1280, height: 900 } }); contexts.push(readContext);
+    await readContext.addCookies([{ name: "atlas_session", value: jwt.sign({ userId: reader.id, organisationId: a.id,
+      authVersion: reader.authVersion, sessionVersion: currentReaderMembership.sessionVersion }, process.env.SESSION_SECRET!,
+      { algorithm: "HS256", expiresIn: "30m" }), url: base, secure: base.startsWith("https"), httpOnly: true, sameSite: "Lax" }]);
+    const readPage = await readContext.newPage(); readPage.on("pageerror", error => browserErrors.push(error.message));
+    const beforeCustomerUi = await snapshot(); await readPage.goto("/tickets", { waitUntil: "networkidle" });
+    const searchPanel = readPage.locator("details").filter({ has: readPage.locator("summary").filter({ hasText: /^Find by additional details$/ }) });
+    await expect(searchPanel).toHaveCount(1); await searchPanel.locator("summary").click();
+    async function searchUi(label: string, comparison: string, value: string | null, expectedIds: string[], currency?: string) {
+      await searchPanel.getByLabel("Detail", { exact: true }).selectOption({ label });
+      await searchPanel.getByLabel("Comparison", { exact: true }).selectOption(comparison);
+      if (value !== null) {
+        const input = searchPanel.getByLabel("Search value", { exact: true });
+        if (label === "Search answer") await input.selectOption(value); else await input.fill(value);
+      }
+      if (currency) await searchPanel.getByLabel("Currency", { exact: true }).selectOption(currency);
+      await searchPanel.getByRole("button", { name: "Find tickets", exact: true }).click();
+      await expect(searchPanel.getByText("Search complete. Only tickets you can currently read are shown.", { exact: true })).toBeVisible();
+      const table = searchPanel.getByRole("table", { name: "Tickets matching the additional detail" });
+      await expect(table.getByRole("link")).toHaveCount(expectedIds.length);
+      for (const id of expectedIds) await expect(table.locator(`a[href="/tickets/${id}"]`)).toHaveCount(1);
+      await expect(searchPanel.locator(`a[href="/tickets/${privateId}"]`)).toHaveCount(0);
+      await expect(searchPanel.locator(`a[href="/tickets/${foreignId}"]`)).toHaveCount(0);
+      await expect(searchPanel.getByRole("alert")).toHaveCount(0);
+    }
+    await searchUi("Search count", "equals", "0", [records[2]]);
+    await searchUi("Search answer", "equals", "no", [records[2]]);
+    await searchUi("Search answer", "null", null, [records[1]]);
+    await searchUi("Search count", "gte", "9", [records[1]]);
+    await searchUi("Search price", "gte", "1.50", [records[2]], "GBP");
+    assert.deepEqual(await snapshot(), beforeCustomerUi, "Customer filters must not change native/value/windows/Audit state.");
+    // Prove the real authenticated allowlisted HTTP callback before exercising
+    // denial; an unsupported/missing action must not accidentally pass as denial.
+    async function customerSearchAction(input: unknown) {
+      const body = JSON.stringify({ action: "src/core/service-work/field-search-actions:findTicketsByAdditionalDetail", args: await encodeWire([input]) });
+      return readPage.evaluate(async body => { const response = await fetch("/api/desktop/action", { method: "POST",
+        headers: { "content-type": "application/json", "x-atlas-client": "desktop" }, body });
+        return { status: response.status, body: await response.json() as { value?: unknown; error?: string } };
+      }, body);
+    }
+    const customerHttp = await customerSearchAction({ ...zero, limit: 50 }); assert.equal(customerHttp.status, 200); assert.equal(customerHttp.body.error, undefined);
+    assert.deepEqual(resultSchema.parse(decodeWire(customerHttp.body.value as Awaited<ReturnType<typeof encodeWire>>)).records.map(record => record.id), [records[2]]);
+    assert.deepEqual(await snapshot(), beforeCustomerUi);
     // Legal same-generation label/help publication leaves current values written
     // under the original immutable version. Its Read grant remains the same.
     const author = await fresh(), draft = await db.studioDraft.findFirstOrThrow({ where: { organisationId: a.id, definitionId: integer.definitionId } });
@@ -202,9 +259,17 @@ export async function checkFieldSearch(base: string, browser: Browser, existingS
       extension: { organisationId: a.id, recordId: records[2] }, generationId: integer.payload.storageGeneration }, include: { activeValue: true } });
     assert(retained.activeValue); assert.notEqual(retained.activeValue.versionId, currentZero.versionId);
     assert.deepEqual((await invoke(await readSession(), currentZero)).records.map(row => row.id), [records[2]]);
-    const readMember = memberships.find(value => value.organisationId === a.id && value.userId === reader.id)!;
     await db.membership.update({ where: { id: readMember.id, organisationId: a.id }, data: { deniedCapabilities: [cap.written] } });
-    try { await denied(customer, currentZero, /FORBIDDEN/); }
+    try {
+      await denied(customer, currentZero, /FORBIDDEN/);
+      const beforeDeniedUi = await snapshot(), response = await customerSearchAction(currentZero);
+      assert.equal(response.status, 403); assert.match(response.body.error ?? "", /FORBIDDEN/); assert.doesNotMatch(response.body.error ?? "", /unsupported action/i);
+      await readPage.goto("/tickets", { waitUntil: "networkidle" });
+      await expect(readPage.getByRole("heading", { name: "Tickets", exact: true })).toBeVisible();
+      await expect(readPage.getByText("Find by additional details", { exact: true })).toHaveCount(0);
+      await expect(readPage.getByRole("option", { name: "Search count clarified", exact: true })).toHaveCount(0);
+      assert.deepEqual(await snapshot(), beforeDeniedUi, "Revoked current/written Read must deny action and choices without side effects.");
+    }
     finally { await db.membership.update({ where: { id: readMember.id, organisationId: a.id }, data: { deniedCapabilities: [] } }); }
     await db.moduleState.updateMany({ where: { organisationId: a.id, moduleId: "tickets" }, data: { enabled: false } });
     try { await denied(customer, currentZero, /DEPENDENCY_BROKEN|unavailable/i); }
@@ -290,7 +355,7 @@ export async function checkFieldSearch(base: string, browser: Browser, existingS
     assert.equal(await db.serviceWorkItem.count({ where: scope }), 5); assert.deepEqual(browserErrors, []);
     assert.deepEqual(await db.user.findMany({ where: { id: { in: userIds } }, select: userSelect, orderBy: { id: "asc" } }), originalUsers);
     assert.deepEqual(await db.membership.findMany({ where: { userId: { in: userIds }, organisationId: { notIn: tenantIds } }, orderBy: { id: "asc" } }), originalMemberships);
-    console.log("PASS configured Ticket field search: genuine readonly native projections, zero/false/null + ranges/currency, empty continuation, actor/tenant/config cursor, native private/current+written/reference Read, module/stale session denial, reviewed current-generation/history, labelled actual bounded SQL plans and exact usable typed-index catalogues; no production-scale performance claim");
+    console.log("PASS configured Ticket field search: genuine readonly native projections, zero/false/null + ranges/currency, actual ordinary-reader customer filters/HTTP callback and revoked current+written choices, empty engine continuation, actor/tenant/config cursor, native private/current+written/reference Read, module/stale session denial, reviewed current-generation/history, labelled actual bounded SQL plans and exact usable typed-index catalogues; no production-scale performance claim");
   } finally {
     // Attempt every independent exact fixture cleanup even if one fails. The
     // original driver also owns registered-company recovery; never touch old

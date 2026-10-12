@@ -8,10 +8,11 @@ export type AdditionalFieldSetupProps = {
   fieldTypes: readonly { id: string; name: string; settings: readonly string[]; initialValue: string }[];
   referenceTargets: readonly { id: string; name: string }[];
   initial?: AdditionalFieldSetup;
+  storageRulesEditable?: boolean;
 };
 const lines = (value: string) => value.split(/\r?\n/).map(value => value.trim()).filter(Boolean);
 const codes = (value: string) => value.split(/[\n,]/).map(value => value.trim().toUpperCase()).filter(Boolean);
-export function AdditionalFieldSetup({ fieldTypes, referenceTargets, initial }: AdditionalFieldSetupProps) {
+export function AdditionalFieldSetup({ fieldTypes, referenceTargets, initial, storageRulesEditable = true }: AdditionalFieldSetupProps) {
   const types = fieldTypes.filter(value => additionalFieldTypeCatalogue.some(type => type.id === value.id) && (value.id !== 'reference' || referenceTargets.length));
   const [selected, setSelected] = useState(initial?.type ?? types[0]?.id ?? '');
   const selectedType = types.find(type => type.id === selected);
@@ -21,12 +22,13 @@ export function AdditionalFieldSetup({ fieldTypes, referenceTargets, initial }: 
     <label className="grid gap-2 text-sm font-medium">What kind of detail?<select name="type" className={inputClass} required value={selected} onChange={event => setSelected(event.target.value)}>
       {!types.length && <option value="">No field types are available</option>}{types.map(type => <option key={type.id} value={type.id}>{type.name}</option>)}
     </select></label>
-    {selectedType && <TypeControls key={selected} type={selectedType} referenceTargets={referenceTargets} initial={initial?.type === selected ? initial : undefined}/>}
+    {selectedType && <TypeControls key={selected} type={selectedType} referenceTargets={referenceTargets} initial={initial?.type === selected ? initial : undefined} storageRulesEditable={storageRulesEditable} retainedIndex={initial?.indexed ?? false} retainedUnique={initial?.unique ?? false}/>}
     <p className="text-xs leading-5 text-slate-500">{initial ? 'Existing business rules stay in place. Changing these settings does not remove required-field rules.' : 'New fields start optional. Choose which details your business requires in its record setup after publishing the field.'}</p>
   </div>;
 }
-function TypeControls({ type, referenceTargets, initial }: { type: AdditionalFieldSetupProps['fieldTypes'][number]; referenceTargets: AdditionalFieldSetupProps['referenceTargets']; initial?: AdditionalFieldSetup }) {
+function TypeControls({ type, referenceTargets, initial, storageRulesEditable, retainedIndex, retainedUnique }: { type: AdditionalFieldSetupProps['fieldTypes'][number]; referenceTargets: AdditionalFieldSetupProps['referenceTargets']; initial?: AdditionalFieldSetup; storageRulesEditable: boolean; retainedIndex: boolean; retainedUnique: boolean }) {
   const values: Readonly<Record<string, unknown>> = initial?.settings ?? {}, starting = initial?.initialValue;
+  const [searchable, setSearchable] = useState(initial?.indexed === true), [unique, setUnique] = useState(initial?.unique === true);
   const listValue = (key: string, separator: string, fallback: string) => Array.isArray(values[key]) ? values[key].filter(value => typeof value === 'string').join(separator) : fallback;
   const [defaults, setDefaults] = useState(initial !== undefined && starting !== undefined), [choiceText, setChoiceText] = useState(listValue('choices', '\n', '')), [currencyText, setCurrencyText] = useState(listValue('currencies', ', ', 'GBP')), [countryText, setCountryText] = useState(listValue('countries', ', ', 'GB'));
   const objectValue = (key: string) => typeof starting === 'object' && starting !== null && !Array.isArray(starting) && key in starting ? String(Object.entries(starting).find(([name]) => name === key)?.[1] ?? '') : '';
@@ -51,6 +53,13 @@ function TypeControls({ type, referenceTargets, initial }: { type: AdditionalFie
   </>;
   const scalarType = type.id === 'date' ? 'date' : type.id === 'datetime' ? 'datetime-local' : type.id === 'email' ? 'email' : type.id === 'url' ? 'url' : type.id === 'phone' ? 'tel' : type.id === 'integer' || type.id === 'duration' ? 'number' : 'text';
   return <>
+    <fieldset className="space-y-2 rounded-2xl border border-slate-200 p-4"><legend className="px-1 text-sm font-semibold">Finding records</legend>
+      {storageRulesEditable && !['multi_enum', 'address'].includes(type.id) ? <><input type="hidden" name="indexed" value={searchable ? 'on' : 'off'}/><label className="flex gap-2 text-sm"><input type="checkbox" checked={searchable} onChange={event => setSearchable(event.target.checked)}/>Make this detail available in search</label></>
+        : <><input type="hidden" name="indexed" value={!storageRulesEditable && retainedIndex ? 'on' : 'off'}/><p className="text-sm text-slate-600">{storageRulesEditable ? 'Addresses and multiple-choice details cannot be used for this search.' : retainedIndex ? 'This detail is available in search.' : 'This detail is not included in additional-detail search.'}</p></>}
+      {storageRulesEditable && !['multi_enum', 'address'].includes(type.id) ? <><input type="hidden" name="unique" value={unique ? 'on' : 'off'}/><label className="flex gap-2 text-sm"><input type="checkbox" checked={unique} onChange={event => setUnique(event.target.checked)}/>Prevent duplicate values</label></>
+        : <><input type="hidden" name="unique" value={!storageRulesEditable && retainedUnique ? 'on' : 'off'}/>{!storageRulesEditable && <p className="text-sm text-slate-600">{retainedUnique ? 'Duplicate values are prevented.' : 'The same value can be used on more than one record.'}</p>}</>}
+      <p className="text-xs leading-5 text-slate-500">{storageRulesEditable ? 'Choose before publishing. Duplicate checks apply to supplied values; empty details can stay empty. People still need permission to read the detail and its records.' : 'Published search and duplicate-value settings stay in place while other settings are reviewed.'}</p>
+    </fieldset>
     {!!type.settings.length && <fieldset className="grid gap-4 rounded-2xl border border-slate-200 p-4"><legend className="px-1 text-sm font-semibold">Field settings</legend>{settings}</fieldset>}
     {type.id === 'reference' ? <p className="text-xs leading-5 text-slate-500">People choose a linked record when they complete this field. A starting record needs an approved record picker.</p>
       : <fieldset className="space-y-4 rounded-2xl border border-slate-200 p-4"><legend className="px-1 text-sm font-semibold">Optional starting value</legend>

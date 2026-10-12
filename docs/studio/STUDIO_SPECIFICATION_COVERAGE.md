@@ -37,7 +37,7 @@ related provider or service to adapt.
 | 6.5 | Approved typed constraints including decimal/money/currency/enum versions/reference policy | Closed field/storage/value schemas, server validators, typed SQL families/constraints and atomic ordinary saves verified; native whole-form controls/receipts/defaults and configured indexed search IMPLEMENTED | Latest533 candidate form/default/search journeys PASS before unrelated profile failure; public/latest connected field setup, customer search controls and native reference usage verification remain |
 | 6.5;14 | Required-if on every write; hiding never waives validation; sensitivity/capabilities narrow access | Typed condition compiler/evaluator, authorised input reader, current-owner coverage and actual row observation; native hooks/final validation/required activation VERIFIED live ad9 with atomicity/windows/concurrency proof; native typed forms IMPLEMENTED | Paired non-Test conditional readiness/checker IMPLEMENTED; positive production activation requires compatible actual candidate/public evidence, preserving liveTest/current native/field/reference guards |
 | 24;24.1 | Review counts/examples/failures/index/rollback limits; resumable/idempotent conversion; compatible rolling reads; explicit cutover | Existing legacy review/publication/batches/cutover/rollback/finalization and current/history services verified live | Friendly settings, review/conversion/live/history controls IMPLEMENTED source; closed2 adapter integration185/5 PASS, non-Test conditional readiness and compatible visual gates pending. Conditional cutover/settlement verified actual candidate/public1f4 (independent current settler, original creator revoked, Audit atomicity, drift/history/replay); whole affected native window integration VERIFIED live ad9 candidate/public; usable UI remains; format2 conversion/recovery/cancel also verified |
-| 7;7.1–2 | Canonical record types, base + one overlay, deterministic resolution, explicit conflict policy, compiled result | Compiler/base binding/one overlay/exact version pins/assignment070/required union/cohort services, friendly setup, existing-record selector and initial receipt2 IMPLEMENTED;070/080 APPLIED | Latest533 genuine association failed on070 JSON operator precedence; additive12020000 function-only repair and parent actual rehearsal PASS_ROLLBACK, forward application and original profile/default/type journey still required |
+| 7;7.1–2 | Canonical record types, base + one overlay, deterministic resolution, explicit conflict policy, compiled result | Compiler/base binding/one overlay/exact version pins/assignment070/required union/cohort services, friendly setup, existing-record selector and initial receipt2 IMPLEMENTED;070/080 APPLIED | Original533 association exposed070 JSON precedence; additive12020000 function-only repair rehearsed PASS_ROLLBACK and forward APPLIED5f1a. Original profile/default/type journey still required;5f1a stopped earlier on search deadline |
 | 8;8.1 | Structured approved components and registered record surfaces, bounded queries/metrics/actions | Strict Page schema/compiler, owner sources/approvals/shared runtime, Sales/Tickets list/detail and Tickets native form surface IMPLEMENTED; native panels/KPI/exact Analytics embedding owner@3 IMPLEMENTED; View-edge20261012010000 CHECK APPLIED in original147 candidate | Compatible actual Page/form/default/embedded candidate/public journey; unsupported later engines absent |
 | 8;8.2 | Default/conditional variants, shallow inspectable inheritance, capability/record-type/approved fact selection | Deterministic shallow variants/compiler/runtime and approved fact visual conditions IMPLEMENTED;113 integrated assertions PASS | Actual conditional customer/private/hidden-query behavior; do not build Phase3 Decisions early |
 | 8.3 | Buttons reference approved commands, typed modal/preview/result/navigation | Current visible Page/head/device/owner command gateway and Sales native PDF action IMPLEMENTED; shared preview inert | Original actual visual/PDF permission/tenant gate; later Process/Flow commands unavailable |
@@ -85,10 +85,18 @@ retained Page/profile/default pin fixes, plain required-rule target/control work
 Integrated source checks are recorded in the permanent ledger. Actual View-edge
 CHECK20261012010000 APPLIED in original147 candidate. Original533 candidate stopped
 before activation on070 assignment JSON extraction/subtraction precedence; exact
-additive12020000 repair source and parent SQL rehearsal PASS_ROLLBACK are available.
+additive12020000 repair rehearsal PASS_ROLLBACK and forward application5f1a are confirmed.
 Live75977/rollbackc385 remain. Latest533 candidate form/default/search checks passed;
 new production conditional pair was DEFERRED before fixture writes, never PASS.
-Next checkpoint: apply the additive repair through the original immutable release,
+Original5f1a stopped before activation on the configured-search default5s transaction
+deadline. No profile/visual pass inferred. Customer typed search, initial scalar
+search/uniqueness settings and exact five-kind reference controls are implemented
+source; the permanent ledger records focused checks. Native approved source/usage
+links and the bounded registered owning-search deadline correction are IMPLEMENTED
+source;104/8 root checks pass. The original compatible runtime/browser gate remains.
+Logical business-type condition impact is a separate bounded metadata-only closure
+workstream, preserving stable selectors and old seals.
+Next checkpoint: reviewed integrated source/build, original immutable bridge,
 then exact compatible candidate/public visual/profile/type/dashboard/conditional
 runtime gates. Complete
 fresh synthetic non-Test conditional readiness without changing existing tenants or

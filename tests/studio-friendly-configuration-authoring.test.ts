@@ -93,6 +93,13 @@ it.each(["string", "integer", "boolean", "date"])("creates a friendly optional %
   expect(m.publish).not.toHaveBeenCalled(); expect(m.activate).not.toHaveBeenCalled();
   expect(m.lock.mock.invocationCallOrder[0]).toBeLessThan(m.create.mock.invocationCallOrder[0]);
 });
+it("allows explicit searchable scalar fields while rejecting unsupported structured indexes before creating a draft", async () => {
+  await createAdditionalFieldDraftInTransaction(authority, { label: "Search count", type: "integer", indexed: true, unique: true });
+  expect(customFieldPayloadSchema.parse(m.create.mock.calls[0][0].data.draft.create.payload).field).toMatchObject({ indexed: true, unique: true });
+  m.create.mockClear(); m.audit.mockClear();
+  await expect(createAdditionalFieldDraftInTransaction(authority, { label: "Address", type: "address", indexed: true, settings: { countries: ["GB"] } })).rejects.toThrow(/indexing/);
+  expect(m.create).not.toHaveBeenCalled();
+});
 it("rejects client identity/security/structural/default extras and unsupported storage before creating a draft", async () => {
   for (const extra of [{ organisationId: "other" }, { key: "status" }, { storageGeneration: uuid(90) }, { readCapability: "secret.read" },
     { required: true }, { defaultValue: { type: "boolean", value: false } }, { type: "reference" }])
@@ -403,6 +410,18 @@ describe("friendly published field target settings — no migration lifecycle ef
     expect(m.raw.mock.invocationCallOrder[0]).toBeLessThan(m.draft.mock.invocationCallOrder[0]);
     expect(m.audit).toHaveBeenCalledOnce(); expect(m.publish).not.toHaveBeenCalled(); expect(m.activate).not.toHaveBeenCalled(); expect(m.create).not.toHaveBeenCalled();
     expect(result).not.toHaveProperty("payload"); expect(result).not.toHaveProperty("storageGeneration");
+  });
+  it("denies a forged published search-setting change before saving a target", async () => {
+    await sourceField({ indexed: true });
+    const input = request();
+    await expect(saveAdditionalFieldEvolutionDraftInTransaction(authority, { ...input, setup: { ...input.setup, indexed: false } })).rejects.toThrow(/separately reviewed index/);
+    expect(m.save).not.toHaveBeenCalled(); expect(m.audit).not.toHaveBeenCalled();
+  });
+  it("denies a forged published duplicate rule before saving a target", async () => {
+    await sourceField({ unique: true });
+    const input = request();
+    await expect(saveAdditionalFieldEvolutionDraftInTransaction(authority, { ...input, setup: { ...input.setup, unique: false } })).rejects.toThrow(/separately reviewed uniqueness/);
+    expect(m.save).not.toHaveBeenCalled(); expect(m.audit).not.toHaveBeenCalled();
   });
   it.each([{ type: "integer", initialValue: 0 }, { type: "boolean", initialValue: false }])("preserves explicit $type zero/false target defaults without filling existing values", async setup => {
     await sourceField({ storage: setup.type === "integer" ? { type: "integer" } : { type: "boolean" } });

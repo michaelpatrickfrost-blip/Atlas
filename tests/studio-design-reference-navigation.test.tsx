@@ -10,7 +10,7 @@ import type { FieldRuntimeAuthority } from "@/core/studio/fields/runtime-authori
 import { retainedCutoverFixture, cutoverUuid as id } from "./fixtures/studio-field-cutover";
 import { compileCustomField } from "@/core/studio/compiler/fields";
 import { checksum } from "@/core/studio/registry/contracts";
-import { readDesignReferenceUsageInTransaction } from "@/core/studio/authoring/reference-navigation";
+import { readDesignReferenceUsageInTransaction, readDesignReferenceMetadataInTransaction } from "@/core/studio/authoring/reference-navigation";
 import { designReferenceLinks } from "@/core/studio/authoring/reference-links";
 import { ReferenceUsagePanel } from "@/components/studio/reference-usage";
 import { materialiseCompiledView } from "@/core/studio/views/definition-compiler";
@@ -208,4 +208,54 @@ it("supplies real catalogue navigation for an approved field and forwards the sa
   expect(choice.label).toBe("Delivery score"); expect(choice).toMatchObject(designReferenceLinks(pin, { business: "selected" }));
   expect(catalog.palette.find(item => item.key === choice.key)).toMatchObject(designReferenceLinks(pin, { business: "selected" }));
   expect(m.provider).not.toHaveBeenCalled();
+});
+
+it.each(['page', 'entityProfile', 'recordType'] as const)('supports exact retained %s links without admitting future configuration kinds', kind => {
+  const reference = { ...pin, kind, schemaVersion: 1 };
+  const links = designReferenceLinks(reference, { business: 'selected' });
+  expect(links.sourceHref).toBe(`/design-studio/${kind === 'page' ? '' : 'setup/'}${pin.definitionId}?business=selected`);
+  const url = new URL(links.whereUsedHref, 'https://atlas.test');
+  expect(url.searchParams.get('version')).toBe(pin.versionId);
+  expect(url.searchParams.get('kind')).toBe(kind);
+  expect(() => designReferenceLinks({ ...reference, kind: 'process' })).toThrow();
+  expect(() => designReferenceLinks({ ...reference, organisationId: 'foreign' })).toThrow();
+});
+it('uses the same retained/current authority for metadata links without counting usage or reading business values', async () => {
+  const result = await readDesignReferenceMetadataInTransaction(authority, pin);
+  expect(result.name).toBe('Delivery score'); expect(result.whereUsedHref).toContain(`version=${pin.versionId}`);
+  expect(result.sourceHref).toBeNull(); expect(m.usage).not.toHaveBeenCalled(); expect(m.provider).not.toHaveBeenCalled();
+  authority.session.capabilities.delete('tickets.ticket.read');
+  await expect(readDesignReferenceMetadataInTransaction(authority, pin)).rejects.toThrow('FORBIDDEN');
+});
+
+it.each(['entityProfile', 'recordType'] as const)('authorises exact retained %s metadata with original pure seals before links, without counting usage', async kind => {
+  const { entityProfilePayloadSchema, recordTypePayloadSchema } = await import('@/core/studio/record-types/schema');
+  const { resolveEntityProfile, resolveRecordTypeProfile, normaliseConfigurationReferences } = await import('@/core/studio/record-types/resolver');
+  const owner = authority.registry.describe('tickets.ticket', 9);
+  const entity = { id: owner.id, version: owner.version, schemaHash: owner.schemaHash, contractHash: owner.contractHash };
+  const dependency = { ...entity, ownerModuleId: owner.ownerModuleId, kind: owner.kind, classification: owner.classification };
+  const basePayload = entityProfilePayloadSchema.parse({ schemaVersion: 1, entity, profile: {} });
+  const basePlan = { kind: 'entityProfile', schemaVersion: 1, payload: basePayload, resolvedProfile: resolveEntityProfile(basePayload)!.profile,
+    dependencies: [dependency], configurationDependencies: [] };
+  const base = { ...fixture.source, schemaVersion: 1, id: id(71), definitionId: id(70), payload: basePayload, compiledPlan: basePlan, checksum: checksum(basePlan),
+    definition: { kind: 'entityProfile', retiredAt: null }, configurationDependencies: [] };
+  const basePin = { kind: 'entityProfile' as const, definitionId: base.definitionId, versionId: base.id, schemaVersion: 1 as const, checksum: base.checksum };
+  rows.set(base.id, base);
+  let selected: SealedConfigurationVersion = base;
+  if (kind === 'recordType') {
+    const payload = recordTypePayloadSchema.parse({ schemaVersion: 1, entity, baseProfile: basePin, label: 'Workshop', overlay: {} });
+    const resolved = resolveRecordTypeProfile({ reference: basePin, payload: basePayload }, payload, id(72));
+    const plan = { kind, schemaVersion: 1, payload, resolvedProfile: resolved.profile, dependencies: [dependency],
+      configurationDependencies: normaliseConfigurationReferences(resolved.configurationDependencies, id(72)) };
+    selected = { ...fixture.source, schemaVersion: 1, id: id(73), definitionId: id(72), payload, compiledPlan: plan, checksum: checksum(plan),
+      definition: { kind, retiredAt: null }, configurationDependencies: plan.configurationDependencies.map(reference => edge(reference, id(72), id(73))) };
+    rows.set(selected.id, selected);
+  }
+  const reference = { kind, definitionId: selected.definitionId, versionId: selected.id, schemaVersion: 1, checksum: selected.checksum };
+  m.definition.mockResolvedValue({ id: selected.definitionId, organisationId: 'company', name: 'Saved setup', retiredAt: null });
+  const metadata = await readDesignReferenceMetadataInTransaction(authority, reference);
+  expect(metadata.name).toBe('Saved setup'); expect(metadata.whereUsedHref).toContain(`version=${selected.id}`);
+  expect(m.usage).not.toHaveBeenCalled(); expect(m.provider).not.toHaveBeenCalled();
+  selected.checksum = 'b'.repeat(64);
+  await expect(readDesignReferenceMetadataInTransaction(authority, reference)).rejects.toThrow('DEPENDENCY_BROKEN');
 });

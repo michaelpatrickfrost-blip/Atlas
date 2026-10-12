@@ -2,7 +2,7 @@ import { pagePayloadSchema, type PagePayload, type PageScalar, type VisibilityPr
 import { applyPagePatches } from '@/core/studio/pages/patches';
 import { changePageNode, selectedPageNode, type PageEditorNode, type PageEditorSelection } from './page-editor-model';
 
-export type PageEditorConditions = { variantsAllowed: boolean; facts: readonly { id: string; label: string; choices: readonly { label: string; value: PageScalar }[] }[]; recordTypes?: readonly { id: string; label: string }[] };
+export type PageEditorConditions = { variantsAllowed: boolean; facts: readonly { id: string; label: string; choices: readonly { label: string; value: PageScalar }[] }[]; recordTypes?: readonly { id: string; label: string; sourceHref?: string; whereUsedHref?: string }[] };
 export type FactRule = Extract<VisibilityPredicate, { kind: 'fact' }>;
 export type RecordTypeRule = Extract<VisibilityPredicate, { kind: 'recordType' }>;
 export type SimplePageRule = FactRule | RecordTypeRule;

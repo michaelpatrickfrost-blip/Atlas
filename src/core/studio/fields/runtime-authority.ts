@@ -16,12 +16,17 @@ function sameIdentity(session: Session, stamp: SessionAuthorityStamp) {
  * authoring grants or enabled authoring UI, nor does it grant native/field/value
  * access. Trusted callers separately check owning-module and current/written
  * record/reference policy before reading or writing. Never a client callback. */
-export async function withFieldRuntimeAuthority<T>(authenticated: Session, operation: (authority: FieldRuntimeAuthority) => Promise<T>): Promise<T> {
+export async function withFieldRuntimeAuthority<T>(authenticated: Session, operation: (authority: FieldRuntimeAuthority) => Promise<T>,
+  readBudget?: "indexed_search_read"): Promise<T> {
   const stamp = sessionAuthorityStamp(authenticated);
   if (!stamp) denied();
   sameIdentity(authenticated, stamp);
   try {
-    return await db.$transaction(async tx => operation(await refreshAuthority(authenticated, tx)), { isolationLevel: "Serializable" });
+    // An indexed window checks up to50 native/current/written/reference policies
+    // before predicates. Give only that server-owned bounded read the same finite
+    // deadline used by native Studio operations; ordinary mutations stay unchanged.
+    return await db.$transaction(async tx => operation(await refreshAuthority(authenticated, tx)), { isolationLevel: "Serializable",
+      ...(readBudget === "indexed_search_read" ? { timeout: 20_000 } : {}) });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       const metadata = sqlFailure.safeParse(error.meta), state = metadata.success ? metadata.data.code ?? metadata.data.driverAdapterError?.cause?.originalCode : undefined;

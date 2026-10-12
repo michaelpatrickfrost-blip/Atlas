@@ -123,6 +123,24 @@ it("matches exact indexed zero and false without field Write/authoring, returns 
   values = []; slots = []; configured = await configure({ type: "boolean" }); save(configured.payload, "a", false); save(configured.payload, "b", true);
   expect((await searchCurrentFieldValuesInTransaction(configured.authority, { ...request(), filter: { operator: "equals", value: { type: "boolean", value: false } } })).records.map(row => row.recordId)).toEqual(["a"]);
 });
+it("uses the bounded indexed-read deadline through the registered owning query and preserves supplied transactions", async () => {
+  const { authority: a, payload } = await configure(); save(payload, "a", 0);
+  const queryRef = a.registry.describe("tickets.ticket.field_search", 1);
+  m.transaction.mockClear();
+  const result = await a.registry.invoke(a.session, queryRef, request());
+  expect(result).toEqual(expect.objectContaining({ records: [expect.objectContaining({ id: "a" })] }));
+  expect(m.transaction).toHaveBeenCalledTimes(1);
+  expect(m.transaction).toHaveBeenCalledWith(expect.any(Function), { isolationLevel: "Serializable", timeout: 20_000 });
+
+  // The original optional owner callback can share a genuine caller-owned
+  // transaction. Do not open a nested transaction or rewrite its deadline.
+  const contribution = ticketStudioContract.contributions.find(item => item.metadata.id === queryRef.id && item.metadata.version === queryRef.version);
+  if (!contribution?.run) throw new Error("Missing registered search callback.");
+  m.transaction.mockClear();
+  expect(await contribution.run({ session: a.session, transaction: tx }, request())).toEqual(result);
+  expect(m.transaction).not.toHaveBeenCalled();
+  expect(a.registry.describe(queryRef.id, queryRef.version)).toEqual(queryRef);
+});
 it("advances scanned windows even without matches and binds cursor to actor/tenant/config/filter", async () => {
   const { authority: a, payload } = await configure(); save(payload, "a", 8); save(payload, "b", 9); save(payload, "c", 0);
   const first = await searchCurrentFieldValuesInTransaction(a, request()); expect(first.records).toEqual([]); expect(first.next?.after).toBe("b");

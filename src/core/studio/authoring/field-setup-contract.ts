@@ -2,7 +2,7 @@ import { z } from "zod";
 import { addressValueSchema } from "../fields/value-contract";
 
 const label = z.string().trim().min(1).max(100);
-const common = { label, help: z.string().max(500).default("") };
+const common = { label, help: z.string().max(500).default(""), indexed: z.boolean().optional(), unique: z.boolean().optional() };
 const integer = z.number().int().min(-Number.MAX_SAFE_INTEGER).max(Number.MAX_SAFE_INTEGER);
 const decimal = z.string().regex(/^-?(?:0|[1-9]\d*)(?:\.\d+)?$/).max(40);
 const numberBounds = { min: integer.optional(), max: integer.optional() };

@@ -19,6 +19,7 @@ import { createSalesOrderPagePresets } from "../../src/modules/sales/services/st
 import { pagePayloadSchema } from "../../src/core/studio/pages/schema";
 import { readActiveCustomerPage } from "../../src/core/studio/pages/customer-gateway";
 import { customFieldPayloadSchema } from "../../src/core/studio/fields/schema";
+import { designReferenceLinks } from "../../src/core/studio/authoring/reference-links";
 import { TICKETING_CAPABILITIES } from "../../src/core/permissions/capabilities";
 import { checkVisualRecordLayouts } from "./check-visual-record-layouts";
 import { checkVisualBusinessDashboards } from "./check-visual-business-dashboards";
@@ -150,6 +151,25 @@ export async function checkVisualPages(base: string, browser: Browser, managerSy
       await expect(page.getByText("Your reviewed design is now live for this business.", { exact: true })).toBeVisible(); }
     await publish(); const first = await definition(); assert(first.activeVersionId);
     const firstVersionId = first.activeVersionId;
+    // The actual permission-filtered native table choice exposes metadata
+    // navigation only. Use the original saved Page and existing browser/tenant,
+    // not another fixture or a provider shortcut. No native/metadata writes.
+    const referenceBefore = { draft: await draft(), definition: await definition(),
+      audit: await db.auditEntry.findMany({ where: scope, orderBy: { id: "asc" } }),
+      native: await db.salesOrder.findFirstOrThrow({ where: { id: orderId, ...scope }, include: { lines: { orderBy: { id: "asc" } } } }) };
+    await page.getByRole("region", { name: "Design canvas" }).getByRole("button", { name: "Select Order items", exact: true }).click();
+    const nativeSourceHref = await properties.getByRole("link", { name: "Go to source", exact: true }).getAttribute("href");
+    assert(nativeSourceHref?.startsWith("/design-studio/capabilities/"));
+    await properties.getByRole("link", { name: "Go to source", exact: true }).click();
+    await expect(page.getByText("Sales · Approved record query", { exact: true })).toBeVisible();
+    await expect(page.getByText(/This is an approved part of the app/)).toBeVisible();
+    await expect(page.getByRole("main").locator("form, textarea")).toHaveCount(0);
+    await page.getByRole("navigation", { name: "App reference review" }).getByRole("link", { name: "Where used", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Saved designs using this app reference", exact: true })).toBeVisible();
+    await expect(page.getByText(screenName, { exact: true })).toBeVisible();
+    assert.deepEqual({ draft: await draft(), definition: await definition(),
+      audit: await db.auditEntry.findMany({ where: scope, orderBy: { id: "asc" } }),
+      native: await db.salesOrder.findFirstOrThrow({ where: { id: orderId, ...scope }, include: { lines: { orderBy: { id: "asc" } } } }) }, referenceBefore);
     const runtimeRequest = { definitionId, request: { kind: "record" as const, recordId: orderId }, formFactor: "desktop" as const };
     assert.equal((await readActiveCustomerPage(await fresh(), runtimeRequest)).versionId, firstVersionId);
     await page.goto(`${base}/screens/${definitionId}?record=${encodeURIComponent(orderId)}`);
@@ -262,11 +282,14 @@ export async function checkVisualPages(base: string, browser: Browser, managerSy
     await fieldForm.getByLabel("Display name", { exact: true }).fill(`Visit notes ${marker}`);
     await fieldForm.getByLabel("What kind of detail?", { exact: true }).selectOption("string");
     await fieldForm.getByLabel("Maximum characters", { exact: true }).fill("300");
+    await fieldForm.getByRole("checkbox", { name: "Make this detail available in search", exact: true }).check();
     await fieldForm.getByRole("button", { name: "Create field draft", exact: true }).click();
     await expect(page).toHaveURL(/\/design-studio\/setup\/[a-f0-9-]{36}$/);
     const fieldId = new URL(page.url()).pathname.split("/").at(-1)!;
     const fieldDraft = () => db.studioDraft.findFirstOrThrow({ where: { ...scope, definitionId: fieldId } });
     const originalFieldPayload = customFieldPayloadSchema.parse((await fieldDraft()).payload), originalField = originalFieldPayload.field;
+    assert.equal(originalField.indexed, true);
+    await expect(page.getByRole("checkbox", { name: "Make this detail available in search", exact: true })).toBeChecked();
     await expect(page.getByLabel("Maximum characters", { exact: true })).toHaveValue("300");
     await page.getByLabel("Maximum characters", { exact: true }).fill("500");
     await expect(page.getByRole("button", { name: "Review saved draft", exact: true })).toBeDisabled();
@@ -277,6 +300,7 @@ export async function checkVisualPages(base: string, browser: Browser, managerSy
     assert.equal(editedField.storage.type, "string");
     if (editedField.storage.type !== "string") throw new Error("The field type changed unexpectedly.");
     assert.equal(editedField.storage.maxLength, 500);
+    assert.equal(editedField.indexed, true);
     await page.getByRole("button", { name: "Review saved draft", exact: true }).click();
     await expect(page.getByText("Saved draft reviewed", { exact: true })).toBeVisible();
     await page.getByText("Make this setup live", { exact: true }).click();
@@ -286,6 +310,17 @@ export async function checkVisualPages(base: string, browser: Browser, managerSy
     await expect.poll(async () => (await db.studioDefinition.findFirstOrThrow({ where: { ...scope, id: fieldId } })).activeVersionId).not.toBeNull();
     await expect(page.getByLabel("Maximum characters", { exact: true })).toHaveCount(0);
     const liveFieldBefore = await db.studioDefinition.findFirstOrThrow({ where: { ...scope, id: fieldId } });
+    // Review the actual retained field link without modifying the editor or values.
+    const liveFieldVersion = await db.studioDefinitionVersion.findFirstOrThrow({ where: { ...scope, id: liveFieldBefore.activeVersionId! } });
+    const fieldLinks = designReferenceLinks({ kind: "customField", definitionId: fieldId, versionId: liveFieldVersion.id,
+      schemaVersion: liveFieldVersion.schemaVersion, checksum: liveFieldVersion.checksum });
+    await page.goto(`${base}${fieldLinks.whereUsedHref}`);
+    await expect(page.getByRole("heading", { name: originalField.label, exact: true })).toBeVisible();
+    await expect(page.getByRole("region", { name: "Saved references", exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Go to source", exact: true })).toHaveAttribute("href", fieldLinks.sourceHref);
+    await page.getByRole("link", { name: "Go to source", exact: true }).click();
+    assert.deepEqual(await db.studioDefinition.findFirstOrThrow({ where: { ...scope, id: fieldId } }), liveFieldBefore,
+      "Source navigation and Where used must not change the field definition.");
     await page.getByRole("link", { name: /Change settings and preview existing values/ }).click();
     await expect(page).toHaveURL(new RegExp(`/design-studio/setup/${fieldId}/change$`));
     await page.getByLabel("Maximum characters", { exact: true }).fill("250");
@@ -297,6 +332,7 @@ export async function checkVisualPages(base: string, browser: Browser, managerSy
     assert.equal(evolutionTarget.field.key, editedField.key); assert.equal(evolutionTarget.field.storage.type, "string");
     if (evolutionTarget.field.storage.type !== "string") throw new Error("Unexpected field conversion target.");
     assert.equal(evolutionTarget.field.storage.maxLength, 250);
+    assert.equal(evolutionTarget.field.indexed, true, "Published field evolution must preserve its approved index.");
     assert.equal((await db.studioDefinition.findFirstOrThrow({ where: { ...scope, id: fieldId } })).activeVersionId, liveFieldBefore.activeVersionId);
     await page.getByRole("button", { name: "Preview saved change", exact: true }).click();
     const fieldPreview = page.getByRole("region", { name: "Field change preview" });

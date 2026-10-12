@@ -1,5 +1,14 @@
 # Visual builders and easy setup
 
+12 October source checkpoint: initial scalar additional details expose understandable
+search and duplicate-value controls; published settings remain under the original
+reviewed migration rules. Customer Tickets offers typed additional-detail search
+through the existing indexed query and native private-record permissions. Screens,
+business setup, types, additional fields and dashboards have exact saved-version
+Where used links and separately labelled current-draft source links. These are
+IMPLEMENTED source, with actual compatible browser/release verification pending;
+consult the execution ledger for the whole Phase2 gate.
+
 Michael's 9 October follow-up makes visual preview and simple setup a Phase 2
 acceptance requirement. This supplements the supplied specification's structured,
 responsive Page Studio; it does not move later engines into the current phase.

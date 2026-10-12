@@ -63,3 +63,43 @@ describe('friendly record setup choices', () => {
     expect(screen.queryByRole('textbox')).toBeNull(); expect(container.textContent).not.toContain('selected-business');
   });
 });
+
+it('keeps exact saved links until an explicit selection change, without exposing IDs in labels', () => {
+  const live = { sourceHref: '/design-studio/current', whereUsedHref: '/design-studio/references/new' };
+  const retained = { sourceHref: '/design-studio/saved', whereUsedHref: '/design-studio/references/old' };
+  const { container } = render(<form><RecordSetupChoices pages={[{ ...pages[0], ...live }]} fields={[{ ...fields[0], ...live }]} page={pageId}
+    requiredFields={[fieldId]} references={{ page: { id: pageId, ...retained }, requiredFields: [{ id: fieldId, ...retained }],
+      baseProfile: { name: 'Workshop base', sourceHref: '/design-studio/setup/base', whereUsedHref: '/design-studio/references/base' } }}/></form>);
+  expect(screen.getByRole('navigation', { name: 'Record screen references' }).querySelector('a:last-child')?.getAttribute('href')).toBe(retained.whereUsedHref);
+  expect(screen.getByRole('navigation', { name: 'Customer purchase reference references' }).querySelector('a:last-child')?.getAttribute('href')).toBe(retained.whereUsedHref);
+  expect(screen.getByText(/Based on Workshop base/)).toBeTruthy();
+  fireEvent.change(screen.getByRole('combobox', { name: 'Record screen' }), { target: { value: '' } });
+  expect(screen.queryByRole('navigation', { name: 'Record screen references' })).toBeNull();
+  fireEvent.change(screen.getByRole('combobox', { name: 'Record screen' }), { target: { value: pageId } });
+  expect(screen.getByRole('navigation', { name: 'Record screen references' }).querySelector('a:last-child')?.getAttribute('href')).toBe(live.whereUsedHref);
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Customer purchase reference' }));
+  expect(screen.getByRole('navigation', { name: 'Customer purchase reference references' }).querySelector('a:last-child')?.getAttribute('href')).toBe(live.whereUsedHref);
+  for (const link of container.querySelectorAll('a')) { expect(link.target).toBe('_blank'); expect(link.rel).toContain('noopener'); }
+  expect(container.textContent).not.toContain(pageId);
+});
+it('does not substitute current-head links when saved reference metadata is denied or unavailable', () => {
+  render(<RecordSetupChoices pages={[{ ...pages[0], sourceHref: '/design-studio/new', whereUsedHref: '/design-studio/references/new' }]}
+    fields={[{ ...fields[0], sourceHref: '/design-studio/new' }]} page={pageId} requiredFields={[fieldId]}
+    references={{ page: null, requiredFields: [] }}/>);
+  expect(screen.queryByRole('link')).toBeNull();
+});
+
+it('keeps navigation available when editing is unavailable without enabling selection changes', () => {
+  render(<RecordSetupChoices disabled pages={[{ ...pages[0], sourceHref: '/design-studio/screen' }]} fields={[]}
+    page={pageId} references={{ page: { id: pageId, sourceHref: '/design-studio/saved', whereUsedHref: '/design-studio/references/saved' } }}/>);
+  expect((screen.getByRole('combobox', { name: 'Record screen' }) as HTMLSelectElement).disabled).toBe(true);
+  expect(screen.getByRole('link', { name: /Where used/ }).getAttribute('href')).toBe('/design-studio/references/saved');
+});
+
+it('preserves a validated saved screen absent from current choices and links only its retained version', () => {
+  const { container } = render(<form><RecordSetupChoices pages={[]} fields={[]} page={pageId}
+    references={{ page: { id: pageId, sourceHref: null, whereUsedHref: '/design-studio/references/retained?version=old' } }}/></form>);
+  expect(data(container).get('page')).toBe(pageId);
+  expect(screen.getByRole('link', { name: /Where used/ }).getAttribute('href')).toContain('version=old');
+  expect(screen.queryByRole('link', { name: /Go to source/ })).toBeNull(); expect(container.textContent).not.toContain(pageId);
+});

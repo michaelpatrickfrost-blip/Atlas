@@ -105,5 +105,5 @@ export async function searchCurrentFieldValuesInTransaction(supplied: FieldRunti
 }
 
 export function searchCurrentFieldValues(authenticated: Session, input: unknown) {
-  return withFieldRuntimeAuthority(authenticated, authority => searchCurrentFieldValuesInTransaction(authority, input));
+  return withFieldRuntimeAuthority(authenticated, authority => searchCurrentFieldValuesInTransaction(authority, input), "indexed_search_read");
 }

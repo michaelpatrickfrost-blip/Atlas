@@ -2,11 +2,16 @@
 
 Phase2 remains IN PROGRESS/FAIL. Paired conditional bridge is implemented and locally
 checked; original533 candidate failed genuine association on070 JSON precedence.
-Additive12020000 exact function-only repair rehearsed PASS_ROLLBACK, forward pending.
+Additive12020000 exact function-only repair rehearsed PASS_ROLLBACK and forward APPLIED
+in5f1a; its candidate stopped before profiles on the configured-search5s deadline.
 Friendly type conditions, field/View reference inspection, protected named Template
 details/table cells/current source preview are IMPLEMENTED with focused checks.
-Complete customer field search and five-kind setup/type reference controls as listed
-in the execution ledger; actual compatible candidate/public acceptance remains. These reuse original
+Customer field search and five-kind setup/type reference controls are IMPLEMENTED
+source. Friendly initial searchable/unique scalar settings preserve published rules.
+Exact saved navigation retains its pins and corrupt references fail closed. Native
+capability navigation is IMPLEMENTED source; logical business-type condition impact
+remains a bounded metadata-only workstream. Actual compatible
+candidate/public acceptance remains. These reuse original
 registry/metadata graph/field_search/Templates engine, no new schema or later engines.
 
 # Studio Phase 2 workstreams and Admin separation checkpoint

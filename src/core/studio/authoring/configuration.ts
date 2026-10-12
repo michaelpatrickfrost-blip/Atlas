@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { readDesignReferenceMetadataInTransaction } from "./reference-navigation";
+import type { ReferenceNavigationContext } from "./reference-links";
 import { sessionAuthorityStamp } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
 import { writeAudit } from "@/core/audit/log";
@@ -233,7 +235,7 @@ export async function createAdditionalFieldDraftInTransaction(authority: FieldRu
   const payload = customFieldPayloadSchema.parse({ schemaVersion: 1, entity: policy.entity, storageGeneration: crypto.randomUUID(),
     field: { key: `f_${crypto.randomUUID().replaceAll("-", "")}`, label: value.label, help: value.help,
       classification: policy.classification, readCapability: policy.readCapability, writeCapability: policy.writeCapability,
-      required: false, indexed: false, unique: false, ...configured } });
+      required: false, indexed: value.indexed ?? false, unique: value.unique ?? false, ...configured } });
   return create(authority, fieldDefinitionKey(payload), value.label, "customField", payload);
 }
 /** Initial field setup only. Once any version has been published, changing type,
@@ -255,7 +257,8 @@ export async function configureAdditionalFieldDraftInTransaction(authority: Fiel
   if (representable.kind === "read_only") throw new Error(representable.reason);
   const configured = await setupStorage(authority, policy, value.setup, previous.field.storage), field = { ...previous.field };
   delete field.defaultValue;
-  return save(authority, draft, { ...previous, field: { ...field, ...configured, label: value.setup.label, help: value.setup.help } });
+  return save(authority, draft, { ...previous, field: { ...field, ...configured, indexed: value.setup.indexed ?? previous.field.indexed,
+    unique: value.setup.unique ?? previous.field.unique, label: value.setup.label, help: value.setup.help } });
 }
 function friendlyConversion(rule: FriendlyFieldConversion, target: CustomFieldPayload): FieldConversion {
   if (rule.kind !== "string_to_enum") return rule;
@@ -300,6 +303,10 @@ export async function saveAdditionalFieldEvolutionDraftInTransaction(authority: 
     required: payload.field.required, indexed: payload.field.indexed, unique: payload.field.unique });
   if (checksum(security(previous)) !== checksum(security(source)))
     throw new Error("This saved draft changes access or business rules. Keep its existing reviewed editor.");
+  if (value.setup.indexed !== undefined && value.setup.indexed !== source.field.indexed)
+    throw new Error("Search availability for a published detail needs a separately reviewed index change. Its existing search setting is kept.");
+  if (value.setup.unique !== undefined && value.setup.unique !== source.field.unique)
+    throw new Error("Duplicate-value rules for a published detail need a separately reviewed uniqueness change. Its existing rule is kept.");
   const representable = projectAdditionalFieldSetup(source, policy.fieldPolicy.referenceEntities.map(id => ({ id })));
   if (representable.kind === "read_only") throw new Error(representable.reason);
   if (value.setup.type === "reference" && value.setup.initialValue !== undefined)
@@ -401,6 +408,32 @@ export async function readConfigurationDraftInTransaction(authority: FieldRuntim
     definitionRevision: draft.definition.revision, activeVersionId: draft.definition.activeVersionId,
     versions: versions.map(version => ({ ...version, publishedAt: version.publishedAt.toISOString() })) };
 }
+/** Saved setup links retain their exact pins, even when a newer source is live.
+ * Missing access keeps the selection intact but discloses no source name/link.
+ * Broken retained seals/graphs always fail closed; retirement remains inspectable. */
+export async function readSetupReferenceNavigationInTransaction(authority: FieldRuntimeAuthority, input: unknown,
+  navigation: ReferenceNavigationContext = {}) {
+  await owner(authority, CAP.read);
+  const id = uuid.parse(input), draft = await scopedDraft(authority, id);
+  if (!draft) unavailable();
+  const payload = ticketPayload(draft.definition.kind, draft.payload);
+  const read = async (pin: unknown) => {
+    const reference = configurationReferenceSchema.parse(pin);
+    try { return { id: reference.definitionId, ...await readDesignReferenceMetadataInTransaction(authority, reference, navigation) }; }
+    catch (error) {
+      if (error instanceof Error && error.message.startsWith("FORBIDDEN:")) return null;
+      throw error;
+    }
+  };
+  if (draft.definition.kind === "customField") return { page: null, baseProfile: null, requiredFields: [] };
+  const typed = draft.definition.kind === "recordType" ? recordTypePayloadSchema.parse(payload) : null;
+  const profile = typed ? typed.overlay : entityProfilePayloadSchema.parse(payload).profile;
+  const requiredFields = [];
+  for (const pin of profile.requiredFields ?? []) { const metadata = await read(pin); if (metadata) requiredFields.push(metadata); }
+  return { page: profile.page ? await read(profile.page) : null,
+    baseProfile: typed ? await read(typed.baseProfile) : null, requiredFields };
+}
+
 export async function reviewConfigurationDraftInTransaction(authority: FieldRuntimeAuthority, input: unknown) {
   await owner(authority, CAP.edit); const value = identity.parse(input), draft = await scopedDraft(authority, value.definitionId, value.revision);
   if (!draft) conflict();
@@ -444,7 +477,7 @@ export async function goLiveConfigurationDraftInTransaction(authority: FieldRunt
 /** Bounded metadata choices for friendly setup; no native records/typed values.
  * A displayed draft is never promoted to a sealed runtime selection: create/save
  * independently load each selected current active pin and compile it again. */
-export async function getSetupCatalogInTransaction(authority: FieldRuntimeAuthority) {
+export async function getSetupCatalogInTransaction(authority: FieldRuntimeAuthority, navigation: ReferenceNavigationContext = {}) {
   const policy = await owner(authority, CAP.read), groups = [];
   for (const kind of supportedKinds) {
     const definitions = await authority.transaction.studioDefinition.findMany({ where: { organisationId: authority.session.organisationId,
@@ -458,9 +491,16 @@ export async function getSetupCatalogInTransaction(authority: FieldRuntimeAuthor
       const payload = ticketPayload(kind, definition.draft.payload);
       try { await preflightMetadataRead(authority, kind, payload); }
       catch (error) { if (error instanceof Error && error.message.startsWith("FORBIDDEN:")) continue; throw error; }
+      let referenceNavigation;
+      if (definition.activeVersionId) {
+        try { referenceNavigation = await readDesignReferenceMetadataInTransaction(authority, { kind, definitionId: definition.id,
+          versionId: definition.activeVersionId, schemaVersion: definition.activeVersion?.schemaVersion, checksum: definition.activeVersion?.checksum }, navigation); }
+        catch (error) { if (error instanceof Error && error.message.startsWith("FORBIDDEN:")) continue; throw error; }
+      }
       items.push({ id: definition.id, name: displayName(kind, payload, definition.name), kind, revision: definition.draft.revision,
         definitionRevision: definition.revision, activeVersionId: definition.activeVersionId,
-        presentationEditable: presentationEditable(authority, kind, payload), payload });
+        presentationEditable: presentationEditable(authority, kind, payload), payload,
+        ...(referenceNavigation ? { navigation: referenceNavigation } : {}) });
     }
     groups.push({ kind, definitions: items });
   }
@@ -472,8 +512,8 @@ export async function getSetupCatalogInTransaction(authority: FieldRuntimeAuthor
   for (const definition of pages) {
     if (!definition.activeVersion || definition.activeVersionId !== definition.activeVersion.id) unavailable();
     if (pagePayloadSchema.parse(definition.activeVersion.payload).entity.id !== policy.entity.id) continue;
-    await activePin(authority, definition.id, "page");
-    screenChoices.push({ id: definition.id, name: definition.name });
+    const pin = await activePin(authority, definition.id, "page");
+    screenChoices.push({ id: definition.id, ...await readDesignReferenceMetadataInTransaction(authority, pin, navigation) });
   }
   const referenceTargets = [];
   if (policy.fieldPolicy.types.includes("reference") && policy.fieldPolicy.referenceEntities.includes(policy.entity.id)) {

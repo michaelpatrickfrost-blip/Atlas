@@ -51,6 +51,24 @@ describe('safe friendly saved field setup projection', () => {
 });
 
 describe('existing never-published field form hydration', () => {
+  it('preserves an existing search setting and lets an unpublished field explicitly turn it off', () => {
+    const payload = field({ type: 'integer' }); payload.field.indexed = true;
+    const projection = projectAdditionalFieldSetup(payload, targets); if (projection.kind !== 'editable') throw new Error(projection.reason);
+    const { container } = render(<form><AdditionalFieldSetup fieldTypes={additionalFieldTypeCatalogue} referenceTargets={targets} initial={projection.initial}/></form>);
+    expect(submit(container).indexed).toBe(true);
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Make this detail available in search' }));
+    expect(submit(container).indexed).toBe(false);
+    expect(payload.field.indexed).toBe(true);
+  });
+  it('keeps a published index setting when a structural target type changes', () => {
+    const initial = { label: 'Count', help: '', type: 'integer' as const, settings: {}, indexed: true, unique: true };
+    const { container } = render(<form><AdditionalFieldSetup fieldTypes={additionalFieldTypeCatalogue} referenceTargets={targets} initial={initial} storageRulesEditable={false}/></form>);
+    fireEvent.change(screen.getByRole('combobox', { name: 'What kind of detail?' }), { target: { value: 'decimal' } });
+    expect(submit(container).indexed).toBe(true);
+    expect(submit(container).unique).toBe(true);
+    expect(screen.queryByRole('checkbox', { name: 'Make this detail available in search' })).toBeNull();
+    expect(screen.queryByRole('checkbox', { name: 'Prevent duplicate values' })).toBeNull();
+  });
   it.each([
     field({ type: 'integer', min: 0, max: 12 }, { type: 'integer', value: 0 }),
     field({ type: 'boolean' }, { type: 'boolean', value: false }),

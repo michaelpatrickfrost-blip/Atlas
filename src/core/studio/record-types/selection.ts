@@ -98,20 +98,24 @@ export async function reassignRecordTypeInTransaction(authenticated: Session, tx
 /** Metadata-only choices for a genuine current owning Read catalogue. This
  * reuses the original immutable choice/current-field policy path but supplies
  * no record visibility, Extend grant, value projection or assignment proof. */
-export async function readRecordTypeMetadataChoicesInTransaction(authority: FieldRuntimeAuthority, entity: ContractReference) {
+export async function readRecordTypeMetadataReferenceChoicesInTransaction(authority: FieldRuntimeAuthority, entity: ContractReference) {
   await metadataOwner(authority, entity);
   const bindings = await authority.transaction.studioProfileBinding.findMany({ where: {
     organisationId: authority.session.organisationId, entityId: entity.id, kind: "recordType" },
     select: { organisationId: true, entityId: true, kind: true, definitionId: true },
     orderBy: { definitionId: "asc" }, take: maximum + 1 });
   if (bindings.length > maximum || new Set(bindings.map(row => row.definitionId)).size !== bindings.length) invalid();
-  const result: { id: string; label: string }[] = [];
+  const result: { id: string; label: string; reference: ReturnType<typeof recordTypeReferenceSchema.parse> }[] = [];
   for (const binding of bindings) {
     if (binding.organisationId !== authority.session.organisationId || binding.entityId !== entity.id || binding.kind !== "recordType") invalid();
     const approved = await choice(authority, entity, binding.definitionId, true);
-    if (approved) result.push({ id: binding.definitionId, label: approved.label });
+    if (approved) result.push({ id: binding.definitionId, label: approved.label, reference: approved.pin });
   }
   return result;
+}
+
+export async function readRecordTypeMetadataChoicesInTransaction(authority: FieldRuntimeAuthority, entity: ContractReference) {
+  return (await readRecordTypeMetadataReferenceChoicesInTransaction(authority, entity)).map(({ id, label }) => ({ id, label }));
 }
 
 /** New authored stable selectors must name approved active types. Retained Page

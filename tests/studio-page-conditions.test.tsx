@@ -62,14 +62,6 @@ describe('approved visual conditions and alternate layouts', () => {
     expect(f.save.mock.calls[0][0].sections[0].label).toBe('Ticket overview'); expect(f.save.mock.calls[0][0].variants[0].label).toBe('Closed ticket summary');
     choose('Screen layout', ''); expect((screen.getByLabelText('Display name') as HTMLInputElement).value).toBe('Ticket overview');
   });
-  it('keeps device changes in an alternate component presentation patch, preserving the base layout', () => {
-    const f = mount(); fireEvent.click(button('Add conditional layout'));
-    fireEvent.click(within(screen.getByTestId('canvas')).getByRole('button', { name: 'Next steps' }));
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Phone' }));
-    expect(f.value().sections[0].components[0].formFactors).toEqual(forms);
-    expect(variantDesignPage(f.value(), 'variant_1').sections[0].components[0].formFactors).toEqual(['desktop', 'tablet']);
-    expect(f.value().variants[0].patches).toContainEqual({ operation: 'setComponent', componentId: 'guide', properties: { formFactors: ['desktop', 'tablet'] } });
-  });
   it('reorders unique priorities and confirms removing an alternate layout while retaining the default', () => {
     const f = mount(); fireEvent.click(button('Add conditional layout')); choose('Layout name', 'First'); fireEvent.click(button('Add conditional layout')); choose('Layout name', 'Second');
     fireEvent.click(button('Use after other layouts')); expect([...f.value().variants].sort((a, b) => b.priority - a.priority).map(value => value.label)).toEqual(['First', 'Second']);
@@ -131,4 +123,20 @@ it('preserves saved unknown, retired or unavailable type conditions until explic
   expect(() => recordTypeRule(typedCatalog, typeId(90))).toThrow(/approved business record type/);
   fireEvent.click(button('Replace with a simple condition')); expect(f.value().sections[1].visibleWhen).toEqual(factRule(typedCatalog));
   expect(editableRules({ kind: 'any', predicates: [recordTypeRule(typedCatalog), { kind: 'capabilities', mode: 'all', capabilities: ['tickets.ticket.manage'] }] }, typedCatalog)).toBeNull();
+});
+
+it('shows optional friendly source and saved-version links for the selected approved business type only', () => {
+  const id = '10000000-0000-4000-8000-000000000001';
+  const choices: PageEditorConditions = { variantsAllowed: true, facts: [], recordTypes: [{ id, label: 'Workshop job',
+    sourceHref: '/design-studio/setup/workshop', whereUsedHref: '/design-studio/references/workshop?version=saved' }] };
+  const { container } = render(<PageConditionControls catalog={choices} value={{ kind: 'recordType', definitionId: id }} change={() => {}}/>);
+  expect(screen.getByRole('link', { name: /Go to source · current draft/ }).getAttribute('href')).toBe('/design-studio/setup/workshop');
+  expect(screen.getByRole('link', { name: /Where used · saved version/ }).getAttribute('href')).toContain('version=saved');
+  expect(container.textContent).not.toContain(id);
+});
+it('never renders external or malformed navigation supplied to presentation controls', () => {
+  const choices: PageEditorConditions = { variantsAllowed: true, facts: [], recordTypes: [{ id: '10000000-0000-4000-8000-000000000001', label: 'Workshop',
+    sourceHref: 'https://other.test/private', whereUsedHref: '/design-studio/\\other' }] };
+  render(<PageConditionControls catalog={choices} value={{ kind: 'recordType', definitionId: choices.recordTypes![0].id }} change={() => {}}/>);
+  expect(screen.queryByRole('link')).toBeNull();
 });

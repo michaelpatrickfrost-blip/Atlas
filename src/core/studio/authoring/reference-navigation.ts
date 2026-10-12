@@ -33,8 +33,8 @@ export type ReferenceUsageModel = {
 /** Metadata navigation only. Original seals/edges/usage engine remain authoritative.
  * Current native and pinned/current field policies authorise names, not runtime
  * values or old conditions. Retired versions are never fabricated as active. */
-export async function readDesignReferenceUsageInTransaction(supplied: FieldRuntimeAuthority, input: unknown,
-  navigation: ReferenceNavigationContext = {}): Promise<ReferenceUsageModel> {
+async function readDesignReferenceInTransaction(supplied: FieldRuntimeAuthority, input: unknown,
+  navigation: ReferenceNavigationContext = {}, metadataOnly = false): Promise<ReferenceUsageModel & { whereUsedHref: string }> {
   const authority = await fieldRuntimeAuthorityInTransaction(supplied.session, supplied.transaction);
   assertCapability(authority.session, STUDIO_CAPABILITIES.read);
   const request = designReferenceRequestSchema.parse(input), tx = authority.transaction, session = authority.session;
@@ -150,6 +150,10 @@ export async function readDesignReferenceUsageInTransaction(supplied: FieldRunti
     id: request.reference.definitionId, kind: request.reference.kind }, select: { id: true, organisationId: true, name: true, retiredAt: true } });
   if (!definition || definition.id !== request.reference.definitionId || definition.organisationId !== session.organisationId
     || (definition.retiredAt === null) !== (target.definition.retiredAt === null)) broken();
+  const links = designReferenceLinks(request.reference, navigation);
+  const sourceHref = session.capabilities.has(STUDIO_CAPABILITIES.edit) && definition.retiredAt === null ? links.sourceHref : null;
+  if (metadataOnly) return { name: definition.name, sourceHref, retired: definition.retiredAt !== null,
+    usages: [], nextHref: null, whereUsedHref: links.whereUsedHref };
   const usage = await whereUsedConfigurationInTransaction(session, tx, { definitionId: request.reference.definitionId,
     versionId: request.reference.versionId, limit: 25, ...(request.cursor ? { cursor: request.cursor } : {}) });
   const labels = { page: "Screen", entityProfile: "Business setup", recordType: "Business type", view: "Dashboard", customField: "Additional field" } as const;
@@ -166,9 +170,21 @@ export async function readDesignReferenceUsageInTransaction(supplied: FieldRunti
     usages.push({ name: item.name, kind: labels[kind], status: item.retiredAt ? "Retired" : item.active ? "Live" : "Saved version",
       direct: item.depth === 1, href: canOpenEditor && item.retiredAt === null ? `/design-studio/${destination}${item.definitionId}${suffix}` : null });
   }
-  const links = designReferenceLinks(request.reference, navigation);
   const next = usage.next ? new URL(links.whereUsedHref, "https://atlas.invalid") : null;
   if (next && usage.next) { next.searchParams.set("after", usage.next.after); next.searchParams.set("cursorChecksum", usage.next.checksum); }
   return { name: definition.name, sourceHref: canOpenEditor && definition.retiredAt === null ? links.sourceHref : null, retired: definition.retiredAt !== null,
-    usages, nextHref: next ? `${next.pathname}${next.search}` : null };
+    usages, nextHref: next ? `${next.pathname}${next.search}` : null, whereUsedHref: links.whereUsedHref };
+}
+
+/** Exact retained metadata and current rights, without reading usage counts or
+ * business records. Links are navigation only; the destination refreshes rights. */
+export async function readDesignReferenceMetadataInTransaction(authority: FieldRuntimeAuthority,
+  reference: unknown, navigation: ReferenceNavigationContext = {}) {
+  const result = await readDesignReferenceInTransaction(authority, { reference }, navigation, true);
+  return { name: result.name, sourceHref: result.sourceHref, whereUsedHref: result.whereUsedHref, retired: result.retired };
+}
+export async function readDesignReferenceUsageInTransaction(authority: FieldRuntimeAuthority, input: unknown,
+  navigation: ReferenceNavigationContext = {}): Promise<ReferenceUsageModel> {
+  const result = await readDesignReferenceInTransaction(authority, input, navigation);
+  return { name: result.name, sourceHref: result.sourceHref, retired: result.retired, usages: result.usages, nextHref: result.nextHref };
 }

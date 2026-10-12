@@ -4,7 +4,7 @@ import { z } from "zod";
 import { requireSession } from "@/core/auth/session";
 import { STUDIO_CAPABILITIES as CAP } from "@/core/studio/permissions";
 import { withStudioAuthoringAuthority } from "@/core/studio/authoring/context";
-import { getSetupCatalogInTransaction, readConfigurationDraftInTransaction } from "@/core/studio/authoring/configuration";
+import { getSetupCatalogInTransaction, readConfigurationDraftInTransaction, readSetupReferenceNavigationInTransaction } from "@/core/studio/authoring/configuration";
 import { versionedFieldPayloadSchema } from "@/core/studio/fields/required-contract";
 import { entityProfilePayloadSchema, recordTypePayloadSchema } from "@/core/studio/record-types/schema";
 import { ActionForm } from "@/components/ui/action-form";
@@ -19,11 +19,12 @@ export default async function SetupEditor({ params, searchParams }: {
 }) {
   const actor = await requireSession(), { definitionId } = await params, { business } = await searchParams;
   const setup = await withStudioAuthoringAuthority(actor, CAP.read, business, async authority => {
-    const draft = await readConfigurationDraftInTransaction(authority, definitionId), catalogue = await getSetupCatalogInTransaction(authority);
+    const draft = await readConfigurationDraftInTransaction(authority, definitionId), catalogue = await getSetupCatalogInTransaction(authority, business === undefined ? {} : { business });
+    const references = await readSetupReferenceNavigationInTransaction(authority, definitionId, business === undefined ? {} : { business });
     const saved = await authority.transaction.studioDraft.findFirst({ where: { organisationId: authority.session.organisationId,
       definitionId: draft.id, revision: draft.revision }, select: { validation: true } });
     const validation = validationSchema.safeParse(saved?.validation);
-    return { draft, catalogue, name: authority.session.organisationName, canPublish: authority.session.capabilities.has(CAP.publish),
+    return { draft, catalogue, references, name: authority.session.organisationName, canPublish: authority.session.capabilities.has(CAP.publish),
       review: validation.success && validation.data.validatedRevision === draft.revision ? validation.data : null };
   });
   const { draft, catalogue } = setup, suffix = business ? `?business=${encodeURIComponent(business)}` : "";
@@ -32,7 +33,7 @@ export default async function SetupEditor({ params, searchParams }: {
   const subtype = draft.kind === "recordType" ? recordTypePayloadSchema.parse(draft.payload) : null;
   const chosen = subtype?.overlay ?? profile;
   const fields = (catalogue.groups.find(group => group.kind === "customField")?.definitions ?? [])
-    .filter(value => value.activeVersionId && value.presentationEditable).map(value => ({ id: value.id, name: value.name }));
+    .filter(value => value.activeVersionId && value.presentationEditable).map(value => ({ id: value.id, name: value.name, ...value.navigation }));
   const projected = draft.fieldSettings?.kind === "editable" ? draft.fieldSettings.initial : null;
   const initialFieldSettings = projected && catalogue.fieldTypes.some(type => type.id === projected.type) ? projected : null;
   const title = draft.kind === "customField" ? "Additional field" : draft.kind === "entityProfile" ? "Base record setup" : "Record type";
@@ -50,8 +51,10 @@ export default async function SetupEditor({ params, searchParams }: {
             : <><SetupName label={field.label} help={field.help}/><p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-600">{draft.fieldSettings?.kind === "read_only" ? draft.fieldSettings.reason : "Its saved data and rules are kept when you change its name or description. Published settings use the reviewed field workflow."}</p></>)}
           {subtype && <SetupName label={subtype.label} help={subtype.help}/>}
           {chosen && <RecordSetupChoices pages={catalogue.pages} fields={fields} page={chosen.page?.definitionId ?? (chosen.page === null ? null : undefined)}
-            requiredFields={chosen.requiredFields?.map(pin => pin.definitionId)} inherit={!!subtype}/>}
-        </ActionForm> : <p className="text-sm leading-6 text-slate-600">This setup needs its existing reviewed field workflow or additional editing access. Its saved rules have been preserved.</p>}
+            requiredFields={chosen.requiredFields?.map(pin => pin.definitionId)} inherit={!!subtype} references={setup.references}/>}
+        </ActionForm> : <div className="space-y-5"><p className="text-sm leading-6 text-slate-600">This setup needs its existing reviewed field workflow or additional editing access. Its saved rules have been preserved.</p>
+          {chosen && <RecordSetupChoices disabled pages={catalogue.pages} fields={setup.references.requiredFields.map(reference => ({ ...reference }))}
+            page={chosen.page?.definitionId ?? (chosen.page === null ? null : undefined)} requiredFields={chosen.requiredFields?.map(pin => pin.definitionId)} inherit={!!subtype} references={setup.references}/>}</div>}
       </section>} controls={<aside className="space-y-5"><section className="rounded-3xl border border-slate-200 bg-white p-6"><h2 className="flex items-center gap-2 text-lg font-semibold"><CheckCircle2 className="h-5 w-5 text-blue-600"/>Review and go live</h2>
         <p className="mt-3 text-sm leading-6 text-slate-500">Atlas checks the saved draft, access and affected records. A failed check keeps your current live setup.</p>
         {draft.presentationEditable && <ActionForm action={reviewBusinessSetup} label="Review saved draft" className="mt-5"><SetupIdentity business={business} kind={draft.kind} id={draft.id} revision={draft.revision}/></ActionForm>}

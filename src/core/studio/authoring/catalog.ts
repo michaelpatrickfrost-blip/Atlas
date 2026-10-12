@@ -1,3 +1,4 @@
+import { nativeDesignReferenceLinks } from "./native-reference-links";
 import { designReferenceLinks, type ReferenceNavigationContext } from "./reference-links";
 import type { FieldRuntimeAuthority } from "../fields/runtime-authority";
 import type { ContractMetadata } from "../registry/types";
@@ -15,7 +16,7 @@ import { STUDIO_CAPABILITIES } from "../permissions";
 import { assertCapability } from "@/core/permissions/check";
 import { entityDetailsSchema } from "../registry/entities";
 import { inspectSealedFieldVersion } from "../fields/sealed-field";
-import { readRecordTypeMetadataChoicesInTransaction } from "../record-types/selection";
+import { readRecordTypeMetadataReferenceChoicesInTransaction } from "../record-types/selection";
 
 const ref = ({ id, version, schemaHash, contractHash }: Pick<ContractMetadata, "id" | "version" | "schemaHash" | "contractHash">) => ({ id, version, schemaHash, contractHash });
 const friendly = (id: string) => id.replace(/_/g, " ").replace(/^./, value => value.toUpperCase());
@@ -78,6 +79,7 @@ export async function pageEditorCatalogInTransaction(authority: FieldRuntimeAuth
   const fields: PageEditorFieldChoice[] = approvals.nativeFields.filter(field => allowed(field.capability)
     && readableQueries.has(`${field.query.id}@${field.query.version}`)).map(field => ({
     key: `native:${field.id}`, label: field.label ?? friendly(field.id), field: { source: "native", fieldId: field.id, mode: "read" }, editable: false, required: false,
+    ...nativeDesignReferenceLinks({ sourcePage: ref(metadata), reference: ref(source.source), focus: { kind: "field", id: field.id } }, navigation),
   }));
   const customLabels: PagePresentationCatalog["customFields"] = [];
   for (const field of approvals.customFields.filter(field => scope === "record" && allowed(field.readCapability))) {
@@ -100,7 +102,8 @@ export async function pageEditorCatalogInTransaction(authority: FieldRuntimeAuth
     const label = authority.registry.describe(query.id, query.version).label;
     catalog.queries.push({ id: query.id, version: query.version, label,
       columns: query.columns.map(column => ({ id: column.id, label: column.label ?? friendly(column.id), ...(column.format ? { format: column.format } : {}) })) });
-    if (query.purpose === "list" && query.columns.length) palette.push({ key: `query:${query.id}`, label, description: "Show the app's approved records in a table.",
+    if (query.purpose === "list" && query.columns.length) palette.push({ key: `query:${query.id}`, label,
+      ...nativeDesignReferenceLinks({ sourcePage: ref(metadata), reference: ref(query) }, navigation), description: "Show the app's approved records in a table.",
       component: { type: "queryList", label, query: ref(query), pageSize: Math.min(20, query.maxCardinality), columns: query.columns.slice(0, 6).map(column => column.id), formFactors: [...forms] },
       table: { columns: query.columns.map(column => ({ id: column.id, label: column.label ?? friendly(column.id) })), maxPageSize: Math.min(50, query.maxCardinality) } });
   }
@@ -110,13 +113,15 @@ export async function pageEditorCatalogInTransaction(authority: FieldRuntimeAuth
   for (const command of approvals.commands) if (scope === "record" && await authorized(command)) {
     const label = authority.registry.describe(command.id, command.version).label;
     catalog.actions.push({ id: command.id, version: command.version, label });
-    palette.push({ key: `command:${command.id}`, label, description: "A button for an approved app operation.", component: { type: "action", label,
+    palette.push({ key: `command:${command.id}`, label,
+      ...nativeDesignReferenceLinks({ sourcePage: ref(metadata), reference: ref(command) }, navigation), description: "A button for an approved app operation.", component: { type: "action", label,
       command: ref(command), collectInput: "owner_schema", confirm: true, preview: false, formFactors: [...command.formFactors] } });
   }
   for (const metric of approvals.metrics) if (await authorized(metric) && readableQueries.has(`${metric.query.id}@${metric.query.version}`)) {
     const label = authority.registry.describe(metric.id, metric.version).label;
     catalog.metrics.push({ id: metric.id, version: metric.version, label });
-    palette.push({ key: `metric:${metric.id}`, label, description: "Show a key number from the app's current record.", component: {
+    palette.push({ key: `metric:${metric.id}`, label,
+      ...nativeDesignReferenceLinks({ sourcePage: ref(metadata), reference: ref(metric) }, navigation), description: "Show a key number from the app's current record.", component: {
       type: "metric", label, metric: ref(metric), formFactors: [...metric.formFactors] } });
   }
   // Only a Page owner's explicit opt-in can offer saved immutable dashboards.
@@ -155,7 +160,8 @@ export async function pageEditorCatalogInTransaction(authority: FieldRuntimeAuth
   for (const surface of approvals.surfaces) if (scope === "record" && await authorized(surface)) {
     const label = authority.registry.describe(surface.id, surface.version).label;
     catalog.surfaces.push({ id: surface.id, version: surface.version, label });
-    palette.push({ key: `surface:${surface.id}`, label, description: surface.id === "tickets.ticket.progress_form" ? "The app's complete authorised form, including additional fields." : "An approved read-only panel from the app, using its current record access.", component: {
+    palette.push({ key: `surface:${surface.id}`, label,
+      ...nativeDesignReferenceLinks({ sourcePage: ref(metadata), reference: ref(surface) }, navigation), description: surface.id === "tickets.ticket.progress_form" ? "The app's complete authorised form, including additional fields." : "An approved read-only panel from the app, using its current record access.", component: {
       type: "surface", label, family: surface.family, surface: ref(surface), formFactors: [...surface.formFactors] } });
   }
   const readableFacts: typeof approvals.facts = [];
@@ -164,7 +170,8 @@ export async function pageEditorCatalogInTransaction(authority: FieldRuntimeAuth
   for (const fact of readableFacts) {
     const label = catalog.nativeFields.find(field => field.id === fact.id)?.label ?? friendly(fact.id);
     catalog.facts.push({ id: fact.id, label });
-    palette.push({ key: `fact:${fact.id}`, label: `${label} at a glance`, description: "Show a read-only summary detail at a glance.", component: {
+    palette.push({ key: `fact:${fact.id}`, label: `${label} at a glance`,
+      ...nativeDesignReferenceLinks({ sourcePage: ref(metadata), reference: fact.contract, focus: { kind: "fact", id: fact.id } }, navigation), description: "Show a read-only summary detail at a glance.", component: {
       type: "facts", label, factIds: [fact.id], formFactors: [...forms] } });
   }
   const conditionFacts = readableFacts.flatMap(fact => {
@@ -176,6 +183,7 @@ export async function pageEditorCatalogInTransaction(authority: FieldRuntimeAuth
       return [{ id: fact.id, label, choices }];
     });
   const recordTypes = scope === "record" && entityDetailsSchema.parse(source.source.details).extensionPolicy.recordTypes
-    ? await readRecordTypeMetadataChoicesInTransaction(authority, page.entity) : [];
+    ? (await readRecordTypeMetadataReferenceChoicesInTransaction(authority, page.entity)).map(({ id, label, reference }) => ({ id, label,
+      ...designReferenceLinks(reference, navigation) })) : [];
   return { fields, palette, catalog, scope, conditions: { variantsAllowed: approvals.variants, facts: conditionFacts, recordTypes }, approvalsChecksum: checksum(approvals) };
 }

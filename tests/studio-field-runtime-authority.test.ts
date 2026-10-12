@@ -46,6 +46,14 @@ it("cloned metadata/untrusted Session cannot inherit the private stamp; changing
   session.organisationId = "foreign"; await expect(withFieldRuntimeAuthority(session, operation)).rejects.toThrow("FORBIDDEN");
   expect(operation).not.toHaveBeenCalled(); expect(m.transaction).not.toHaveBeenCalled();
 });
+it("gives only the bounded indexed read a finite extended deadline while keeping genuine current authority", async () => {
+  const session = await authenticated(); row.deniedCapabilities = ["tickets.ticket.read"];
+  await withFieldRuntimeAuthority(session, async authority => expect(authority.session.capabilities.has("tickets.ticket.read")).toBe(false), "indexed_search_read");
+  expect(m.transaction).toHaveBeenCalledWith(expect.any(Function), { isolationLevel: "Serializable", timeout: 20_000 });
+  m.transaction.mockClear();
+  await expect(withFieldRuntimeAuthority({ ...session }, vi.fn(), "indexed_search_read")).rejects.toThrow("FORBIDDEN");
+  expect(m.transaction).not.toHaveBeenCalled();
+});
 it("refreshes revoked capabilities rather than using a stale capability set", async () => {
   const session = await authenticated(); row.deniedCapabilities = ["tickets.ticket.read"];
   await withFieldRuntimeAuthority(session, async authority => { expect(authority.session.capabilities.has("tickets.ticket.read")).toBe(false); });

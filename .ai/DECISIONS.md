@@ -1,3 +1,37 @@
+## 12 October 2026 — approved native source and usage review
+
+Native fields/facts/queries/actions/measures/panels expose metadata navigation through
+their exact owning Page policy. Current selected-business/Studio/native/independent
+query-column rights precede labels and reverse-index lookup. Reuse StudioDependency
+and the retained configuration authoriser; compare complete native edge mirrors and
+immutable seals before incoming names. Review displays25 entries, scans at most500
+saved versions and rejects overflow/stale continuation explicitly. No provider,
+command, business-value read or configuration mutation occurs. Native detail usage
+is clearly capability-level, preserving old hashes rather than inventing field edges.
+
+## 12 October 2026 — bounded indexed-search transaction deadline
+
+Original5f1a central candidate required configured-search conflict denial but the
+original implicit5s field runtime expired at6720ms. Keep the error/denial expectation
+and cardinality/private/current+written/reference checks. Only the original bounded
+indexed-search read explicitly selects a finite20s server-owned transaction budget,
+matching existing native operations. Ordinary field mutations retain the original
+budget; no client budget, retry, timeout-as-conflict mapping or unlimited transaction.
+The customer callback closes its metadata authority transaction before invoking the
+original independently refreshing owning search query, avoiding nested held read
+transactions. Source tests are not proof of actual performance; the unchanged original
+central conflict, index, tenant and current-denial gates must pass before activation.
+
+## 12 October 2026 — simple initial search and duplicate-value settings
+
+Initial never-published scalar fields may explicitly opt into original indexed search
+and uniqueness through friendly controls. Address/multiple-choice retain original
+unsupported-index/uniqueness rejection. Old omitted inputs preserve existing metadata;
+UI explicit off permits initial deselection. Published target editor shows retained
+settings without editing them, and server rejects forged changes before saves. Existing
+structural evolution retains its exact source search/uniqueness policy; this controls
+original flags, never creates a second index/schema engine or weakens domain validation.
+
 ## 12 October 2026 — Assignment JSON extraction needs explicit grouping
 
 PostgreSQL gives binary subtraction higher precedence than generic JSON extraction

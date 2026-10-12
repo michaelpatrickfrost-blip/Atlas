@@ -11,6 +11,7 @@ import { pageProjectionSchema, pageQueryOutputSchema, type PageSourcePolicy } fr
 import { pagePayloadSchema } from "@/core/studio/pages/schema";
 import { pageEditorCatalogInTransaction } from "@/core/studio/authoring/catalog";
 import type { FieldRuntimeAuthority } from "@/core/studio/fields/runtime-authority";
+import { parseNativeDesignReferenceLocation } from "@/core/studio/authoring/native-reference-links";
 
 // Genuine Session issuance, registry, owner declarations and approval/compiler
 // are real. Membership SQL/module availability are explicit fixture collaborators;
@@ -92,4 +93,22 @@ it.each(["example.order.list", "example.order.secret"])("omits a forbidden table
   const result = await pageEditorCatalogInTransaction(authority, page);
   expect(result.palette.some(item => item.component.type === "queryList")).toBe(false); expect(result.catalog.queries).toEqual([]);
   expect(page.sections[0].components[0]).toMatchObject({ columns: ["subject"], pageSize: 1 }); expect(m.values).not.toHaveBeenCalled();
+});
+
+it("offers exact server-resolved native source/usage links only on already permitted field, fact and table choices", async () => {
+  const { authority, page } = await fixture(), result = await pageEditorCatalogInTransaction(authority, page, { business: "selected-business" });
+  const field = result.fields.find(choice => choice.field.source === "native")!;
+  const fieldUrl = new URL(field.whereUsedHref!, "https://atlas.invalid");
+  expect(parseNativeDesignReferenceLocation("example.order", Object.fromEntries(fieldUrl.searchParams))).toMatchObject({
+    business: "selected-business", usage: true, request: { sourcePage: reference(authority.registry.describe("example.order.page", 1)),
+      reference: reference(authority.registry.describe("example.order", 1)), focus: { kind: "field", id: "subject" } },
+  });
+  const fact = result.palette.find(choice => choice.component.type === "facts")!;
+  expect(parseNativeDesignReferenceLocation("example.order", Object.fromEntries(new URL(fact.sourceHref!, "https://atlas.invalid").searchParams))).toMatchObject({
+    usage: false, request: { focus: { kind: "fact", id: "urgent" } },
+  });
+  const listed = await fixture("list"), table = (await pageEditorCatalogInTransaction(listed.authority, listed.page)).palette.find(choice => choice.component.type === "queryList")!;
+  expect(parseNativeDesignReferenceLocation("example.order.list", Object.fromEntries(new URL(table.whereUsedHref!, "https://atlas.invalid").searchParams)).request)
+    .toEqual({ sourcePage: reference(listed.authority.registry.describe("example.order.page", 1)), reference: reference(listed.authority.registry.describe("example.order.list", 1)) });
+  expect(m.values).not.toHaveBeenCalled();
 });

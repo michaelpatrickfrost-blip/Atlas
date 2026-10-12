@@ -12,14 +12,14 @@ import { RecordSetupChoices, SetupIdentity, SetupName } from "./choices";
 export default async function BusinessSetup({ searchParams }: { searchParams: Promise<{ business?: string }> }) {
   const actor = await requireSession(), business = (await searchParams).business;
   const setup = await withStudioAuthoringAuthority(actor, CAP.read, business, async authority => ({
-    ...await getSetupCatalogInTransaction(authority), name: authority.session.organisationName,
+    ...await getSetupCatalogInTransaction(authority, business === undefined ? {} : { business }), name: authority.session.organisationName,
     canEdit: authority.session.capabilities.has(CAP.edit),
   }));
   const suffix = business ? `?business=${encodeURIComponent(business)}` : "";
   const fields = setup.groups.find(group => group.kind === "customField")?.definitions ?? [];
   const bases = setup.groups.find(group => group.kind === "entityProfile")?.definitions ?? [];
   const types = setup.groups.find(group => group.kind === "recordType")?.definitions ?? [];
-  const requiredChoices = fields.filter(field => field.activeVersionId && field.presentationEditable).map(field => ({ id: field.id, name: field.name }));
+  const requiredChoices = fields.filter(field => field.activeVersionId && field.presentationEditable).map(field => ({ id: field.id, name: field.name, ...field.navigation }));
   const groups = [{ title: "Additional fields", text: "The extra details this business needs on its tickets.", icon: TextCursorInput, items: fields },
     { title: "Base record setup", text: "The standard screen and required details for your business.", icon: ListChecks, items: bases },
     { title: "Record types", text: "Special setups for different kinds of ticket, built on your base.", icon: Tags, items: types }];
@@ -49,7 +49,7 @@ export default async function BusinessSetup({ searchParams }: { searchParams: Pr
       </section>}
       <section className="rounded-3xl border border-slate-200 bg-white p-6"><h2 className="mb-5 text-lg font-semibold">Add a record type</h2>
         {bases.some(base => base.activeVersionId) ? <ActionForm action={createBusinessSetup} label="Create record type draft"><SetupIdentity business={business} kind="type"/><SetupName/>
-          <RecordSetupChoices pages={setup.pages} fields={requiredChoices} inherit/>
+          <RecordSetupChoices pages={setup.pages} fields={requiredChoices} inherit references={{ baseProfile: bases.find(base => base.activeVersionId)?.navigation ?? null }}/>
         </ActionForm> : <p className="text-sm leading-6 text-slate-500">Create and make your base setup live first. Each record type then builds on that business setup.</p>}
       </section>
     </div>}

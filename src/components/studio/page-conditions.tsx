@@ -1,4 +1,5 @@
 'use client';
+import { ReferenceNavigationControls } from './reference-navigation-controls';
 import type { VisibilityPredicate } from '@/core/studio/pages/schema';
 import { Button } from '@/components/ui/button';
 import { inputClass } from '@/components/ui/service-fields';
@@ -19,6 +20,7 @@ export function PageConditionControls({ value, catalog, change, required = false
       const setRule = (next: typeof rule) => update(rules.map((value, i) => i === index ? next : value));
       return <div key={index} className="space-y-2 border-t pt-3"><label className="block space-y-1 text-xs"><span>Business detail {index + 1}</span><select className={inputClass} value={rule.kind === 'recordType' ? '__record_type__' : rule.factId} onChange={event => setRule(event.target.value === '__record_type__' ? recordTypeRule(catalog) : factRule(catalog, event.target.value))}>{usable.map(value => <option key={value.id} value={value.id}>{value.label}</option>)}{types.length > 0 && <option value="__record_type__">Business record type</option>}</select></label>
         <label className="block space-y-1 text-xs"><span>Is equal to {index + 1}</span>{rule.kind === 'recordType' ? <select className={inputClass} value={types.findIndex(type => type.id === rule.definitionId)} onChange={event => { const type = types[Number(event.target.value)]; if (type) setRule(recordTypeRule(catalog, type.id)); }}>{types.map((type, i) => <option key={type.id} value={i}>{type.label}</option>)}</select> : <select className={inputClass} value={fact!.choices.findIndex(choice => choice.value === rule.values[0])} onChange={event => setRule(factRule(catalog, fact!.id, Number(event.target.value)))}>{fact!.choices.map((choice, i) => <option key={i} value={i}>{choice.label}</option>)}</select>}</label>
+        {rule.kind === 'recordType' && <ReferenceNavigationControls {...types.find(type => type.id === rule.definitionId)} label="Business record type"/>}
         <Button type="button" variant="ghost" disabled={required && rules.length === 1} onClick={() => update(rules.filter((_, i) => i !== index))}>Remove condition {index + 1}</Button></div>;
     })}
     <Button type="button" disabled={!available || rules.length >= 8} onClick={() => update([...rules, firstConditionRule(catalog)])}>Add condition</Button>

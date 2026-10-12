@@ -493,7 +493,7 @@ export const ticketStudioContract: StudioModuleContract = { contributions: [
           return project(row); }), next: found.next };
       };
       if (ctx.transaction) return search(await fieldRuntimeAuthorityInTransaction(ctx.session, ctx.transaction));
-      return withFieldRuntimeAuthority(ctx.session, search);
+      return withFieldRuntimeAuthority(ctx.session, search, "indexed_search_read");
     } }),
   query({ ...identity, id: "tickets.ticket.list", label: "Tickets", kind: "query", input: listInput,
     output: z.strictObject({ records: z.array(projection).max(50), next: listInput.shape.cursor.nullable() }),

@@ -1,3 +1,78 @@
+## 12 October 2026 — visual/search closure checkpoint preparing compatible release
+
+Integrated native source/usage cff6acdd and owning indexed-search fix2c9c721c;
+independent source review found no further concrete permissions/tenant/private/seal
+defect. Native route reuses original dependency index/current authoriser and reads
+metadata only. Original actual visual fixtures now check native source→usage,
+field usage, five-kind setup/type exact retained links and read-only snapshots;
+94ff22de added original record-layout checks. Root review added explicit Screen
+layout selection after navigation resets the editor; no runtime assertion weakened.
+Logical stable business-type predicate impact remains a bounded parallel metadata
+workstream (no new version edge/schema/compiler hash), wholePhase2 still FAIL.
+
+Root final104/8 source tests PASS85069, actual-checker early gates57/3 PASS78972;
+earlier210/7 navigation and21/2 corruption tests PASS. Full strict34126, scoped
+lint63085 and production32770 EXIT0. Final checker strict86970 EXIT0; checker
+lint8264 EXIT0. Original5f1a expired search/live75977/rollbackc385 retained; no new
+runtime pass yet. No DDL in this checkpoint;12020000 already APPLIED. No extra
+dependency/runtime/worktree/dump/local data. Exact next: commit this reviewed checkpoint, original pinned locked bridge candidate/public
+acceptance, fix concrete failures; then compatible new-family positive release
+including logical predicate impact before wholePhase2 PASS.
+
+## 12 October 2026 — connected visual/search source integration
+
+Projected customer typed additional-detail search f357/bfcb/0fdf through the original
+owning indexed query, closing metadata authority before its independent read; genuine
+current field/native/private/reference policies remain. Initial scalar search/unique
+controls preserve omitted old inputs and reject forged published policy changes.
+Projected15cf385c five-kind source/Where-used controls and75ac4601 corruption fix;
+saved links retain exact pins, current-draft links are explicit, only independently
+FORBIDDEN references are omitted. Retired metadata stays inspectable; missing/broken
+seals fail closed. No new graph/index/renderer/schema/dependencies/worktree/dump.
+
+Root53/4 search/runtime checks and165/4 field setup checks PASS; navigation integration
+210/7 PASS97277, corruption21/2 PASS87430. Scoped search lint89048 and production89460
+EXIT0. Standalone strict56592 found a missing help in a test fixture; corrected,
+strict4558 EXIT0 after five-kind integration. Later native navigation/checker and
+registered indexed-query20s allowance integration still require final checks/build.
+The actual registered route (rather than only helper wrapper) is being corrected;
+original configured-search conflict expectations remain unchanged. Read-only current
+pointers verified live75977/rollbackc385; server149GBfree/Mac92GiB. WholePhase2 FAIL.
+Exact next: finish narrow native/reference/checker and registered-query projections,
+review/scopedchecks/build, commit this coherent checkpoint and retry the original
+locked compatible bridge. Then actual next-compatible-pair new-family positives.
+
+## 12 October 2026 —5f1a bridge preactivation failure and search controls
+
+Original5f1a release45380 EXIT1 BEFORE activation. CandidateZ1TF6x original native
+forms/defaults PASS; production conditional DEFER before fixtures. Original configured
+search required CONFLICT denial encountered expired default5000ms transaction after
+6720ms instead; expectations remain mandatory. Record-profile and visual journeys
+were NOT reached on this candidate.12020000 forward APPLIED015623; no genuine
+assignment pass inferred. Live75977/rollbackc385 retained, recovery015623/fixture015820.
+
+Projectedf357a590 bounded customer search (original indexed query/cursor/current native,
+written/reference policies) source; helper40/3types/lint PASS, root integration pending.
+Root friendly initial field search/duplicate-value controls reuse original schema,
+keep scalar-only constraints, preserve omission for old clients, explicit unchanged
+published settings/current CAS/no silent index or uniqueness change.165/4 source tests
+PASS14766; actual new controls/browser journey pending. No DDL or new engine.
+Exact next: identify bounded search deadline/callsite without masking denial; finish
+config/native reference controls, check integrated source/build, original compatible
+release retry. No Phase3, wholePhase2 FAIL.
+
+## 12 October 2026 — pinned5f1a visual/assignment repair bridge running
+
+Original release45380 is pinned to5f1a45b98af753fce7d94a2be53f1e5ecd67d7ba;
+keep HEAD fixed. Mandatory recovery015623 retained, no adhoc dump. Original central
+Prisma015623-migrate.log confirms additive20261012020000 successfully APPLIED;
+immutable candidate production build completed successfully. Candidate/public
+acceptance still running; no activation/PASS inferred. Live75977 rollbackc385 at
+last pointer check. Server149GB free; original retention remains mandatory.
+Exact next: read actual candidate gate results, fix any concrete failure safely,
+then accepted bridge permits next compatible new-family positive release. Parallel
+customer-search/config/native-reference work remains bounded source-only.
+
 ## 12 October 2026 — visual Templates, type conditions and reference inspection checkpoint
 
 Original Templates now offers protected named business details, custom document details,

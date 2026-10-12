@@ -95,8 +95,10 @@ it("joins authorised type metadata to a record catalogue without reading actual 
   const page = pagePayloadSchema.parse({ schemaVersion: 1, entity, formFactors: forms, sections: [{ id: "main", label: "Ticket", formFactors: forms,
     columns: { desktop: 1, tablet: 1, phone: 1 }, components: [{ id: "guide", type: "instructions", text: "Ticket help", formFactors: forms }] }] });
   const result = await pageEditorCatalogInTransaction(authority, page);
-  expect(result.conditions.recordTypes).toEqual([{ id: id(1), label: "Customer complaint" }]);
-  expect(result.scope).toBe("record"); expect(Object.keys(result.conditions.recordTypes[0])).toEqual(["id", "label"]);
+  expect(result.conditions.recordTypes).toMatchObject([{ id: id(1), label: "Customer complaint" }]);
+  expect(result.conditions.recordTypes[0].whereUsedHref).toContain(`version=${id(2)}`);
+  expect(result.conditions.recordTypes[0].sourceHref).toBe(`/design-studio/setup/${id(1)}`);
+  expect(result.scope).toBe("record"); expect(Object.keys(result.conditions.recordTypes[0])).toEqual(["id", "label", "sourceHref", "whereUsedHref"]);
   m.preflight.mockRejectedValue(new Error("FORBIDDEN: private field Read"));
   const denied = await pageEditorCatalogInTransaction(authority, page);
   expect(denied.conditions.recordTypes).toEqual([]); expect(JSON.stringify(denied)).not.toContain("Customer complaint");

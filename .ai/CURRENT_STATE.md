@@ -1,5 +1,22 @@
 ## 12 October 2026 — bridge0d80 stopped before activation on checker viewport sequencing
 
+## 12 October 2026 — original bridge acceptance: Finance checker correction
+
+Pinned b408c4fa original release26087 stopped before activation: candidate Home/Apps,
+Admin/business login/provisioning and native Ticket/Analytics checks passed; Settings
+reached the native Finance invoice link but its checker expected an accessible name
+without the existing trailing arrow. The actual row/reference/href were present.
+The correction selects the exact native document href, verifies its reference and
+actually clicks to the expected detail route; spend still denies the foreign row
+and now also checks absence of its href. No permission or app behaviour changed.
+Scoped checker lint passed; actual acceptance retry remains required.
+Recovery: predeploy001209 and candidate001359 backups, candidate evidence
+/tmp/atlas-studio-candidate-Vf7R1k. No activation or whole Phase2 PASS claimed.
+Parallel visual editor, original business View reader, guided field lifecycle and
+immutable Page embedding integrations remain uncommitted and excluded from this
+bridge release. Next: original pinned bridge retry, then connected visual checks.
+
+
 Original15657 EXIT1. Actual native/private/form/search/Studio Admin gates PASS;
 Home and Apps desktop/tablet/phone/small-phone fit, Escape and focus PASS. Checker
 then tried cross-header Search click while still320px with open Apps covering its

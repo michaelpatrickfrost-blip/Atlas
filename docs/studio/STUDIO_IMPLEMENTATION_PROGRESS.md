@@ -19,7 +19,7 @@ before the complete Phase2 gate passes. Foundation-first order remains authorise
 f41d7908 projected uncommitted with root customer renderer/retained compilation/
 selected-business Analytics draft seam/actions. Full lifecycle UI, actual View
 reader/editor/customer Home and owner KPI embedding IN PROGRESS. Original bridge
-0d80a83a release15657 EXIT1 beforeactivation on stale320px cross-header checker sequencing; nextcorrectdesktopstep/originalretry. No whole Phase2 PASS claim.
+b408c4fa release26087 EXIT1 before activation on stale Finance exact link-name assertion (existing arrow). Home cross-header/mobile sequencing passed. Exact document href/reference/navigation checker corrected; next original pinned bridge retry. No whole Phase2 PASS claim.
 
 # Overall Status
 
@@ -4184,3 +4184,19 @@ No unrelated functionality removed; reviewed diff clean.080 rehearsal under both
 locks PASS/ROLLBACK, NOT APPLIED. Exact next original pinned Studio bridge followed
 by compatible actual visual/profile/default/type gates. Source is IMPLEMENTED,
 not verified live; fullPhase2 FAIL/incomplete. No Phase3 or new software copies.
+
+## 12 October bridge checkpoint: actual candidate Settings blocker
+
+Original b408c4fa release26087 EXIT1 beforeactivation. Home/Apps responsive and
+Admin/native Ticket/Analytics gates passed; Page/profile/defaults were DEFERRED
+because the actual rollback cannot read them. Settings stopped on the existing
+native invoice arrow being part of the link name. Exact href/reference plus real
+click/navigation preserves and strengthens the check; no application permission
+change. Scoped checker lint PASS. Required recovery001209/001359 and candidate
+evidenceVf7R1k retained. Visual future work excluded. Phase2 remains FAIL.
+
+# Exact Next Action
+
+Commit only the reviewed Finance checker and this memory, run the original pinned
+bridge release, restore future source after push, then integrate b45a72c8 and
+6bacbe10 and connect the business dashboard and field lifecycle visual routes.

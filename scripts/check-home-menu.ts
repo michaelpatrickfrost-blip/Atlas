@@ -224,6 +224,10 @@ async function main() {
           `PASS ${name}: grouped Apps, authorised links, viewport fit, touch targets and Escape focus.`,
         );
       }
+      // Cross-header interaction needs the desktop header: the compact phone
+      // popup deliberately covers the second header row. Mobile Escape/focus
+      // and all four viewport fits were checked above without forced clicks.
+      await page.setViewportSize({ width: 1448, height: 1086 });
       await page.getByRole("button", { name: "Apps", exact: true }).click();
       await page
         .getByRole("button", { name: /Search apps, people, reports/ })

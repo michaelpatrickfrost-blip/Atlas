@@ -1,3 +1,52 @@
+## 12 October 2026 — bridge0d80 stopped before activation on checker viewport sequencing
+
+Original15657 EXIT1. Actual native/private/form/search/Studio Admin gates PASS;
+Home and Apps desktop/tablet/phone/small-phone fit, Escape and focus PASS. Checker
+then tried cross-header Search click while still320px with open Apps covering its
+second header row. Source now explicitly restores desktop viewport for that
+separate header interaction; no forced click/test bypass/runtime navigation edit.
+Existing mobile coverage remains. Actual rerun pending; production not switched.
+Recovery000350/fixture000540 and private evidence retained. No duplicate dumps.
+Next: lint/diff small checker checkpoint, original pinned retry while visual source
+WIP stays excluded. WholePhase2 incomplete and featurefamily pairDEFERRED.
+
+## 12 October 2026 — Phase2 parallel visual integration in progress
+
+Pinned original bridge0d80a83a release15657 runs under original locks; candidate
+pair features[] against oldc385, so Page/profile/default/type still DEFERRED.
+Required recovery000350/fixture000540 retained; no ad-hoc dumps or extra copies.
+No public activation confirmed. Keep pinned tip fixed until original run ends.
+
+Integrated uncommitted reviewed Ticket panels22b2, original View publisher692757,
+field lifecycle/control f41d7908. Native INTERNAL evidence metadata is now filtered
+before filenames return. Root wires pure panels to customer Page outputs, preserves
+retained exact-source compilation for restore/comparison and trusted authoring
+source@1 fallback until new panel runtime pair is accepted. Actual customer/native
+panels, all used grants and unchanged command handlers remain independent.
+Root existing Analytics editor now has explicit business-draft CAS callback/max8,
+no personal save/copy/delete/monitor or wrong-business source navigation fallback.
+Eight focused editor tests PASS as part owner integration50/5 PASS; full strict
+9504 EXIT0 before latest server wrappers. Initial integration issues fixed: retained
+mock@2 duplicate; retained compiler mock; actual probe JSX React import; exact
+status:none/other:page descriptor expectation; predecessor receipt1 pinned38a1113.
+No pretending new View metadata compiler is an actual customer reader: its feature
+stays closed while helper adds genuine reader + native chart renderer.
+
+Seven original field lifecycle engine wrappers + fresh explicit status are reviewed;
+root adds11 explicit server actions with Session/Publish as first two statements.
+Independent source review found no blocker. Helper173/10 + final control29/types/
+lint PASS are explicit collaborators, not central SQL/runtime proof. Root lifecycle
+UI and actual gate remain pending. Status preflights private/current/written
+metadata before counts; cancellation sparse after native rights loss; terminal
+historical metadata omits only unused old default VALUE lookup, keeps all actual
+source/reference/history policies. No protocol2 visual support claimed.
+
+Exact next: retain pinned release tip; finish business dashboard original-editor
+routes and customer reader/Home cards, integrate typed field lifecycle panel and
+explicit URL resume, then approved Sales owner KPI slice/runtime pair and Page
+immutable view embedding. Helpers own disjoint source/renderer/control panels in
+existing worktrees. Whole Phase2 FAIL/incomplete; no Phase3/new engines.
+
 ## 12 October 2026 — original2d9028c8 release stopped BEFORE activation
 
 Original release6793 EXIT1; actual configured Ticket field search/index catalogue,

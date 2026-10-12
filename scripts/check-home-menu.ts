@@ -92,12 +92,14 @@ async function main() {
             "/home",
             "/analytics",
             "/reports",
+            "/guides",
             "/profile#assigned",
             "/chat",
             "/settings",
+            "/profile/settings",
           ].includes(href ?? ""),
         ),
-        "Rail only contains utilities.",
+        `Rail only contains utilities: ${utilityHrefs.join(", ")}`,
       );
       assert(
         await utilities.evaluate((nav) => {

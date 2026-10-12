@@ -1,3 +1,24 @@
+## 12 October 2026 — original2d9028c8 release stopped BEFORE activation
+
+Original release6793 EXIT1; actual configured Ticket field search/index catalogue,
+ordinary native/private/windows/concurrency and standalone Admin/native pages PASS.
+Page/profile/default/type remain DEFERRED against oldrollbackc385, not feature PASS.
+Then Home-menu checker rejected existing /guides (and omitted existing personal
+/profile/settings destination) from its stale fixed utility allowlist. Source now
+includes only those actual utility routes; unchanged Admin/business-boundary guards,
+actual authorised app links/responsive checks remain mandatory. Unknown-href failure
+now includes observed fixed routes. No application permission/navigation change.
+Required recovery235322/fixture235513 preserved. Fresh SSH confirms livec385a2be/
+rollback5b6390c8 unchanged; root141GiB/tmp1.4GiB free. No ad-hoc dump/cleanup.
+
+Scoped checker lint PASS; native business-shell boundary6/1 PASS. Diff reviewed;
+only existing utility allowlist/assertion changed. Next: small checkpoint and
+original pinned bridge retry. Future WIP Analytics explicit business-draft
+editor seam and neutral panel palette text are separate uncommitted work; exclude
+from this release. Helpers have source checkpoints for original field control/
+status and Ticketpanels; owner/compiler/publication/readiness integration follows.
+WholePhase2 remains FAIL/incomplete; no Phase3 engine work.
+
 ## 12 October 2026 — Phase2 visual comparison and property controls IN PROGRESS
 
 Root checkpoint65ede12e built/strict/lint passed. Original pinned both-lock release

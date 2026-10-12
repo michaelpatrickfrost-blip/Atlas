@@ -157,7 +157,8 @@ window/concurrency checks PASS. Actual search plan chose usable instant index;
 exact fingerprint index choice assertion failed on small fixture. Corrected source
 retains actual authorised bounded ANALYZE/result/permission gates and checks actual
 catalogue validity/readiness/key order/default keys. Central fingerprint catalogue
-SQL PASS; original actual acceptance rerun pending. Page/profile/default/type
+SQL PASS; original2d release actual search catalogue/native checks PASS; later Home utility
+allowlist fails before activation. Corrected checker actual rerun pending. Page/profile/default/type
 readiness DEFERRED against old livec385; DEFERRED never means feature PASS.
 Current uncommitted visual comparison18/2 and index/facts/table41/3 source tests PASS;
 original actual comparison/table/fact/zero-record preview wired, not run.
@@ -201,17 +202,16 @@ Later phases remain architectural context only; no complete visual designer clai
 
 # Exact Next Action
 
-Final current diff/memory checkpoint, then commit
-visual comparison/facts/table/field target-preview and reviewed migration/compiler
-source.147/8 integration and25/2 lifecycle/UI suites PASS; production74423 EXIT0;
-strict85546/final lint54348 EXIT0. Original properties/comparison/friendly preview
-checker wired, not run. Then original pinned both-lock bridge retry with corrected
-actual catalogue gate.080 APPLIED;19593 ended preactivation, root may advance.
-Keep new pinned tip fixed through acceptance. After accepted bridge, actual compatible
-Page/profile/default/type and customer visual journeys; DEFERRED never PASS.
-Helpers continue original lifecycle/recovery, native Ticket read-only surface
-compatibility and Analytics publisher/readiness. WholePhase2 FAIL; no Phase3 or
-extra source/dependency copies/ad-hoc dumps.
+Checkpoint the small Home utility checker correction (existing /guides and
+/profile/settings; no runtime/permission change), then retry original pinned bridge.
+Scoped checker lint PASS; business-shell boundary6/1 PASS; diff reviewed.
+2d9028c8 release6793 EXIT1 BEFORE activation after configured search/native/Admin
+checks PASS; Page/profile/default/type DEFERRED. Fresh livec385/rollback5b unchanged;
+root141GiB/tmp1.4GiB free, required235322/235513 recovery retained. Keep original
+release tip fixed through acceptance. Future business-draft Analytics editor/palette
+WIP remains outside this small release checkpoint. Integrate reviewed Ticket22b2,
+field-control/status and Analytics publisher/readiness next, wire friendly controls
+and genuine customer readers. WholePhase2 FAIL; no later engines or ad-hoc dumps.
 
 # Historical checkpoint evidence
 

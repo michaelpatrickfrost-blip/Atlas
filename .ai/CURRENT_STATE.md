@@ -1,3 +1,25 @@
+## 14 October 2026 — Premium visual overhaul prepared; candidate verification pending
+
+Michael requests a substantial, consistent polish across every Atlas app, clarified
+as bold/posh, with Apple-like glass buttons and no cheesy or tacky decoration. Based on
+actual live75977b02, the shared premium.css foundation adds pearl surfaces, sapphire
+glass-style controls, restrained app accent tiles, editorial Home grouping, refined
+navigation/search/forms/tables/status/tabs/dialogs and matching Admin/Studio/sign-in.
+AppDirectory and app-appearance preserve registry filtering and all destinations.
+PageMotion animates the existing content node for240ms without remounting drafts;
+reduced motion is honoured. Menus remain opaque; cards/header have no backdrop
+filters that trap overlays. No domain/schema/grant/storage changes.
+Local production build PASS; strict TypeScript PASS; existing menu/business-shell/
+drawer regressions12/3 PASS; changed-file lint0 errors/3 existing image warnings.
+New motion/draft-retention regressions2 PASS (total14/4); read-only whole-app browser gate pending.
+Navigation groups now use consistent purpose-specific thin-stroke icons. The polish
+release selector runs all authorised app roots/core/Admin/Studio at1440/820/390,
+Home/menu/focus and reduced-motion checks under the existing release locks; it
+creates no fixtures or additional dumps. Required release backup remains intact.
+Next: final checks, sealed candidate visual review, public activation/verification.
+Git repair: seven invalid space-suffixed duplicate ref files were moved intact to
+.git/atlas-ref-recovery-20261014; valid refs/source/other worktrees preserved.
+
 ## 12 October 2026 — bridge0d80 stopped before activation on checker viewport sequencing
 
 ## 12 October 2026 — MRP proposal acceptance correction (no app change)

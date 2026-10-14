@@ -67,7 +67,7 @@ export function CommandPalette({ variant = "default" }: { variant?: "default" | 
     <>
       <button
         onClick={() => setOpen(true)}
-        className={`flex w-full min-w-0 items-center gap-3 rounded-full border text-[#6e6e73] shadow-sm transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${variant === "workspace" ? "h-9 border-black/[0.08] bg-[#fafbfc] px-3 text-sm sm:h-10 sm:gap-2.5 sm:px-3.5" : "h-10 border-white/80 bg-white/70 px-4 text-sm backdrop-blur-xl"}`}
+        className={`atlas-search-trigger flex w-full min-w-0 items-center gap-3 rounded-full border text-[#6e6e73] shadow-sm transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${variant === "workspace" ? "h-9 border-black/[0.08] bg-[#fafbfc] px-3 text-sm sm:h-10 sm:gap-2.5 sm:px-3.5" : "h-10 border-white/80 bg-white/70 px-4 text-sm backdrop-blur-xl"}`}
       >
         <Search size={variant === "workspace" ? 18 : 15} aria-hidden="true" className="shrink-0" />
         <span className="min-w-0 flex-1 truncate text-left">Search apps, people, reports...</span>
@@ -83,7 +83,7 @@ export function CommandPalette({ variant = "default" }: { variant?: "default" | 
           onClick={closePalette}
         >
           <div
-            className="w-full max-w-xl overflow-hidden rounded-[28px] border border-white/70 bg-white shadow-[var(--shadow-atlas-lg)]"
+            className="atlas-search-dialog w-full max-w-xl overflow-hidden rounded-[28px] border border-white/70 bg-white shadow-[var(--shadow-atlas-lg)]"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-center gap-2 border-b border-[var(--color-border)] px-4 py-3">

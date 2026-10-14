@@ -84,10 +84,12 @@ export function FloatingModuleNav({ title, items }: { title: string; items: Modu
             }
             const groupActive = entry.items.some((i) => i.href === bestMatch);
             const open = openGroup === entry.label;
+            const GroupIcon = iconForNav(entry.label);
             return (
               <div key={entry.label} className="lg:relative" onMouseEnter={() => openGroupNow(entry.label)} onMouseLeave={scheduleGroupHide}>
                 <button type="button" onClick={() => toggleGroup(entry.label)} aria-expanded={open} aria-haspopup="menu"
                   className={`atlas-float-tab inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium ${groupActive ? "atlas-float-tab-active" : ""}`}>
+                  <GroupIcon size={14} strokeWidth={1.65} aria-hidden="true" />
                   {entry.label}
                   <ChevronDown size={13} strokeWidth={2} className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
                 </button>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PageMotion } from "@/components/shell/page-motion";
 import { LogOut, ShieldCheck } from "lucide-react";
 import type { ReactNode } from "react";
 import type { Session } from "@/core/auth/session";
@@ -40,7 +41,7 @@ export function AdminShell({ session, children }: { session: Session; children: 
     <div className="flex min-h-0 min-w-0 flex-1 gap-4 px-3 pb-4 sm:px-5 lg:gap-6 lg:px-7 lg:pb-6">
       <aside className="hidden w-[232px] shrink-0 lg:block"><AdminNavigation links={links} /></aside>
       <main id="atlas-admin-content" className="min-w-0 flex-1 overflow-y-auto overflow-x-hidden rounded-[24px] border border-white/90 bg-white/65 p-4 shadow-[0_8px_40px_-28px_rgba(44,81,136,0.2)] sm:p-6 lg:p-7">
-        <div className="mx-auto max-w-7xl space-y-7 pb-8"><div className="mb-6 border-b border-[#e6edf7] pb-5"><h1 className="text-2xl font-semibold tracking-tight text-slate-950">Atlas Admin</h1><p className="mt-2 text-sm text-[#7b879e]">Manage business accounts, platform access and company setup.</p></div>{children}</div>
+        <PageMotion><div className="mx-auto max-w-7xl space-y-7 pb-8"><div className="mb-6 border-b border-[#e6edf7] pb-5"><h1 className="text-2xl font-semibold tracking-tight text-slate-950">Atlas Admin</h1><p className="mt-2 text-sm text-[#7b879e]">Manage business accounts, platform access and company setup.</p></div>{children}</div></PageMotion>
       </main>
     </div>
   </div>;

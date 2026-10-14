@@ -20,7 +20,7 @@ import { ContextGuideLink } from './context-guide-link';
 
 export function Topbar({ session }: { session: Session }) {
   const today = new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", timeZone: "Europe/London" }).format(new Date());
-  const home = <header className="flex min-h-[88px] shrink-0 flex-wrap items-center gap-3 px-4 py-4 sm:flex-nowrap sm:px-6 lg:gap-8">
+  const home = <header className="atlas-home-topbar flex min-h-[88px] shrink-0 flex-wrap items-center gap-3 px-4 py-4 sm:flex-nowrap sm:px-6 lg:gap-8">
     <Link href="/home" aria-label="Atlas Home" className="flex shrink-0 items-center gap-2.5 rounded-xl focus-visible:outline-2 focus-visible:outline-blue-600">
       <img src="/brand/atlas-mark.png" width={515} height={400} alt="" className="h-10 w-[52px] object-contain mix-blend-multiply sm:h-12 sm:w-[62px]" />
       <span className="hidden sm:block"><AtlasLogo className="h-auto w-[148px] mix-blend-multiply" /><span className="mt-1.5 block text-center text-[8px] tracking-[0.16em] text-[#526587]">Plan. Make. Deliver.</span></span>
@@ -41,7 +41,7 @@ export function Topbar({ session }: { session: Session }) {
   return (
     <TopbarVariant home={home} regular={
     // Keep fixed chat/search overlays relative to the viewport; backdrop-filter traps them in this header.
-    <header className="flex h-[var(--atlas-topbar)] shrink-0 flex-wrap items-center gap-1 border-b border-black/[0.06] bg-white px-2 py-2 min-[360px]:gap-2 min-[360px]:px-3 sm:flex-nowrap sm:gap-3 sm:px-5 sm:py-0">
+    <header className="atlas-workspace-topbar flex h-[var(--atlas-topbar)] shrink-0 flex-wrap items-center gap-1 border-b border-black/[0.06] bg-white px-2 py-2 min-[360px]:gap-2 min-[360px]:px-3 sm:flex-nowrap sm:gap-3 sm:px-5 sm:py-0">
       <Link href="/home" aria-label="Home" title="Home" className="flex size-10 shrink-0 items-center justify-center rounded-xl hover:bg-black/[0.05] focus-visible:outline-2 focus-visible:outline-blue-600 sm:size-10">
         <img src="/brand/atlas-icon.png" alt="" className="size-7 sm:size-7" />
       </Link>

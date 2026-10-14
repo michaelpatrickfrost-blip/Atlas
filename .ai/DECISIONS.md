@@ -1,3 +1,16 @@
+## 14 October 2026 — One premium visual system across all apps
+
+Michael requests a substantial visual overhaul with smooth motion, glass-like
+buttons and classy coloured icons throughout Atlas; he clarified an Apple-like,
+bold and posh feel with no cheesy or tacky decoration. Keep the supplied brand and
+Nunito, with pearl surfaces, navy text, sapphire primary actions and muted curated
+app accents. Shared premium.css and shell/UI components own this system; no new
+per-module theme engines. The colour map is presentation only and grants nothing.
+Opaque menus and filter-free content containers preserve readability and layering.
+Route motion animates existing DOM without keyed layout remounts, so unsaved form
+state survives. Reduced motion disables movement; native dialogs retain focus and
+save guards. Business/Admin separation and central data remain unchanged.
+
 ## 11 October 2026 — One publisher and genuine standalone visual Studio context
 
 The standalone /design-studio route sits outside Admin/customer shell chrome;

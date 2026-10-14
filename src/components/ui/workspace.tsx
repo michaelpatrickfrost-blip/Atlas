@@ -13,7 +13,7 @@ export function WorkspaceHeading({
   actions?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-wrap items-end justify-between gap-5 rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-white p-5 sm:p-7">
+    <div className="atlas-workspace-heading flex flex-wrap items-end justify-between gap-5 rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-white p-5 sm:p-7">
       <div className="max-w-2xl">
         <p className="text-xs font-semibold uppercase tracking-[.16em] text-blue-600">
           {eyebrow}
@@ -47,7 +47,7 @@ export function WorkspaceStats({
       {items.map(({ label, value, hint, icon: Icon }) => (
         <div
           key={label}
-          className="min-w-0 rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5"
+          className="atlas-stat-card min-w-0 rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5"
         >
           <div className="flex items-center justify-between gap-2">
             <p className="text-xs font-medium text-slate-500">{label}</p>
@@ -79,7 +79,7 @@ export function WorkspaceLinks({
         <Link
           key={href}
           href={href}
-          className="group flex min-w-0 items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 transition-colors hover:border-blue-300 hover:bg-blue-50/40"
+          className="atlas-workspace-link group flex min-w-0 items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 transition-colors hover:border-blue-300 hover:bg-blue-50/40"
         >
           <span className="rounded-xl bg-blue-50 p-2.5 text-blue-600">
             <Icon size={19} aria-hidden />

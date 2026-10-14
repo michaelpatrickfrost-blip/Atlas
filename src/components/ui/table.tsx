@@ -19,14 +19,14 @@ export function DataTable<Row extends { id: string }>(props: {
   const { columns, rows, getHref, emptyLabel = "Nothing here yet." } = props;
   if (rows.length === 0) {
     return (
-      <div className="flex items-center justify-center rounded-[var(--radius-atlas-md)] border border-[var(--color-border)] bg-[var(--color-surface)] py-16 text-sm text-[var(--color-ink-muted)] shadow-[var(--shadow-atlas)]">
+      <div className="atlas-table-empty flex items-center justify-center rounded-[var(--radius-atlas-md)] border border-[var(--color-border)] bg-[var(--color-surface)] py-16 text-sm text-[var(--color-ink-muted)] shadow-[var(--shadow-atlas)]">
         {emptyLabel}
       </div>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded-[22px] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-atlas)]">
+    <div className="atlas-data-table overflow-x-auto rounded-[22px] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-atlas)]">
       <table className="w-full min-w-[640px] border-collapse text-sm">
         <thead>
           <tr className="border-b border-[var(--color-border)] bg-[var(--color-surface-sunken)]">

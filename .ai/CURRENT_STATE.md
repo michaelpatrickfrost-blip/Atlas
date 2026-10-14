@@ -1,3 +1,15 @@
+## 14 October 2026 — Banner candidate passed; final launcher rehearsal correction
+
+Prepared5a2e28ac passed36 entry screens at1440/820/390, native crossfade, reduced
+motion and Home/Apps down to320px (privatekiVtdp coverage/screenshots). Finance
+preview visually verified with the shared light banner and glass action. Switch
+rehearsalfa1ssm passed20 read-only page loads/menu toggles but stopped on another
+stale launcher expectation: public / intentionally renders AtlasWebsite; /home is
+the authenticated launcher. Corrected only the checker navigation and result label.
+No app behaviour change. Scoped lint and diff checks PASS. Next: pinned retry,
+complete switch/rollback rehearsal and public acceptance, then safe swap cleanup.
+Public75977b02 remains unchanged; no new grants, fixtures or business writes.
+
 ## 14 October 2026 — Align remaining banners with the premium UI
 
 Michael identified the dark Financial command centre and similar banners as out

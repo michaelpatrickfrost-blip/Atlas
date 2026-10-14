@@ -42,7 +42,7 @@ async function main() {
     await expect(page.locator("main")).not.toContainText(/disabled in your workspace|not enabled for this company/i);
     for (const width of [1440, 768, 390]) {
       await page.setViewportSize({ width, height: 1000 });
-      await page.goto(`${base}/`, { waitUntil: "networkidle" });
+      await page.goto(`${base}/home`, { waitUntil: "networkidle" });
       await expect(page).toHaveURL(`${base}/home`);
       await expect(page.getByRole("heading", { name: "Your apps", exact: true })).toBeVisible();
       const nav = page.getByRole("navigation", { name: "Apps", exact: true });
@@ -80,7 +80,7 @@ async function main() {
       await expect(toggle).toHaveAttribute("aria-expanded", "false");
     }
     assert.equal(failures, 0);
-    console.log(`PASS launcher: ${apps.length} authorised module links/icons; desktop/tablet/phone, root landing, no overflow, My work navigation and Apps switching; zero browser/chunk errors. All writes blocked.`);
+    console.log(`PASS launcher: ${apps.length} authorised module links/icons; desktop/tablet/phone, Home landing, no overflow, My work navigation and Apps switching; zero browser/chunk errors. All writes blocked.`);
   } finally { await browser.close(); await db.$disconnect(); }
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });

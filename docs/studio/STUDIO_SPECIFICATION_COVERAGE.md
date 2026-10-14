@@ -78,6 +78,22 @@ STUDIO_VISUAL_BUILDER_REQUIREMENTS.md and are still unfinished Phase 2 work.
 
 ## Exact next checkpoint
 
+14 October: bounded Home/defaults correction IMPLEMENTED, focused67/4/scoped lint/
+full types PASS; original production90532 running. Save reviewed source/memory then
+original exact compatible bridge, followed by new-family positive pair. No whole
+Phase2 PASS or live visual outcome inferred from these source checks.
+
+Current12October checkpointb30e85d8: setup/dashboard continuous metadata checks,
+current saved/local explicit comparisons and approved measure navigation integrated;
+original compatible gallery resolver restored; actual staff selected-business journey,
+native panel/exact currency proof and native forwarding/refresh source closure added.
+Local production/strict/scoped lint and bounded tests PASS; original candidatei6watQ
+EXIT1 before activation at Ticket defaults /tickets/create networkidle timeout30s;
+native browser/HTTP forms PASS, visual/public not reached. Phase2 FAIL. First bridge retains
+only original4family pair; next accepted compatible candidate/public must exercise
+all new families. Permanent ledger/current state give exact original runner/log and
+unpinned HEAD and exact investigation next action. The following dated evidence describes prior checkpoints.
+
 Original75977 full candidate/public combined release PASS and health/pointer verified.
 WholePhase2 remains incomplete: original old paired reader deferred new visual families.
 Root connected original company View publication/readers, opt-in immutable embedding,

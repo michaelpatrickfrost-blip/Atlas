@@ -1,3 +1,96 @@
+## 14 October 2026 — bounded Home/defaults checkpoint ready for actual retry
+
+Focused67/4 PASS35327; scoped lint76275 EXIT0 (existing Home img warning);
+full TypeScript77789 and production90532 EXIT0. Final source/doc diff reviewed,
+no unrelated removals. Original direct writers/readers/seals/tenant/current authority
+remain strict. No DB/migration/dependency/copy/ad-hoc dump. Live75977 verified.
+WholePhase2 FAIL. Exact next: save this coherent reviewed checkpoint and invoke the
+original exact-pinned Studio release; keep HEAD fixed through its locks/backups/
+compatibility/candidate/public gates. After accepted bridge run the required next
+compatible new-family positive pair before full Phase2 gate. No later engines.
+
+## 14 October 2026 — recovered bounded Phase2 release corrections
+
+Root recovered source without new checkouts/dependencies: helper's exact four owned
+Home/service/runtime-test/new Home-test files match root plus only intended discovery
+changes. Genuine native identity/server CUSTOMER scope precedes field authority;
+current registry discovery omits unavailable Analytics before definition/name queries.
+Direct reads/writers and corrupt sealed metadata remain strict. No schema/data changes.
+Focused67/4 PASS35327; scoped lint76275 EXIT0 with existing Home img warning, no errors.
+Defaults correction retained original30s/HTTP200/native assertions and private bounded
+failure diagnostics. Earlier12October lint PASS was recorded, local temporary log is
+now absent; current scoped lint includes the checker and passed. Strict/build pending.
+Live health75977b02dcb3355863788e968d839ec2481fa79a verified unchanged. WholePhase2
+FAIL, no Phase3 work. Exact next: finish strict/build, review/update docs/checkpoint,
+original compatible candidate/public bridge then required new-family positive pair.
+
+## 12 October 2026 — owning default-form readiness checkpoint
+
+IMPLEMENTED in original check-ticket-defaults.ts. Actual sealed-source mapping proves
+Analytics errors originate Home, not Ticket creation. Existing logs cannot identify
+which navigation attempt or slow document versus background request; no cause claim.
+Original shell polls/refreshes independently, so networkidle is unsuitable form-ready
+evidence. Both original navigations now retain30s, require DOMContentLoaded +HTTP200,
+then all original native controls/defaults/atomicity/replay/current-rights assertions.
+On navigation failure bounded method/path/type/elapsed diagnostics go to original
+private acceptance log (no headers/query/cookies/body/new artifacts). Scoped lint/
+strict/build pending; actual original candidate/public retry remains mandatory.
+Home fix in existing helper IN PROGRESS, internal Home also needs genuine server
+CUSTOMER check before entering customer-only field authority; no catch/grant bypass.
+
+## 12 October 2026 — bounded Home dashboard discovery correction
+
+IN PROGRESS. Confirmed original Home uses enabledModulesForSession's staff exception
+while genuine business View registry correctly requires selected-company enablement/
+entitlement. listPublishedBusinessViewsInTransaction currently resolves owner before
+discovery, producing module-unavailable500 on Home for that supported staff context.
+Bounded service fix/test delegated in existing worktree: genuine fresh discovery
+omits unavailable owner before definition/name queries; strict direct readers/writers
+and corrupt sealed metadata remain fail-closed. No schema/grants/new engine/copies.
+Separate defaults navigation investigation remains open; no causal link inferred.
+
+## 12 October 2026 — b30e85d8 gate stopped before activation
+
+Original78889 EXIT1. HEAD is no longer pinned. Candidatei6watQ server build,
+owner/storage/lifecycle/Admin/CAS, complete native field checks and Ticket browser/
+HTTP forms PASS. Ticket defaults stopped at /tickets/create networkidle navigation
+timeout30s; visual/public gates were not reached. Test companies suspended safely,
+Audit retained and QA identity unchanged. Recovery040004/fixture040205 retained;
+readlink live75977 confirmed unchanged. WholePhase2 FAIL. No Phase3 work.
+Investigation IN PROGRESS: trace actual timeout and repeated Analytics unavailable
+errors in original040004-smoke.log before changing any app/checker behavior. No
+timeout waiver or runtime success inferred. Exact next: establish route/error source,
+fix confirmed bounded defect, focused checks/build/checkpoint then original bridge
+and required next compatible new-family positive pair. Entries below are historical.
+
+## 12 October 2026 — b30e85d8 candidate prepared, original actual gates running
+
+Original78889 still IN PROGRESS; HEAD b30e85d82aa96d79f4f599196dd5caadcb81fcab
+pinned. Original server production040004-build.log EXIT0; sealed pair with75977
+supports literalFieldDefaults/structuredPages/recordProfiles/recordTypeForms only.
+New panels/KPI/View/embedding/conditional families remain deferred until next accepted
+pair, never PASS. Mandatory recovery040004 and fixture040205 retained. Actual candidate
+private evidence /tmp/atlas-studio-candidate-i6watQ/acceptance.log (sudo-n read needed).
+Actual Tickets owner/field storage/metadata lifecycle/business setup/draft conflict
+PASS so far; complete customer/field/profile/visual/public result not yet reached.
+Server138GBfree/readlinklive75977 confirmed. Full unchanged spec6.2/6.4–8/18.2/27
+re-read/checksum matches original. No source/HEAD changes during current run.
+Exact next: inspect original78889 and actual candidate evidence through complete
+acceptance/activation/public outcome. If failed preserve complete failure/cleanup/live
+state, then targeted fix/checkpoint/retry; if PASS run next compatible pair for ALL
+new-family actual positives. WholePhase2 FAIL until both complete. No Phase3 engine.
+
+## 12 October 2026 — b30e85d8 original compatible release IN PROGRESS
+
+Reviewed46file checkpointb30e85d82aa96d79f4f599196dd5caadcb81fcab saved clean,
+original Studio deploy78889 running. HEAD pinned until completion; no source commit
+or branch move during original locks/compatibility/recovery/candidate/public gates.
+Local log /tmp/atlas-studio-phase2-builder-closure-release.txt. Final source/build
+checks are recorded below. No actual acceptance outcome inferred yet. WholePhase2
+FAIL; new-family positive pair still required after bridge. No later-phase engines.
+Exact next: read original78889 actual evidence, preserve/fix genuine failure if any;
+if bridge accepted, run next exact compatible new-family candidate/public gate.
+
 ## 12 October 2026 — reviewed Phase2 builder/native checkpoint ready for original gate
 
 Root final integrated198/8 PASS54541; actual-checker early99/4 PASS26261; native

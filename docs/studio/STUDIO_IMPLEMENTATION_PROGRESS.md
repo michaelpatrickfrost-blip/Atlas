@@ -1,6 +1,6 @@
 # Atlas Studio implementation progress
 
-Updated: 12 October 2026. This dashboard supersedes historical next steps below.
+Updated: 14 October 2026. This dashboard supersedes historical next steps below.
 The unchanged source is ATLAS_STUDIO_SOURCE.docx; SHA256 matches Michael's original:
 4afb01d98ead51cd70ec4958620eb9d27a19a0298cd0fa1cb8bd0aee69d9198d.
 STUDIO_SPECIFICATION_COVERAGE.md traces the source requirements across all phases.
@@ -13,6 +13,54 @@ phase wording on9 October: proceed in the document's order. No Phase3 features
 before the complete Phase2 gate passes. Foundation-first order remains authorised.
 
 # Current Workstream
+
+IMPLEMENTED/source checks complete — bounded Home/defaults checkpoint ready for
+original actual retry. Focused67/4 PASS35327, scoped lint76275 EXIT0, full types77789
+and production90532 EXIT0. Final diff reviewed; no unrelated removal/DB change.
+Exact next save source/memory then original pinned bridge. WholePhase2 FAIL until
+actual compatible candidate/public and next new-family positives; live75977 retained.
+
+IMPLEMENTED — recovered bounded Home/dashboard discovery correction and original
+default-form readiness. Exact four owned helper files integrated after comparison;
+unrelated helper edits preserved. Focused67/4 PASS35327, scoped lint76275 EXIT0
+(existing Home img warning). Strict/build pending. No DB/migration/dependencies/copy.
+Actual live health75977 confirmed unchanged; wholePhase2 FAIL until original bridge
+and next new-family positive pair pass. Earlier checkpoint entries below historical.
+
+IMPLEMENTED — original default-form readiness correction. Both navigation deadlines
+remain30s; DOMContentLoaded +HTTP200 then actual original owning controls/defaults
+replace global networkidle (independent shell polling). Bounded original private-log
+failure diagnostics, no body/headers/query/secrets/new dump. Sealed-source trace proves
+Analytics failures are Home-only; actual timeout cause is not captured in prior logs.
+Expected file check-ticket-defaults.ts; no DB changes. Scoped lint/strict/build and
+actual original compatible retry pending. Home discovery correction in parallel.
+
+IN PROGRESS — bounded current Home dashboard discovery correction (existing helper):
+purpose omit genuinely unavailable Analytics owner before names/definition queries;
+dependency original fresh FieldRuntimeAuthority + registry discovery; expected service/
+focused test paths, no DB change. Direct readers/writers/corrupt sealed definitions
+retain strict errors. Confirmed staff launcher exception/current owner mismatch;
+not yet proven cause of separate defaults navigation timeout. Focused tests/review,
+strict/lint/build and original candidate/public retry required for completion.
+
+IN PROGRESS — investigate original78889 EXIT1 before activation. b30/i6watQ server
+build, owner/storage/lifecycle/Admin/CAS, native field gates and actual Ticket forms
+PASS; defaults /tickets/create networkidle30s timeout. Visual/public not reached.
+Test companies safely suspended, Audit retained, QA unchanged; live75977 confirmed.
+Recovery040004/fixture040205 retained, no HEAD pin. Trace actual timeout and repeated
+Analytics unavailable errors before bounded fix. WholePhase2 FAIL. Following entries
+are historical checkpoint evidence, not a currently running release.
+
+b30 original78889 candidatei6watQ prepared; server040004 build PASS, mandatory
+recovery040004/fixture040205 retained. First actual owner/storage/lifecycle/setup/
+draft-conflict assertions PASS; whole candidate/customer/visual/public not yet reached.
+Original4family bridge only; all newfamilies remain DEFERRED until next accepted pair.
+HEAD pinned; live75977 confirmed. WholePhase2 FAIL/incomplete. Source unchangedSHA.
+
+Originalb30e85d82aa96d79f4f599196dd5caadcb81fcab deploy78889 IN PROGRESS.
+HEAD pinned; no commit/branch move until original completion. Clean reviewed46file
+builder/native checkpoint; log /tmp/atlas-studio-phase2-builder-closure-release.txt.
+No actual runtime outcome inferred; wholePhase2 FAIL pending both compatible stages.
 
 Reviewed final builder/native source ready for original compatible gate. Final198/8
 source PASS54541, visual early99/4 PASS26261, native35/3 PASS80144; strict35946/
@@ -204,6 +252,11 @@ original service, without labels/counts/native/progress. New non-Test conditiona
 
 # Files Changed
 
+14 October bounded correction: original Home route and Analytics business View
+discovery service; existing runtime test +new Home test; original default checker.
+Shared CURRENT_STATE/DECISIONS/ledger/coverage/phase plan/Analytics contract updated.
+No unrelated helper files projected and no existing reader/writer/provider removed.
+
 Current closure: original configuration/setup decoder/actions/guard/editor; gated
 Sales layouts/preset factory; original selected-business staff checker, metadata/
 document/visual parent integration and panel/KPI checks; original manual action
@@ -277,6 +330,11 @@ from mocked SQL/authority collaborators.
 
 # Tests Run
 
+14 October bounded correction:67/4 focused assertions PASS35327, scoped lint76275
+EXIT0 (existing Home img warning), full TypeScript77789 EXIT0. Production90532
+IN PROGRESS. Current tests/lint/types include integrated Home and defaults changes.
+No actual candidate/public result inferred; original release retry pending.
+
 Final native/bridge source35/3 PASS80144; strict35946/scopedlint56633/build5279 EXIT0.
 Single test reserved variable corrected before final lint. No further app changes.
 No actual installed Mac, SQL/browser/release run for this checkpoint yet.
@@ -331,6 +389,16 @@ Original75977 candidate+public ALL COMBINED PASS28119; new feature families DEFE
 against old paired reader, not verified. New dependency SQL rehearsal PASS_ROLLBACK.
 
 # Test Results
+
+14 October: genuine current discovery/module/Read/forged/revoked/internal/corrupt
+metadata paths and native action forwarding source checks67/4 PASS. Scoped lint
+and full types EXIT0. WholePhase2 remains FAIL; runtime gates pending.
+
+12 October originalb30/78889 EXIT1 before activation: actual native Ticket forms
+PASS then defaults /tickets/create networkidle30s timeout. Actual sealed stack maps
+Analytics unavailable errors to Home discovery separately. Neither prior log captures
+request timing/attempt, so timeout cause is not proven. Test access retired safely,
+Audit/QA preserved, live75977 unchanged; recovery040004/fixture040205 retained.
 
 ## 12 October 2026 — d720 old customer landing assertion
 
@@ -497,6 +565,11 @@ Decisions and rationale recorded in .ai/DECISIONS.md; no silent source divergenc
 
 # Known Issues
 
+- b30 actual visual/public gate not reached because defaults navigation timed out.
+  Semantic owning-form readiness correction IMPLEMENTED, actual retry pending.
+  Separate confirmed staff Home discovery mismatch IMPLEMENTED and source tested;
+  live verification pending. No blanket dependency catch or new permission grant.
+
 - Original533b bridge failed beforeactivation: applied070 assignmentguard extraction/subtraction operator precedence. Read-only SQL reproduced; additive function-only repair implemented, actual rehearsal PASS_ROLLBACK and forward APPLIED5f1a; actual gates pending. No business rows/history altered.
 
 WholePhase2 incomplete: compatible actual visual/profile/type/default/dashboard
@@ -523,10 +596,9 @@ journeys mandatory. No later phase starts.
 
 # Exact Next Action
 
-Save reviewed builder/native source checkpoint with shared memory. Run original
-pinned Studio candidate/public bridge using exact HEAD and codex/studio-phase2;
-keep HEAD fixed until original locks/backups/compatibility/runtime gates finish.
-Fix genuine failures with preserved evidence. After accepted bridge, next compatible
+Save reviewed bounded Home/defaults source and shared memory checkpoint, then original
+pinned Studio bridge retry. Keep HEAD fixed until original gates finish.
+After accepted bridge, next compatible
 candidate/public pair must positively exercise all new panels/KPI/View/embedding/
 non-Test conditional/staff authoring families before Phase2 PASS. No later engines.
 

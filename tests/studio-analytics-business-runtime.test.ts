@@ -10,18 +10,18 @@ import { analyticsBusinessViewContract } from "@/modules/analytics/services/stud
 import { salesAnalyticsStudioContract } from "@/modules/sales/services/studio-analytics";
 import { productsAnalyticsStudioContract } from "@/modules/products/services/studio-analytics";
 import { createBusinessViewDraftInTransaction, saveBusinessViewDraftInTransaction, loadBusinessViewMetricsInTransaction,
-  loadBusinessViewSliceInTransaction, readPublishedAnalyticsViewInTransaction, listPublishedBusinessViewsInTransaction } from "@/modules/analytics/services/studio-business-view";
+  loadBusinessViewSliceInTransaction, readPublishedAnalyticsViewInTransaction, listPublishedBusinessViewsInTransaction, listPublishedBusinessViews } from "@/modules/analytics/services/studio-business-view";
 import { businessViewCreateSchema, businessViewSaveSchema } from "@/modules/analytics/services/business-view-contract";
 const m = vi.hoisted(() => ({ stamp: vi.fn(), bridge: vi.fn(), definition: vi.fn(), version: vi.fn(), draft: vi.fn(), create: vi.fn(), update: vi.fn(), audit: vi.fn(),
-  modules: vi.fn(), catalogue: vi.fn(), queries: vi.fn(), list: vi.fn() }));
+  modules: vi.fn(), catalogue: vi.fn(), queries: vi.fn(), list: vi.fn(), tx: vi.fn(), native: vi.fn(), customer: vi.fn() }));
 vi.mock("@/core/auth/session", () => ({ sessionAuthorityStamp: m.stamp, requireSession: vi.fn(), getSession: vi.fn(), sessionForUser: vi.fn() }));
-vi.mock("@/core/db/client", () => ({ db: {} }));
-vi.mock("@/core/studio/fields/runtime-authority", () => ({ fieldRuntimeAuthorityInTransaction: m.bridge }));
+vi.mock("@/core/db/client", () => ({ db: { $transaction: m.tx } }));
+vi.mock("@/core/studio/fields/runtime-authority", () => ({ fieldRuntimeAuthorityInTransaction: m.bridge, nativeFieldMutationSessionInTransaction: m.native }));
 vi.mock("@/core/modules/runtime", () => ({ getEnabledModuleIds: vi.fn(), enabledModulesForSession: vi.fn() }));
 vi.mock("@/core/analytics/catalogue", () => ({ getAnalyticsMetrics: m.catalogue }));
 const id = (n: number) => `90000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
 const stamp: SessionAuthorityStamp = { organisationId: "a", userId: "actor", membershipId: "member", authVersion: 1, sessionVersion: 1 };
-const transaction = { studioDefinition: { findFirst: m.definition, findMany: m.list, create: m.create, updateMany: m.update }, studioDefinitionVersion: { findFirst: m.version }, studioDraft: { findFirst: m.draft, updateMany: m.update },
+const transaction = { organisation: { findFirst: m.customer }, studioDefinition: { findFirst: m.definition, findMany: m.list, create: m.create, updateMany: m.update }, studioDefinitionVersion: { findFirst: m.version }, studioDraft: { findFirst: m.draft, updateMany: m.update },
   moduleState: { findFirst: m.modules }, auditEntry: { create: m.audit } } as unknown as Prisma.TransactionClient;
 let authority: FieldRuntimeAuthority, session: Session, fresh: Session, registry: CapabilityRegistry, issued: WeakMap<Session, SessionAuthorityStamp>, enabled: Set<string>;
 let saved: Awaited<ReturnType<typeof compileRegisteredView>>, row: ReturnType<typeof versionRow>;
@@ -51,6 +51,12 @@ beforeEach(async () => {
     if (!issued.has(value) || !issued.has(fresh) || value.organisationId !== stamp.organisationId || !tx) throw new Error("FORBIDDEN: genuine current authority required");
     return { session: fresh, stamp, transaction: tx, registry };
   });
+  m.tx.mockImplementation(async callback => callback(transaction));
+  m.native.mockImplementation(async (value, tx) => {
+    if (!issued.has(value) || !issued.has(fresh) || tx !== transaction) throw new Error("FORBIDDEN: genuine native identity required");
+    return { session: fresh, stamp };
+  });
+  m.customer.mockResolvedValue({ id: "a" });
   saved = await compileRegisteredView(authority, payload()); row = versionRow();
   m.list.mockResolvedValue([{ id: id(1) }]); m.definition.mockResolvedValue({ id: id(1), name: "Overview", revision: 3, activeVersionId: id(2) }); m.version.mockImplementation(async ({ select }) => select.version ? { ...row } : { ...row });
   m.draft.mockResolvedValue({ id: id(3), definitionId: id(1), payload: saved.payload, definition: { retiredAt: null, name: content().name, revision: 3 }, updatedAt: new Date("2026-10-12T00:00:00Z"), revision: 0 });
@@ -139,4 +145,53 @@ it("retained pin preflight never follows active pointer and counts EACH approved
   m.queries.mockClear(); fresh.capabilities.delete("core.products.read");
   await expect(inspectSealedViewForReadInTransaction(authority, pin)).rejects.toThrow("FORBIDDEN");
   await expect(readSealedViewInTransaction(authority, pin)).rejects.toThrow("FORBIDDEN"); expect(m.queries).not.toHaveBeenCalled();
+});
+
+it.each(["module", "read"])("Home discovery omits currently unavailable Analytics %s before definition metadata while direct reads stay strict", async cause => {
+  // Shell staff navigation can advertise every implemented app; the actual
+  // current business registry must still follow genuine entitlement + Read.
+  session.capabilities.add("atlas.staff"); fresh.capabilities.add("atlas.staff");
+  if (cause === "module") enabled.delete("analytics"); else fresh.capabilities.delete("analytics.dashboard.read");
+  m.list.mockClear();
+  expect(await listPublishedBusinessViewsInTransaction(authority)).toEqual([]);
+  expect(m.list).not.toHaveBeenCalled(); expect(m.definition).not.toHaveBeenCalled(); expect(m.version).not.toHaveBeenCalled(); expect(m.queries).not.toHaveBeenCalled();
+  await expect(readPublishedAnalyticsViewInTransaction(authority, request())).rejects.toThrow(cause === "module" ? "DEPENDENCY_BROKEN" : "FORBIDDEN");
+  expect(m.queries).not.toHaveBeenCalled();
+});
+it.each(["forged", "revoked"])("Home discovery keeps %s genuine current identity failures hard, never treating them as unavailable owners", async cause => {
+  if (cause === "forged") authority.session = { ...session }; else issued.delete(fresh);
+  m.list.mockClear(); await expect(listPublishedBusinessViewsInTransaction(authority)).rejects.toThrow("FORBIDDEN");
+  expect(m.list).not.toHaveBeenCalled(); expect(m.queries).not.toHaveBeenCalled();
+});
+
+it("Home wrapper refreshes native identity and CUSTOMER scope before field authority in one Serializable transaction", async () => {
+  m.bridge.mockClear();
+  expect(await listPublishedBusinessViews(session)).toMatchObject([{ name: content().name }]);
+  expect(m.tx).toHaveBeenCalledWith(expect.any(Function), { isolationLevel: "Serializable" });
+  expect(m.native).toHaveBeenCalledWith(session, transaction);
+  expect(m.customer).toHaveBeenCalledWith({ where: { id: fresh.organisationId, kind: "CUSTOMER", status: "ACTIVE", archivedAt: null }, select: { id: true } });
+  expect(m.native.mock.invocationCallOrder[0]).toBeLessThan(m.customer.mock.invocationCallOrder[0]);
+  expect(m.customer.mock.invocationCallOrder[0]).toBeLessThan(m.bridge.mock.invocationCallOrder[0]);
+  expect(m.bridge.mock.calls.every(([value, tx]) => value === fresh && tx === transaction)).toBe(true);
+  expect(m.queries).not.toHaveBeenCalled(); expect(m.audit).not.toHaveBeenCalled(); expect(m.update).not.toHaveBeenCalled();
+});
+it.each(["INTERNAL", "suspended CUSTOMER", "archived CUSTOMER"])("Home wrapper returns no customer names for actual %s before field authority", async () => {
+  m.customer.mockResolvedValue(null); m.bridge.mockClear();
+  fresh.capabilities.add("atlas.staff");
+  expect(await listPublishedBusinessViews(session)).toEqual([]);
+  expect(m.native).toHaveBeenCalledWith(session, transaction);
+  expect(m.bridge).not.toHaveBeenCalled(); expect(m.list).not.toHaveBeenCalled(); expect(m.definition).not.toHaveBeenCalled();
+  expect(m.version).not.toHaveBeenCalled(); expect(m.queries).not.toHaveBeenCalled();
+});
+it.each(["forged", "revoked"])("Home wrapper retains %s identity failure before CUSTOMER/field lookup", async mode => {
+  const supplied = mode === "forged" ? { ...session } : session;
+  if (mode === "revoked") issued.delete(fresh);
+  m.bridge.mockClear();
+  await expect(listPublishedBusinessViews(supplied)).rejects.toThrow("FORBIDDEN");
+  expect(m.customer).not.toHaveBeenCalled(); expect(m.bridge).not.toHaveBeenCalled(); expect(m.list).not.toHaveBeenCalled(); expect(m.queries).not.toHaveBeenCalled();
+});
+it("Home wrapper uses refreshed tenant identity and never converts customer authority failure into empty discovery", async () => {
+  m.bridge.mockClear(); m.bridge.mockRejectedValue(new Error("FORBIDDEN: customer membership revoked"));
+  await expect(listPublishedBusinessViews(session)).rejects.toThrow("customer membership revoked");
+  expect(m.list).not.toHaveBeenCalled(); expect(m.definition).not.toHaveBeenCalled(); expect(m.queries).not.toHaveBeenCalled();
 });

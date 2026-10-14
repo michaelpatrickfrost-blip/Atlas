@@ -6,6 +6,13 @@ that all 195 sections are accepted. This document describes the implemented work
 
 ## Workspace and design
 
+Published business-dashboard discovery on Home refreshes the genuine authenticated
+identity and checks the server-owned customer workspace before reading Studio
+metadata. The internal Atlas workspace has no customer dashboards. Staff launcher
+availability does not bypass selected-company enablement, entitlement or current
+Read permission: unavailable Analytics is omitted before names or definition queries.
+Direct dashboard readers/writers and incompatible sealed definitions remain strict.
+
 Dashboards at `/analytics` joins Home, Reports, My tasks, Messages and Settings in
 the modern business workspace sidebar. It is removed from Home's business-app cards.
 Analytics remains an entitled/enabled module with its original read/manage

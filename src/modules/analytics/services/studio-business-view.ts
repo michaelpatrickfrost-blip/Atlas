@@ -1,8 +1,10 @@
 import { z } from "zod";
+import type { Session } from "@/core/auth/session";
+import { db } from "@/core/db/client";
 import { assertCapability } from "@/core/permissions/check";
 import { getAnalyticsMetrics } from "@/core/analytics/catalogue";
 import type { AnalyticsMetric, AnalyticsResult } from "@/core/analytics/types";
-import { fieldRuntimeAuthorityInTransaction, type FieldRuntimeAuthority } from "@/core/studio/fields/runtime-authority";
+import { fieldRuntimeAuthorityInTransaction, nativeFieldMutationSessionInTransaction, type FieldRuntimeAuthority } from "@/core/studio/fields/runtime-authority";
 import { createViewDraftInTransaction, readViewDraftInTransaction, saveViewDraftInTransaction, reviewViewDraftInTransaction,
   publishViewDraftInTransaction, restoreViewVersionInTransaction } from "@/core/studio/authoring/views";
 import { readPublishedViewInTransaction, readPublishedViewMetadataInTransaction, readSealedViewInTransaction } from "@/core/studio/views/runtime";
@@ -119,7 +121,12 @@ async function displayResults(authority: FieldRuntimeAuthority, rawContent: unkn
  * read preflight runs before exposing each friendly name. Denied independent
  * source views are omitted; corrupt/unsupported metadata remains a hard error. */
 export async function listPublishedBusinessViewsInTransaction(authority: FieldRuntimeAuthority) {
-  authority = await current(authority);
+  authority = await fieldRuntimeAuthorityInTransaction(authority.session, authority.transaction);
+  // Navigation's staff exception is not a Studio entitlement. Discovery uses
+  // the genuine registry's actual module/current Read policy before any draft,
+  // definition or version query; direct readers/writers still use strict current().
+  const available = await authority.registry.discover(authority.session);
+  if (!available.some(metadata => metadata.id === owner && metadata.version === 1)) return [];
   const candidates = await authority.transaction.studioDefinition.findMany({ where: { organisationId: authority.session.organisationId,
     kind: "view", retiredAt: null, activeVersionId: { not: null }, activeVersion: { payload: { path: ["sourceView", "id"], equals: owner } } },
     select: { id: true }, orderBy: { id: "asc" }, take: 101 });
@@ -135,6 +142,20 @@ export async function listPublishedBusinessViewsInTransaction(authority: FieldRu
     }
   }
   return result;
+}
+
+/** Home discovery also supports the genuine INTERNAL Atlas workspace: it has
+ * no customer Studio configuration authority and returns no customer names.
+ * Refresh errors remain hard; a client/session DTO cannot select another tenant. */
+export async function listPublishedBusinessViews(authenticated: Session) {
+  return db.$transaction(async transaction => {
+    const current = await nativeFieldMutationSessionInTransaction(authenticated, transaction);
+    const customer = await transaction.organisation.findFirst({ where: { id: current.session.organisationId,
+      kind: "CUSTOMER", status: "ACTIVE", archivedAt: null }, select: { id: true } });
+    if (!customer) return [];
+    const authority = await fieldRuntimeAuthorityInTransaction(current.session, transaction);
+    return listPublishedBusinessViewsInTransaction(authority);
+  }, { isolationLevel: "Serializable" });
 }
 
 /** Module-owned native display adapter for an exact sealed embedded view. The

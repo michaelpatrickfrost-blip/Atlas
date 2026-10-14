@@ -1,3 +1,14 @@
+## 14 October 2026 — bounded actual release corrections
+
+Workstream purpose: close confirmed staff Home discovery mismatch and capture
+owning default-form readiness. Dependencies: original current authentication,
+customer scope and registry discovery; original Ticket form/current typed assertions.
+Files: Home, original Analytics View service, focused runtime/Home tests, original
+default checker. DB/migrations/dependencies: none. Source IMPLEMENTED;67/4 focused
+tests/scoped lint/full types PASS. Production and original candidate/public retry
+pending. Phase2 remains FAIL. Direct readers/writers/sealed metadata retain strict
+authority; unavailable owner omitted before names/queries. No later engines.
+
 ## 12 October 2026 — visual closure and genuine selected-business proof
 
 Additional source6.2/18.2 workstreams: original setup continuous metadata inspection

@@ -129,6 +129,26 @@ export async function checkTicketDefaults(base: string, browser: Browser, existi
       process.env.SESSION_SECRET, { algorithm: "HS256", expiresIn: "30m" });
     await context.addCookies([{ name: "atlas_session", value: token, url: base, secure: base.startsWith("https"), httpOnly: true, sameSite: "Lax" }]);
     const page = await context.newPage(), browserErrors: string[] = []; page.on("pageerror", error => browserErrors.push(error.message));
+    const pendingRequests = new Set<import("playwright").Request>();
+    page.on("request", request => pendingRequests.add(request));
+    page.on("requestfinished", request => pendingRequests.delete(request));
+    page.on("requestfailed", request => pendingRequests.delete(request));
+    async function navigate(url: string, operation: string) {
+      const started = Date.now();
+      try {
+        // The shell refreshes and polls independently. Its global network silence
+        // is not owning-form readiness; retain the deadline and require HTTP200,
+        // then the actual native/typed controls below before any operation.
+        const response = await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30_000 });
+        assert(response, "Ticket navigation must return its document response.");
+        assert.equal(response.status(), 200, "Ticket document must load successfully.");
+      } catch (error) {
+        console.error("Ticket defaults navigation failed", JSON.stringify({ operation, elapsedMs: Date.now() - started,
+          path: new URL(page.url()).pathname, pending: [...pendingRequests].slice(0, 20).map(request => ({
+            method: request.method(), path: new URL(request.url()).pathname, type: request.resourceType() })) }));
+        throw error;
+      }
+    }
     const snapshot = async () => ({
       native: await db.serviceWorkItem.findMany({ where: scope, orderBy: { id: "asc" } }),
       entries: await db.serviceWorkEntry.findMany({ where: scope, orderBy: { id: "asc" } }),
@@ -179,7 +199,7 @@ export async function checkTicketDefaults(base: string, browser: Browser, existi
     const createForm = () => page.locator("form").filter({ has: page.getByRole("button", { name: "Create ticket", exact: true }) });
     const editForm = () => page.locator("form").filter({ has: page.getByRole("button", { name: "Update work", exact: true }) });
     async function openCreate(subject: string, queueId = queue.id, suggestedAnswer = "no") {
-      await page.goto("/tickets/create", { waitUntil: "networkidle" });
+      await navigate("/tickets/create", subject);
       await createForm().getByLabel("Receiving team", { exact: true }).selectOption(queueId);
       await createForm().getByLabel("Subject", { exact: true }).fill(subject);
       await createForm().getByLabel("Details and requested action", { exact: true }).fill("Bounded retained central Test literal default acceptance.");
@@ -326,7 +346,7 @@ export async function checkTicketDefaults(base: string, browser: Browser, existi
     const legacyReceipt = ticketFormReceiptSchema.parse((await db.auditEntry.findFirstOrThrow({ where: { ...scope,
       entityId: legacyId, action: "tickets.form.completed", entityType: "TicketFormReceipt" } })).after);
     assert.equal(legacyReceipt.fields.length, 2); assert(legacyReceipt.fields.every(field => field.defaulted));
-    await page.goto(`/tickets/${second.recordId}`, { waitUntil: "networkidle" });
+    await navigate(`/tickets/${second.recordId}`, "Retained explicit null on original ticket");
     await expect(editForm().getByRole("spinbutton", { name: /^Suggested count/ })).toHaveValue("");
     const beforeImmutable = await snapshot();
     await assert.rejects(() => db.auditEntry.update({ where: { id: ticketFormReceiptKey(firstReceipt.operationId), organisationId }, data: { after: {} } }), /immutable/);

@@ -7,8 +7,7 @@ import { AppDirectory } from "@/components/shell/app-directory";
 import { GoalMeter } from "@/modules/kpis/components/goal-meter";
 import { loadGoalWorkspace } from "@/modules/kpis/services/workspace";
 import { listCustomerScreens } from "@/core/studio/pages/customer-catalog";
-import { withFieldRuntimeAuthority } from "@/core/studio/fields/runtime-authority";
-import { listPublishedBusinessViewsInTransaction } from "@/modules/analytics/services/studio-business-view";
+import { listPublishedBusinessViews } from "@/modules/analytics/services/studio-business-view";
 
 const PANEL = "rounded-2xl border border-black/[0.06] bg-white";
 const DOT = { critical: "bg-[#d12b45]", warning: "bg-[#c9820a]", info: "bg-[#c7c7cc]" } as const;
@@ -20,7 +19,7 @@ export default async function HomePage() {
   const highlights = goalBoard?.goals.filter((goal) => goal.status === "ACTIVE").slice(0, 4) ?? [];
   const screens = await listCustomerScreens(session);
   const businessDashboards = enabled.has("analytics") && session.capabilities.has("analytics.dashboard.read")
-    ? await withFieldRuntimeAuthority(session, authority => listPublishedBusinessViewsInTransaction(authority)) : [];
+    ? await listPublishedBusinessViews(session) : [];
   return (
     <div className="mx-auto flex max-w-[1440px] flex-col gap-5">
       <section id="your-apps" aria-labelledby="launcher-title" className="relative isolate scroll-mt-5 overflow-hidden rounded-[26px] border border-white bg-white/55 p-3 shadow-[0_10px_50px_-30px_rgba(64,98,151,0.25)] sm:p-5 lg:p-7">

@@ -1,3 +1,20 @@
+## 12 October 2026 — owning form readiness and genuine dashboard discovery
+
+Use an actual successful document response and owning native/typed form controls
+for default-form readiness. Global networkidle is unsuitable for a shell that polls
+and refreshes independently. Keep original30s navigation deadline and every business
+assertion; record bounded request method/path/type diagnostics in the existing private
+acceptance log on failure. Prior evidence does not establish the timeout's cause.
+
+Published customer-dashboard discovery must use genuine current company module
+enablement/entitlement, even when staff navigation offers all apps. Omit unavailable
+owners before querying definition IDs/names through the original registry discovery;
+do not grant capabilities or catch arbitrary dependency errors. Internal Atlas Home
+has no customer Studio layouts: check its genuine server-owned organisation before
+entering customer-only field authority. Direct readers/writers and incompatible
+sealed definitions retain their existing strict checks. This preserves the specification
+server boundaries and existing launcher policy without a duplicate discovery engine.
+
 ## 12 October 2026 — native Studio forwards share original guarded exports
 
 Ordinary web releases do not regenerate the checked-in desktop actionallowlist.

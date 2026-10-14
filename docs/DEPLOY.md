@@ -524,6 +524,15 @@ never recreate/change lock ownership/inodes to work around sticky-file protectio
 
 ## Usability/Guides/production handoff acceptance
 
+14 October premium f9bb9b16 compilation repeated the confirmed memory failure:
+kernel193355UTC killed candidate compiler1051146; live75977b02 stayed unchanged
+and recovered HTTPS. Extra private preview stopped. Under both original locks,
+failed source/config was retained as failed-premium-f9bb9b16398de23fc7db46c329dc62c8f4e53f35-20261014
+in maintenance backups, with only generated outputs retired. Temporary2GiB
+/var/tmp/atlas-release-build.swap activated for the pinned retry. Original193106
+recovery/logs and premium-build-memory-20261014.txt retained. Apply the same safe
+post-build swap cleanup requirements above; no permanent service/config change.
+
 Use `ATLAS_RELEASE_ACCEPTANCE=usability` with the exact reviewed release branch/SHA.
 The checked-in `scripts/check-usability-release.ts` exercises the sealed candidate
 and public HTTPS under the existing release locks, taking central backups at both

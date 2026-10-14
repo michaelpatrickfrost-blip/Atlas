@@ -1,3 +1,17 @@
+## 14 October 2026 — Premium compiler memory recovery; activation still pending
+
+f9bb9b16 passed local production build, strict types and15/4 focused tests. Server
+kernel193355UTC confirms OOM killed candidate compiler1051146 before acceptance.
+SSH/HTTPS briefly timed out; public75977b02 recovered unchanged. Stopped the private
+preview processes. Under both original locks/no candidate process, retained failed
+source/config at /opt/atlas-maintenance-backups/failed-premium-f9bb9b16398de23fc7db46c329dc62c8f4e53f35-20261014
+and retired only its generated dependencies/build/client. Original193106 required
+backup/build log retained. Reused documented temporary2GiB build-buffer procedure:
+/var/tmp/atlas-release-build.swap active, no fstab/app/PG/database configuration
+changes; evidence premium-build-memory-20261014.txt in maintenance backups.
+Next: normal pinned retry and complete candidate/public acceptance; remove exact
+temporary swap under both locks once no compiler remains and RAM safely permits.
+
 ## 14 October 2026 — Premium candidate review corrections
 
 Prepared59e806cb remains unactivated. Actual read-only desktop gate passed35 app/

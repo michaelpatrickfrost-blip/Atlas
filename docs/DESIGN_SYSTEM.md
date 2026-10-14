@@ -18,10 +18,14 @@ is a presentation-only map used by the directory, app header and workspace shell
 Home uses numbered groups and individual app cards rather than nested white panels.
 The existing registered destinations and capability filtering remain authoritative.
 
-`PageMotion` animates the existing DOM on pathname changes (240ms); it never keys or
-remounts layouts/forms. No persistent transform/filter traps fixed overlays after
-motion completes. Cards lift only with a fine pointer; menus/dialogs have short
-entry transitions. Reduced motion disables movement; increased contrast strengthens
+`PageMotion` uses Next's bundled React ViewTransition for coordinated content
+crossfades and streamed arrivals (260ms), keeping shell chrome anchored. It never
+keys or remounts layouts/forms. Unsupported browsers use a 240ms arrival fallback.
+Record tabs retain mounted input while their content crossfades. Menus use discrete
+display transitions for opening/closing and immediately become inert when closed.
+No persistent transform/filter traps fixed overlays after motion completes.
+Cards lift only with a fine pointer. Reduced motion disables movement and snapshot
+animations; increased contrast strengthens
 control boundaries. Status tones retain their meaning independently of app colours.
 
 ## Foundation (tokens — `src/app/globals.css` and `src/app/premium.css`)

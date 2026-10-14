@@ -93,7 +93,7 @@ export function FloatingModuleNav({ title, items }: { title: string; items: Modu
                   {entry.label}
                   <ChevronDown size={13} strokeWidth={2} className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
                 </button>
-                <div role="menu" aria-label={entry.label} aria-hidden={!open} hidden={!open} className={`absolute inset-x-4 top-full z-[63] pt-2 transition-[opacity,transform] duration-200 ease-out lg:inset-x-auto lg:left-0 lg:w-52 ${open ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none -translate-y-1.5 opacity-0"}`}>
+                <div role="menu" aria-label={entry.label} aria-hidden={!open} hidden={!open} inert={!open} className="atlas-menu-motion absolute inset-x-4 top-full z-[63] pt-2 lg:inset-x-auto lg:left-0 lg:w-52">
                   <div className="atlas-float-dropdown rounded-2xl p-1.5">
                     {entry.items.map((item) => {
                       const Ico = iconForNav(item.label);

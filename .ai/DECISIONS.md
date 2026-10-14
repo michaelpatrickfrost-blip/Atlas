@@ -7,8 +7,11 @@ Nunito, with pearl surfaces, navy text, sapphire primary actions and muted curat
 app accents. Shared premium.css and shell/UI components own this system; no new
 per-module theme engines. The colour map is presentation only and grants nothing.
 Opaque menus and filter-free content containers preserve readability and layering.
-Route motion animates existing DOM without keyed layout remounts, so unsaved form
-state survives. Reduced motion disables movement; native dialogs retain focus and
+Route motion uses bundled React ViewTransition to coordinate streamed arrivals,
+with an arrival fallback for unsupported browsers. No keyed layout remounts, so
+unsaved form state survives. Tabs keep their mounted panels; closed menus are
+immediately inert while display transitions finish. Reduced motion disables
+movement and snapshot animations; native dialogs retain focus and
 save guards. Business/Admin separation and central data remain unchanged.
 
 ## 11 October 2026 — One publisher and genuine standalone visual Studio context

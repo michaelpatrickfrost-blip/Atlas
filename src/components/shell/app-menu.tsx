@@ -37,11 +37,9 @@ function WorkspaceAppMenu({ children }: { children: ReactNode }) {
         <LayoutGrid size={18} strokeWidth={1.75} aria-hidden="true" />
         <span className="hidden sm:inline">Apps</span>
       </button>
-      {open && (
-        <div id={panelId} role="region" aria-label="Apps menu" onClick={(event) => { if ((event.target as HTMLElement).closest("a")) close(); }} className="atlas-apps-popup fixed left-3 top-[calc(var(--atlas-topbar)+8px)] z-[70] w-[900px] max-w-[calc(100vw-24px)] rounded-2xl border border-black/[0.08] bg-white p-3 shadow-[0_16px_48px_-12px_rgba(0,0,0,0.18)] sm:absolute sm:left-0 sm:top-[calc(100%+8px)] sm:max-w-[calc(100vw-112px)] sm:p-4">
+        <div id={panelId} role="region" aria-label="Apps menu" hidden={!open} inert={!open} aria-hidden={!open} onClick={(event) => { if ((event.target as HTMLElement).closest("a")) close(); }} className="atlas-menu-motion atlas-apps-popup fixed left-3 top-[calc(var(--atlas-topbar)+8px)] z-[70] w-[900px] max-w-[calc(100vw-24px)] rounded-2xl border border-black/[0.08] bg-white p-3 shadow-[0_16px_48px_-12px_rgba(0,0,0,0.18)] sm:absolute sm:left-0 sm:top-[calc(100%+8px)] sm:max-w-[calc(100vw-112px)] sm:p-4">
           {children}
         </div>
-      )}
     </div>
   );
 }

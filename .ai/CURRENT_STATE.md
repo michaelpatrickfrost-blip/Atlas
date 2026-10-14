@@ -1,3 +1,27 @@
+## 14 October 2026 — Premium candidate review corrections
+
+Prepared59e806cb remains unactivated. Actual read-only desktop gate passed35 app/
+core/Admin roots, then correctly rejected the checker’s invalid staff Studio URL
+without a selected business. QA company has no Studio entitlement; corrected gate
+covers Admin Studio setup and only opens designer when already entitled, with the
+required business parameter. No grants/fixtures added; designer live coverage stays
+explicitly unavailable for this QA identity. Home/all Apps desktop/tablet passed;
+phone28px hit-target assertion failed during animated entry. Raised targets to30px,
+and visual phone review found the added Apps border could wrap header utilities;
+compact phone utility sizing now preserves the two-row header/search. Each polish
+checker now explicitly exits on failure so a following checker cannot mask it.
+Read-only private preview is open in the app through a loopback SSH tunnel; no POST
+requests or new access grants. Candidate screenshots and backup191858 retained.
+User explicitly reiterated fluid transitions. PageMotion now uses bundled React
+ViewTransition with260ms crossfades/streamed arrivals and an older-browser fallback;
+record tabs crossfade without remounting fields, menus ease both open and closed
+while closed contents immediately become inert. Shell chrome stays anchored and
+reduced-motion snapshot durations are zero. Native navigation assertion added to
+the browser gate. Final production build and strict TypeScript PASS; focused
+menu/shell/drawer/motion/tab-retention15/4 tests PASS; scoped lint, shell syntax and
+diff whitespace PASS. Existing topbar image warnings unchanged.
+Next: complete candidate/public responsive gate and activation.
+
 ## 14 October 2026 — Premium visual overhaul prepared; candidate verification pending
 
 Michael requests a substantial, consistent polish across every Atlas app, clarified

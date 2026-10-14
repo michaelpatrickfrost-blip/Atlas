@@ -49,7 +49,7 @@ export function Topbar({ session }: { session: Session }) {
       <div className="hidden min-[360px]:block"><WorkspaceBack /></div>
       <span title={session.organisationName} className="hidden max-w-48 truncate rounded-lg bg-blue-50/70 px-3 py-2 text-sm font-medium text-blue-600 lg:block">{session.organisationName}</span>
       <div className="order-3 w-full min-w-0 sm:order-none sm:w-auto sm:flex-1 xl:max-w-[720px]"><CommandPalette variant="workspace" /></div>
-      <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-1.5">
+      <div className="atlas-header-utilities ml-auto flex shrink-0 items-center gap-1 sm:gap-1.5">
         <NewWindow />
         {can(session, "core.profile.self") && <TasksButton />}
         <ContextGuideLink canPurchase={session.capabilities.has('finance.purchase.read')} />

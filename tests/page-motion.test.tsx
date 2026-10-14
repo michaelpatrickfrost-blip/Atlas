@@ -3,6 +3,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import { useState } from "react";
 import { PageMotion } from "@/components/shell/page-motion";
+import { Tabs } from "@/components/ui/tabs";
 const route = vi.hoisted(() => ({ pathname: "/customers" }));
 vi.mock("next/navigation", () => ({ usePathname: () => route.pathname }));
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
@@ -26,4 +27,14 @@ it("does not start route motion when reduced motion is requested", () => {
   Object.defineProperty(Element.prototype, "animate", { configurable: true, value: animate });
   render(<PageMotion><Draft /></PageMotion>);
   expect(animate).not.toHaveBeenCalled();
+});
+it("preserves unsaved record fields when moving between animated tabs", () => {
+  window.history.replaceState(null, "", "/customers/account");
+  render(<Tabs tabs={[{ id: "overview", label: "Overview", content: <Draft /> }, { id: "activity", label: "Activity", content: <p>Recent activity</p> }]} />);
+  fireEvent.change(screen.getByLabelText("Draft"), { target: { value: "Still here" } });
+  fireEvent.click(screen.getByRole("tab", { name: "Activity" }));
+  expect(screen.getByRole("tabpanel").textContent).toBe("Recent activity");
+  fireEvent.click(screen.getByRole("tab", { name: "Overview" }));
+  expect((screen.getByLabelText("Draft") as HTMLInputElement).value).toBe("Still here");
+  expect(window.location.hash).toBe("#overview");
 });

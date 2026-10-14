@@ -36,9 +36,12 @@ worktree uses `ATLAS_RELEASE_COMMIT=<full HEAD SHA>` after pushing that exact
 commit to `origin/main`. Main moving causes a safe stop for review.
 
 For shared visual releases, use `ATLAS_RELEASE_ACCEPTANCE=polish`. The read-only
-premium checker visits every authorised app root plus core/Admin/Studio at desktop,
+premium checker visits every authorised app root plus core/Admin at desktop,
 tablet and phone widths, captures private screenshots, checks viewport fit, loaded
-styles, browser/assets, Apps bounds/focus and reduced motion. Existing Home acceptance
+styles, browser/assets, Apps bounds/focus, actual client crossfades and reduced motion.
+Admin Studio setup is covered; standalone designer coverage requires an already
+entitled QA company and explicit selected-business URL. The gate never adds grants.
+Existing Home acceptance
 then checks all authorised entries and header interactions. Both run against the
 candidate and public runtime under the original lock pair. No fixtures, grants or
 extra fixture dumps are created; the required normal release backup is retained.

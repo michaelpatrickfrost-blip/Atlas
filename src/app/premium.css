@@ -76,13 +76,20 @@ body { background: var(--color-app-bg); color: var(--color-ink); }
   box-shadow: inset 0 1px 0 #fff, 0 2px 4px rgb(33 67 125 / 5%);
 }
 .atlas-apps-trigger:hover, .atlas-apps-trigger[aria-expanded=true] { background: #e7efff; border-color: #b6c9ed; }
-.atlas-apps-popup, .atlas-search-dialog { animation: atlas-surface-in 200ms var(--atlas-ease); box-shadow: var(--shadow-atlas-lg); }
+.atlas-apps-popup, .atlas-search-dialog { box-shadow: var(--shadow-atlas-lg); }
+.atlas-search-dialog { animation: atlas-surface-in 200ms var(--atlas-ease); }
+.atlas-menu-motion {
+  opacity: 1; translate: 0 0;
+  transition: opacity 180ms ease-out, translate 240ms var(--atlas-ease), display 240ms allow-discrete;
+}
+.atlas-menu-motion[hidden] { opacity: 0; translate: 0 -5px; pointer-events: none; }
+@starting-style { .atlas-menu-motion:not([hidden]) { opacity: 0; translate: 0 -5px; } }
 .atlas-apps-popup { border: 1px solid #dce4f0; border-radius: 20px; background: #fff; }
-.atlas-menu-link { color: var(--color-ink); transition: background-color 180ms, color 180ms; }
+.atlas-menu-link { min-height: 30px; color: var(--color-ink); transition: background-color 180ms, color 180ms; }
 .atlas-menu-link:hover { background: var(--app-tint); color: var(--app-accent); }
 .atlas-menu-directory h2 { margin-bottom: 5px; color: #6a7890; }
 .atlas-menu-directory .atlas-app-icon { display: none; }
-@media (min-width: 640px) { .atlas-menu-directory .atlas-app-icon { display: flex; } }
+@media (min-width: 640px) { .atlas-menu-directory .atlas-app-icon { display: flex; } .atlas-menu-link { min-height: 36px; } }
 .atlas-utility-rail, .atlas-admin-navigation {
   border: 1px solid #fff;
   background: linear-gradient(165deg, #ffffffeb, #f8faffdb);
@@ -127,7 +134,7 @@ body { background: var(--color-app-bg); color: var(--color-ink); }
   background: linear-gradient(155deg, #fff, #e7efff);
   box-shadow: inset 0 1px 0 #fff, 0 2px 4px -2px #23447924;
 }
-.atlas-float-dropdown { background: #fff; border-color: #dce4f0; box-shadow: var(--shadow-atlas-lg); animation: atlas-surface-in 160ms var(--atlas-ease); }
+.atlas-float-dropdown { background: #fff; border-color: #dce4f0; box-shadow: var(--shadow-atlas-lg); }
 .atlas-float-dropdown a { transition: color 160ms, background-color 160ms; }
 .atlas-float-dropdown-active { background: #edf3ff; color: #315ec1; }
 
@@ -236,10 +243,27 @@ main tbody tr:hover { background-color: #f2f6fd; }
 main tbody a { transition: color 160ms; }
 main tbody a:hover { color: var(--color-atlas-blue); }
 .atlas-record-tabs { display: flex; flex-wrap: wrap; gap: 5px; padding: 5px; border: 1px solid #e0e6ef; border-radius: 15px; background: #edf1f7; }
-.atlas-record-tab { padding: 9px 15px; border: 1px solid transparent; border-radius: 11px; color: #68778f; font-size: 13px; font-weight: 700; }
+.atlas-record-tab { padding: 9px 15px; border: 1px solid transparent; border-radius: 11px; color: #68778f; font-size: 13px; font-weight: 700; transition: color 180ms, background-color 180ms, box-shadow 180ms; }
 .atlas-record-tab:hover { color: #304f82; background: #ffffff80; }
 .atlas-record-tab[aria-selected=true] { color: #2a4c87; background: linear-gradient(180deg, white, #f9fbff); border-color: #dae3f0; box-shadow: 0 2px 5px -2px #27447226; }
-.atlas-record-panel:not([hidden]) { animation: atlas-surface-in 180ms var(--atlas-ease); }
+@supports not (view-transition-name: atlas-workspace) {
+  .atlas-record-panel:not([hidden]) { animation: atlas-surface-in 180ms var(--atlas-ease); }
+}
+
+/* The shell stays anchored. Only content snapshots blend, including streamed
+   arrivals; these animations never transform the live ancestor of a fixed dialog. */
+::view-transition { pointer-events: none; }
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-group(.atlas-content), ::view-transition-group(.atlas-tab-content) {
+  animation-duration: 260ms; animation-timing-function: var(--atlas-ease);
+}
+::view-transition-old(.atlas-content), ::view-transition-old(.atlas-tab-content) {
+  animation: atlas-content-out 140ms ease-out both;
+}
+::view-transition-new(.atlas-content) { animation: atlas-content-in 260ms var(--atlas-ease) both; }
+::view-transition-new(.atlas-tab-content) { animation: atlas-content-in 220ms var(--atlas-ease) both; }
+@keyframes atlas-content-out { to { opacity: 0; } }
+@keyframes atlas-content-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
 .atlas-dialog, .atlas-side-panel { border-color: #dce4f0; box-shadow: var(--shadow-atlas-lg); }
 .atlas-dialog::backdrop { background: rgb(16 32 60 / 28%); backdrop-filter: blur(5px); }
@@ -257,6 +281,13 @@ main tbody a:hover { color: var(--color-atlas-blue); }
 }
 @media (max-width: 1023px) { .atlas-launcher-signature { display: none; } }
 @media (max-width: 639px) {
+  .atlas-workspace-topbar { padding-block: 6px; gap: 4px; }
+  .atlas-apps-trigger { padding-inline: 10px; }
+  .atlas-header-utilities { gap: 2px; }
+  .atlas-header-utilities > :is(button, a),
+  .atlas-header-utilities > div > button,
+  .atlas-header-utilities > form > button { width: 30px; height: 32px; }
+  .atlas-header-utilities .atlas-avatar { width: 28px; height: 28px; }
   .atlas-launcher { padding: 4px 1px 12px; }
   .atlas-launcher-header { padding: 14px 3px 24px; }
   .atlas-launcher-intro { max-width: 260px; font-size: 13px; }
@@ -269,6 +300,7 @@ main tbody a:hover { color: var(--color-atlas-blue); }
   .atlas-float-tab { padding: 7px 10px; font-size: 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*), ::view-transition-new(*), ::view-transition-group(*) { animation-duration: 0s !important; animation-delay: 0s !important; }
   *, *::before, *::after { animation-delay: 0ms !important; animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
   .atlas-home-shell .atlas-launcher-card:hover, .atlas-launcher-card:hover .atlas-launcher-icon, .atlas-launcher-card:hover .atlas-launcher-arrow, .atlas-button:not(:disabled):active { transform: none; }
 }

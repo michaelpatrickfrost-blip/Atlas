@@ -120,8 +120,8 @@ feature_acceptance() {
   (
     cd "$CANDIDATE"; set -a; . /etc/atlas/guardian.env; set +a
     if [[ "$ACCEPTANCE" = polish ]]; then
-      NODE_ENV=production ATLAS_PREMIUM_CHECK=1 ATLAS_PREMIUM_URL="$url" ATLAS_PREMIUM_OUTPUT="$evidence" node --env-file=.env.local --import tsx scripts/check-premium-ui.ts
-      NODE_ENV=production ATLAS_HOME_MENU_CHECK=1 ATLAS_HOME_MENU_URL="$url" node --env-file=.env.local --import tsx scripts/check-home-menu.ts
+      NODE_ENV=production ATLAS_PREMIUM_CHECK=1 ATLAS_PREMIUM_URL="$url" ATLAS_PREMIUM_OUTPUT="$evidence" node --env-file=.env.local --import tsx scripts/check-premium-ui.ts || exit 1
+      NODE_ENV=production ATLAS_HOME_MENU_CHECK=1 ATLAS_HOME_MENU_URL="$url" node --env-file=.env.local --import tsx scripts/check-home-menu.ts || exit 1
     elif [[ "$ACCEPTANCE" = people ]]; then
       NODE_ENV=production ATLAS_PEOPLE_TEST=1 ATLAS_PEOPLE_TEST_URL="$url" ATLAS_PEOPLE_EVIDENCE="$evidence" node --env-file=.env.local --import tsx scripts/check-people-workspaces.ts
     elif [[ "$ACCEPTANCE" = usability ]]; then

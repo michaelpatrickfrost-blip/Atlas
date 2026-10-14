@@ -1,3 +1,21 @@
+## 14 October 2026 — Align remaining banners with the premium UI
+
+Michael identified the dark Financial command centre and similar banners as out
+of line with the new UI. Finance and Customer Service now use shared WorkspaceHeading
+with sapphire/white glass actions; Finance entity selection retains links and active
+state in a light segmented strip. Manufacturing and all three Guides headers now
+use the same shared surface hook. No business/query/permission changes.
+Prepared0f574df1 passed36 roots×3 widths, native client crossfade, phone focus/menu,
+reduced motion and Home/all Apps down to320px; private evidenceYxo0sK/BeP6AH.
+No activation. The optional switch drill found a stale launcher checker expecting
+separate Stock/Planning after their existing consolidation, old icon sizes and
+description-free links. Updated to the actual authorised consolidated registry,
+separate Dashboards utility and shared48/54px tile contract, preserving access,
+disabled-app staff checks, responsive fit and continuity. EvidencewW1cl3 retained.
+Banner production build, strict TypeScript, scoped lint and diff checks PASS.
+Next: new pinned candidate, corrected switch drill and full public acceptance;
+temporary build swap remains pending safe cleanup. Preview0f574 remains read-only.
+
 ## 14 October 2026 — Premium compiler memory recovery; activation still pending
 
 f9bb9b16 passed local production build, strict types and15/4 focused tests. Server

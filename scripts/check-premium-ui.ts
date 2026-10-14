@@ -71,6 +71,14 @@ async function main() {
         assert(layout.rootFits && layout.mainFits, `${path} ${viewport}: page and main must fit`);
         assert(layout.headings > 0 && layout.theme === "#18263e", `${path}: rendered premium foundation`);
         assert(layout.cardFilters, `${path}: cards must not trap overlays`);
+        if (["/finance", "/service", "/manufacturing", "/guides"].includes(path)) {
+          const banner = page.locator("main .atlas-workspace-heading").first();
+          await expect(banner).toBeVisible();
+          assert(await banner.evaluate(el => {
+            const style = getComputedStyle(el);
+            return style.backgroundImage.includes("linear-gradient") && style.color !== "rgb(255, 255, 255)";
+          }), `${path}: workspace banner follows the shared light surface and readable ink palette`);
+        }
         await page.screenshot({ path: `${evidence}/${path.replaceAll("/", "-").slice(1) || "root"}-${viewport}.png` });
         results.push({ path, viewport, headings: layout.headings, controls: layout.controls });
         console.log(`PASS ${path} ${viewport}: themed, rendered, viewport fit.`);

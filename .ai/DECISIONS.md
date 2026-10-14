@@ -7,6 +7,9 @@ Nunito, with pearl surfaces, navy text, sapphire primary actions and muted curat
 app accents. Shared premium.css and shell/UI components own this system; no new
 per-module theme engines. The colour map is presentation only and grants nothing.
 Opaque menus and filter-free content containers preserve readability and layering.
+Michael explicitly rejected the dark Finance/Customer Service banners as inconsistent;
+workspace hero banners use the shared light pearl surface, navy heading and glass
+actions. Manufacturing/Guides share the same surface hook rather than isolated themes.
 Route motion uses bundled React ViewTransition to coordinate streamed arrivals,
 with an arrival fallback for unsupported browsers. No keyed layout remounts, so
 unsaved form state survives. Tabs keep their mounted panels; closed menus are

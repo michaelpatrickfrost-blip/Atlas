@@ -17,6 +17,10 @@ fine borders, restrained shadows and consistent control states. `app-appearance.
 is a presentation-only map used by the directory, app header and workspace shell.
 Home uses numbered groups and individual app cards rather than nested white panels.
 The existing registered destinations and capability filtering remain authoritative.
+Workspace banners use this same light foundation: Finance and Customer Service
+use WorkspaceHeading; Manufacturing, Guides and People share its surface hook.
+Avoid isolated dark command-centre banners. Finance entity navigation keeps its
+active state in the same light segmented style as record tabs.
 
 `PageMotion` uses Next's bundled React ViewTransition for coordinated content
 crossfades and streamed arrivals (260ms), keeping shell chrome anchored. It never

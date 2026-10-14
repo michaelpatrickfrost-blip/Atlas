@@ -245,7 +245,7 @@ main tbody a:hover { color: var(--color-atlas-blue); }
 .atlas-record-tabs { display: flex; flex-wrap: wrap; gap: 5px; padding: 5px; border: 1px solid #e0e6ef; border-radius: 15px; background: #edf1f7; }
 .atlas-record-tab { padding: 9px 15px; border: 1px solid transparent; border-radius: 11px; color: #68778f; font-size: 13px; font-weight: 700; transition: color 180ms, background-color 180ms, box-shadow 180ms; }
 .atlas-record-tab:hover { color: #304f82; background: #ffffff80; }
-.atlas-record-tab[aria-selected=true] { color: #2a4c87; background: linear-gradient(180deg, white, #f9fbff); border-color: #dae3f0; box-shadow: 0 2px 5px -2px #27447226; }
+.atlas-record-tab[aria-selected=true], .atlas-record-tab[aria-current=page] { color: #2a4c87; background: linear-gradient(180deg, white, #f9fbff); border-color: #dae3f0; box-shadow: 0 2px 5px -2px #27447226; }
 @supports not (view-transition-name: atlas-workspace) {
   .atlas-record-panel:not([hidden]) { animation: atlas-surface-in 180ms var(--atlas-ease); }
 }

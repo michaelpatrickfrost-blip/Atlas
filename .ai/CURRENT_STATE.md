@@ -1,3 +1,42 @@
+## 14 October 2026 — Premium overhaul live and publicly verified
+
+Supersedes the pending 14 October checkpoints below. Public HTTPS and the live
+runtime now report ee18a2689d592dc0c837fb42c74c3a7fc739d487; immediate rollback is
+75977b02dcb3355863788e968d839ec2481fa79a. Source is committed/pushed on
+codex/premium-ui-overhaul-20261014. Shared premium.css/shell/UI components deliver
+pearl surfaces, sapphire/white glass controls, coloured app tiles, refined Home,
+navigation, forms, tables, tabs, drawers, login and Admin/Studio surfaces. Finance,
+Customer Service, Manufacturing and Guides now share the light banner system.
+Page/tab crossfades and discrete menu transitions retain draft/focus behaviour and
+respect reduced motion. No domain, schema, grant or business-store changes.
+
+Production builds, strict TypeScript, scoped lint, diff/shell checks and15 focused
+tests/4 files PASS. Exact final candidate and public acceptance PASS:36 entry
+screens×1440/820/390, zero browser/asset errors, phone Apps/focus, actual native
+client crossfade and reduced motion; Home/Apps/header gates also pass down to320px.
+Standalone Studio designer was NOT exercised: the existing QA company lacks its
+entitlement. Admin Studio setup was covered; no grants/fixtures were added.
+Private final evidence: /tmp/atlas-polish-candidate-5eSG36 and
+/tmp/atlas-polish-public-NrbLw9; Home/menu obilsf and6rzNZ9. Full repository tests/lint
+were not run. Final release recovery backup: atlas-pre-deploy-20261014-200039.
+
+Switch/rollback rehearsalA2gG1x PASS45 page requests/45 Apps toggles and staff
+launcher28 authorised apps. PriorTrKQah interrupted a Service report response;
+unchanged repeat passed, with original failed evidence retained. Normal activation,
+public feature acceptance, compatibility and final login200 all PASS. Standard
+retention retired14 redundant generated runtimes, preserving source/evidence/data,
+current/rollback. Temporary2GiB build swap removed under both original locks with
+no compiler and3,893,496KiB available versus1,245,364,224 bytes swapped; no permanent
+service/fstab/PG changes. Maintenance evidence premium-build-memory-20261014.txt.
+
+Read-only live preview uses a45-minute loopback proxy to the actual runtime; no
+extra Next process or new permissions. Public screenshots were visually inspected.
+Canonical Desktop source reconciliation remains pending: read-only scoped patch
+check fails on its older/missing deployed paths and unrelated unfinished edits.
+No source patch/reset applied there; a shared CURRENT_STATE release pointer is
+added without replacing concurrent entries. Merge the deployed lineage and memory
+with that work before a future main release; do not deploy the unrelated WIP.
+
 ## 14 October 2026 — Banner candidate passed; final launcher rehearsal correction
 
 Prepared5a2e28ac passed36 entry screens at1440/820/390, native crossfade, reduced

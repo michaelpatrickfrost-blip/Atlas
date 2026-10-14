@@ -531,6 +531,17 @@ in maintenance backups, with only generated outputs retired. Temporary2GiB
 recovery/logs and premium-build-memory-20261014.txt retained. Apply the same safe
 post-build swap cleanup requirements above; no permanent service/config change.
 
+14 October resolution: premium ee18a2689d592dc0c837fb42c74c3a7fc739d487 built and
+passed candidate/public polish acceptance (36 entry screens at three widths,
+Home/Apps down to320px, actual crossfade/focus/reduced motion). Switch drillA2gG1x
+passed45 page loads/menu toggles after an interrupted-stream attemptTrKQah; retain
+both records. Public runtime activated with75977b02 as rollback and required
+backup200039. Under both original locks/no compiler, MemAvailable3893496KiB versus
+swap-used1245364224 bytes passed the1.5GiB margin. The exact temporary swap was
+deactivated/removed; zero swap remains. Maintenance evidence is appended to
+premium-build-memory-20261014.txt. Existing retention pruned only redundant generated
+runtimes; sources, configuration, private evidence and central records remain.
+
 ## Usability/Guides/production handoff acceptance
 
 Use `ATLAS_RELEASE_ACCEPTANCE=usability` with the exact reviewed release branch/SHA.

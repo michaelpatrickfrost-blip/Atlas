@@ -214,6 +214,25 @@ and original actual-value/history/ref coverage remain. Mutation preparation,
 publishing, execution and cutover still authorise actual default values; no client
 mode or generic bypass. Root reviewed helperf41d and independent source review.
 
+## 14 October 2026 — One premium visual system across all apps
+
+Michael requests a substantial visual overhaul with smooth motion, glass-like
+buttons and classy coloured icons throughout Atlas; he clarified an Apple-like,
+bold and posh feel with no cheesy or tacky decoration. Keep the supplied brand and
+Nunito, with pearl surfaces, navy text, sapphire primary actions and muted curated
+app accents. Shared premium.css and shell/UI components own this system; no new
+per-module theme engines. The colour map is presentation only and grants nothing.
+Opaque menus and filter-free content containers preserve readability and layering.
+Michael explicitly rejected the dark Finance/Customer Service banners as inconsistent;
+workspace hero banners use the shared light pearl surface, navy heading and glass
+actions. Manufacturing/Guides share the same surface hook rather than isolated themes.
+Route motion uses bundled React ViewTransition to coordinate streamed arrivals,
+with an arrival fallback for unsupported browsers. No keyed layout remounts, so
+unsaved form state survives. Tabs keep their mounted panels; closed menus are
+immediately inert while display transitions finish. Reduced motion disables
+movement and snapshot animations; native dialogs retain focus and
+save guards. Business/Admin separation and central data remain unchanged.
+
 ## 11 October 2026 — One publisher and genuine standalone visual Studio context
 
 The standalone /design-studio route sits outside Admin/customer shell chrome;

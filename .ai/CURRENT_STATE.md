@@ -1,3 +1,15 @@
+## 15 October 2026 — accepted live visual system integrated into Studio branch
+
+Merged accepted live ee18a268 with original Studio authentication, customer Home
+dashboard discovery and deployment gates preserved. Only independent prepend-only
+memory conflicts required reconciliation; both histories retained. Updated Studio
+entry regression for the new PageMotion wrapper without changing its access checks.
+Focused integration17/4 PASS; diff whitespace PASS. Combined strict/lint/build and
+candidate/public verification await the bounded visual/template closures. No DDL.
+Next: correct reproduced Page Property label association (actual Chromium exact
+label misses wrapped select options), then finish native template inspection/editor
+workstreams and the original guarded compatible release. Whole Phase2 remains FAIL.
+
 ## 15 October 2026 — recovered actual46d failure and newer live visual system
 
 Original94378 ended before activation: native forms/defaults/configured search,
@@ -620,6 +632,96 @@ nested-dashboard checker, run integrated checks/checkpoint; original immutable
 bridge then compatible candidate/public visual/profile/type/required gates. Non-Test
 conditional activation still guarded; fresh isolated production-safe acceptance
 and exact paired conditional feature are a separate scoped workstream. No Phase3.
+
+## 14 October 2026 — Banner candidate passed; final launcher rehearsal correction
+
+Prepared5a2e28ac passed36 entry screens at1440/820/390, native crossfade, reduced
+motion and Home/Apps down to320px (privatekiVtdp coverage/screenshots). Finance
+preview visually verified with the shared light banner and glass action. Switch
+rehearsalfa1ssm passed20 read-only page loads/menu toggles but stopped on another
+stale launcher expectation: public / intentionally renders AtlasWebsite; /home is
+the authenticated launcher. Corrected only the checker navigation and result label.
+No app behaviour change. Scoped lint and diff checks PASS. Next: pinned retry,
+complete switch/rollback rehearsal and public acceptance, then safe swap cleanup.
+Public75977b02 remains unchanged; no new grants, fixtures or business writes.
+
+## 14 October 2026 — Align remaining banners with the premium UI
+
+Michael identified the dark Financial command centre and similar banners as out
+of line with the new UI. Finance and Customer Service now use shared WorkspaceHeading
+with sapphire/white glass actions; Finance entity selection retains links and active
+state in a light segmented strip. Manufacturing and all three Guides headers now
+use the same shared surface hook. No business/query/permission changes.
+Prepared0f574df1 passed36 roots×3 widths, native client crossfade, phone focus/menu,
+reduced motion and Home/all Apps down to320px; private evidenceYxo0sK/BeP6AH.
+No activation. The optional switch drill found a stale launcher checker expecting
+separate Stock/Planning after their existing consolidation, old icon sizes and
+description-free links. Updated to the actual authorised consolidated registry,
+separate Dashboards utility and shared48/54px tile contract, preserving access,
+disabled-app staff checks, responsive fit and continuity. EvidencewW1cl3 retained.
+Banner production build, strict TypeScript, scoped lint and diff checks PASS.
+Next: new pinned candidate, corrected switch drill and full public acceptance;
+temporary build swap remains pending safe cleanup. Preview0f574 remains read-only.
+
+## 14 October 2026 — Premium compiler memory recovery; activation still pending
+
+f9bb9b16 passed local production build, strict types and15/4 focused tests. Server
+kernel193355UTC confirms OOM killed candidate compiler1051146 before acceptance.
+SSH/HTTPS briefly timed out; public75977b02 recovered unchanged. Stopped the private
+preview processes. Under both original locks/no candidate process, retained failed
+source/config at /opt/atlas-maintenance-backups/failed-premium-f9bb9b16398de23fc7db46c329dc62c8f4e53f35-20261014
+and retired only its generated dependencies/build/client. Original193106 required
+backup/build log retained. Reused documented temporary2GiB build-buffer procedure:
+/var/tmp/atlas-release-build.swap active, no fstab/app/PG/database configuration
+changes; evidence premium-build-memory-20261014.txt in maintenance backups.
+Next: normal pinned retry and complete candidate/public acceptance; remove exact
+temporary swap under both locks once no compiler remains and RAM safely permits.
+
+## 14 October 2026 — Premium candidate review corrections
+
+Prepared59e806cb remains unactivated. Actual read-only desktop gate passed35 app/
+core/Admin roots, then correctly rejected the checker’s invalid staff Studio URL
+without a selected business. QA company has no Studio entitlement; corrected gate
+covers Admin Studio setup and only opens designer when already entitled, with the
+required business parameter. No grants/fixtures added; designer live coverage stays
+explicitly unavailable for this QA identity. Home/all Apps desktop/tablet passed;
+phone28px hit-target assertion failed during animated entry. Raised targets to30px,
+and visual phone review found the added Apps border could wrap header utilities;
+compact phone utility sizing now preserves the two-row header/search. Each polish
+checker now explicitly exits on failure so a following checker cannot mask it.
+Read-only private preview is open in the app through a loopback SSH tunnel; no POST
+requests or new access grants. Candidate screenshots and backup191858 retained.
+User explicitly reiterated fluid transitions. PageMotion now uses bundled React
+ViewTransition with260ms crossfades/streamed arrivals and an older-browser fallback;
+record tabs crossfade without remounting fields, menus ease both open and closed
+while closed contents immediately become inert. Shell chrome stays anchored and
+reduced-motion snapshot durations are zero. Native navigation assertion added to
+the browser gate. Final production build and strict TypeScript PASS; focused
+menu/shell/drawer/motion/tab-retention15/4 tests PASS; scoped lint, shell syntax and
+diff whitespace PASS. Existing topbar image warnings unchanged.
+Next: complete candidate/public responsive gate and activation.
+
+## 14 October 2026 — Premium visual overhaul prepared; candidate verification pending
+
+Michael requests a substantial, consistent polish across every Atlas app, clarified
+as bold/posh, with Apple-like glass buttons and no cheesy or tacky decoration. Based on
+actual live75977b02, the shared premium.css foundation adds pearl surfaces, sapphire
+glass-style controls, restrained app accent tiles, editorial Home grouping, refined
+navigation/search/forms/tables/status/tabs/dialogs and matching Admin/Studio/sign-in.
+AppDirectory and app-appearance preserve registry filtering and all destinations.
+PageMotion animates the existing content node for240ms without remounting drafts;
+reduced motion is honoured. Menus remain opaque; cards/header have no backdrop
+filters that trap overlays. No domain/schema/grant/storage changes.
+Local production build PASS; strict TypeScript PASS; existing menu/business-shell/
+drawer regressions12/3 PASS; changed-file lint0 errors/3 existing image warnings.
+New motion/draft-retention regressions2 PASS (total14/4); read-only whole-app browser gate pending.
+Navigation groups now use consistent purpose-specific thin-stroke icons. The polish
+release selector runs all authorised app roots/core/Admin/Studio at1440/820/390,
+Home/menu/focus and reduced-motion checks under the existing release locks; it
+creates no fixtures or additional dumps. Required release backup remains intact.
+Next: final checks, sealed candidate visual review, public activation/verification.
+Git repair: seven invalid space-suffixed duplicate ref files were moved intact to
+.git/atlas-ref-recovery-20261014; valid refs/source/other worktrees preserved.
 
 ## 12 October 2026 — bridge0d80 stopped before activation on checker viewport sequencing
 

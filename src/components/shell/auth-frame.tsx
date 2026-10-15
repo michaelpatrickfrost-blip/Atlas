@@ -3,8 +3,8 @@ import { AtlasLogo } from "@/components/shell/atlas-logo";
 
 export function AuthFrame({ title, subtitle, children, footer }: { title: string; subtitle?: string; children: ReactNode; footer?: ReactNode }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white px-5 py-12">
-      <div className="w-full max-w-sm">
+    <div className="atlas-auth-frame flex min-h-screen items-center justify-center bg-white px-5 py-12">
+      <div className="atlas-auth-card w-full max-w-sm">
         <div className="mb-8 flex justify-center">
           <AtlasLogo full className="h-auto w-60" />
         </div>

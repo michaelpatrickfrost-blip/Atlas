@@ -1,15 +1,15 @@
 # Design memory map
 
-Current direction (9 October 2026): Home follows Michael's supplied modern
-blue-and-white reference. A branded search header sits above grouped app cards
-with blue icons and short descriptions. A slim separate utility rail contains
-Home, Reports, My tasks, authorised Messages and Settings; it does
-not repeat the business apps. On tablet/phone it becomes a compact utility bar.
-This supersedes the older no-sidebar rule for Home and Reports. Other workspaces retain
-their top menus and a compact wider Apps popup per Michael's 10 October corrections: every authorised
-app visible without scrolling, up to 900px wide, four desktop/three tablet/three
-phone grouped columns, small grey icons and compact labels. Workspace header is
-60px desktop/96px phone, with smaller Apps/company/search controls.
+Current direction (14 October 2026): a consistent premium light interface across
+all apps. Pearl backgrounds, navy hierarchy, sapphire glass-like action buttons,
+muted coloured icon tiles and fine borders/shadows. Home has an editorial heading,
+numbered app groups and individual luminous cards; the light utility rail stays
+separate from business apps. Tablet/phone retain labelled utility controls. The
+compact Apps popup remains up to900px, with every authorised app visible without
+internal scrolling. Menus are solid white. Workspace headers remain60px desktop/
+96px phone. Shared `src/app/premium.css` layers over foundational globals; use
+`app-appearance.ts` for consistent app icons and `PageMotion` for240ms navigation
+without resetting mounted drafts. Reduced-motion preferences take priority.
 Business navigation contains no Atlas Console/Admin, Connections or platform
 return links, including staff support workspaces. The header shows company identity.
 Company admin and Manage apps remain permission-filtered business tools.

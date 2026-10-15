@@ -8,6 +8,7 @@ vi.mock("@/app/(studio)/design-studio/actions", () => ({ createVisualScreen: vi.
 vi.mock("@/app/(studio)/design-studio/layouts", () => ({ screenLayouts: vi.fn() }));
 import CustomerStudioEntry from "@/app/(app)/studio/page";
 import StudioLayout from "@/app/(studio)/design-studio/layout";
+import { PageMotion } from "@/components/shell/page-motion";
 import StudioWorkspace from "@/app/(studio)/design-studio/page";
 import { STUDIO_CAPABILITIES as CAP } from "@/core/studio/permissions";
 const actor = (capabilities: string[]): Session => ({ userId: "actor", userName: "Designer", userEmail: "designer@example.test",
@@ -27,7 +28,8 @@ it("keeps the standalone shell permission boundary after sign-in", async () => {
   await expect(StudioLayout({ children: "design" })).rejects.toThrow("FORBIDDEN");
   state.session = actor([CAP.read]);
   const result = await StudioLayout({ children: "design" });
-  expect(result.props.children).toBe("design");
+  expect(result.props.children.type).toBe(PageMotion);
+  expect(result.props.children.props.children).toBe("design");
 });
 it("sends unselected authorised staff to the existing business selector without creating access", async () => {
   state.session = actor([CAP.read, "atlas.staff.manage", "atlas.companies.manage"]);

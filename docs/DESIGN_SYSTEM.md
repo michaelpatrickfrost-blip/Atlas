@@ -7,7 +7,32 @@ a light utility rail on Home, a luminous workspace, icon-led navigation and soft
 surfaces. Dense screens stay calm. Company logos live on the organisation and
 appear in the shell. Do not invent a second visual language per module.
 
-## Foundation (tokens — `src/app/globals.css`)
+## 14 October 2026 — Premium platform overhaul
+
+`src/app/premium.css`, imported after `globals.css`, owns the refreshed shared
+appearance across business apps, Admin, Studio and authentication. Michael
+clarified a bold, posh Apple-like feel: luminous pill buttons and restrained detail. Pearl backgrounds
+and navy hierarchy support sapphire glass-like actions, muted coloured app tiles,
+fine borders, restrained shadows and consistent control states. `app-appearance.ts`
+is a presentation-only map used by the directory, app header and workspace shell.
+Home uses numbered groups and individual app cards rather than nested white panels.
+The existing registered destinations and capability filtering remain authoritative.
+Workspace banners use this same light foundation: Finance and Customer Service
+use WorkspaceHeading; Manufacturing, Guides and People share its surface hook.
+Avoid isolated dark command-centre banners. Finance entity navigation keeps its
+active state in the same light segmented style as record tabs.
+
+`PageMotion` uses Next's bundled React ViewTransition for coordinated content
+crossfades and streamed arrivals (260ms), keeping shell chrome anchored. It never
+keys or remounts layouts/forms. Unsupported browsers use a 240ms arrival fallback.
+Record tabs retain mounted input while their content crossfades. Menus use discrete
+display transitions for opening/closing and immediately become inert when closed.
+No persistent transform/filter traps fixed overlays after motion completes.
+Cards lift only with a fine pointer. Reduced motion disables movement and snapshot
+animations; increased contrast strengthens
+control boundaries. Status tones retain their meaning independently of app colours.
+
+## Foundation (tokens — `src/app/globals.css` and `src/app/premium.css`)
 
 | Token | Purpose |
 |---|---|
@@ -53,15 +78,15 @@ tracking-tight`), body copy readable at `text-sm`, tabular data uses
 - **StatusPill** (`status-pill.tsx`) — concise label + one of four tones.
   `danger` is reserved for genuine problems — never decorate a neutral status
   in red.
-- **EmptyState** (`empty-state.tsx`) — dashed border, title + optional
+- **EmptyState** (`empty-state.tsx`) — quiet layered surface, title + optional
   description/action. Used for "no data yet", permission-denied and
   not-found states (see `src/app/(app)/error.tsx`).
 
 ## Shell (`src/components/shell/`)
 
-- **Home** — modern blue-and-white launcher based on Michael's 9 October reference.
+- **Home** — premium pearl launcher following Michael's 14 October overhaul request.
   A branded search header, light utility rail and grouped app cards with larger
-  blue icons and concise purpose descriptions (manifest fallback) replace the compact Home link grid.
+  muted coloured glass icon tiles and concise purpose descriptions (manifest fallback) replace the compact Home link grid.
   The utility rail contains Home, Reports (built-in data workspace), My tasks,
   Messages (chat permission) and Settings (company-admin access). It does not
   repeat the apps. Tablet/phone use a compact utility bar. This supersedes the
@@ -87,10 +112,10 @@ tracking-tight`), body copy readable at `text-sm`, tabular data uses
   company identity/date, profile and sign-out. Other workspaces retain home,
   Apps, back, search, new window, notices, chat, profile and sign-out.
   Company identity has no Admin badge or platform-console return link.
-  Workspace controls use a larger Apps pill and search field. On phone search
+  Workspace controls use a compact glass Apps button and inset search field. On phone search
   moves onto its own header row so utility controls remain reachable.
   `public/brand/atlas-mark.png` is a crop of Michael's supplied artwork.
-- **Messages** — wide blue/white pop-out, conversation list beside chat on desktop,
+- **Messages** — compact native right-hand drawer with a list/detail Back flow,
   one pane at a time on phone, quiet date separators and structured record cards.
   A horizontal composer groups attachments/work actions; conversation details
   contain participants and records in the displayed messages. Full `/chat` uses
@@ -183,7 +208,7 @@ unread chats. Task detail uses progressive disclosure for notes, linked records,
 checklist and status. Native dialog top-layer positioning prevents card overlap;
 all drawer widths use a list/detail Back flow, with Escape and focus restoration.
 Drawers are at most560px wide, animate entry/exit over240ms and honor reduced
-motion. The shade is light and unblurred so the current workspace remains visible.
+motion. The shade is light with a subtle3px blur, keeping the current workspace recognisable.
 Dashboard and Settings keep their existing page/menu destinations.
 
 ## 11 October 2026 — website and working guidance

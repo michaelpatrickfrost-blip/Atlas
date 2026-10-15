@@ -14,6 +14,13 @@ before the complete Phase2 gate passes. Foundation-first order remains authorise
 
 # Current Workstream
 
+IMPLEMENTED — accepted liveee18 premium visual integration. Original Studio login/
+capabilities and Home current-business discovery retained; independent memory blocks
+both preserved. Focused integration17/4 PASS, diff check PASS. No schema/dependencies.
+Next: Page exact control label correction, original Templates metadata inspection/
+comparison/reference UI, focused checks/build then original candidate/public gate.
+
+
 IN PROGRESS — recovery/live UI integration and final visual quality closures.
 Original94378 failed preactivation at Page Desktop columns exact label lookup;
 forms/defaults/search/Create-only types/profiles actual PASS. Test cleanup preserved

@@ -35,6 +35,17 @@ checked-in `scripts/deploy/vps-release.sh` over key-only SSH. A clean detached
 worktree uses `ATLAS_RELEASE_COMMIT=<full HEAD SHA>` after pushing that exact
 commit to `origin/main`. Main moving causes a safe stop for review.
 
+For shared visual releases, use `ATLAS_RELEASE_ACCEPTANCE=polish`. The read-only
+premium checker visits every authorised app root plus core/Admin at desktop,
+tablet and phone widths, captures private screenshots, checks viewport fit, loaded
+styles, browser/assets, Apps bounds/focus, actual client crossfades and reduced motion.
+Admin Studio setup is covered; standalone designer coverage requires an already
+entitled QA company and explicit selected-business URL. The gate never adds grants.
+Existing Home acceptance
+then checks all authorised entries and header interactions. Both run against the
+candidate and public runtime under the original lock pair. No fixtures, grants or
+extra fixture dumps are created; the required normal release backup is retained.
+
 For People releases, set `ATLAS_RELEASE_ACCEPTANCE=people` on prepare/activation.
 The checked-in People harness verifies real central Test workflows against the
 smoke candidate before switching and against public HTTPS before completion,
@@ -515,6 +526,15 @@ Root164GiBfree/no swap/2.6GiB available RAM; no fstab/app/PG/database change. Op
 existing owner-administrator locks as that owner; privileged buffer operations run
 while the owner shell holds them. Initial root opens were denied before mutation;
 never recreate/change lock ownership/inodes to work around sticky-file protection.
+
+14 October premium f9bb9b16 compilation repeated the confirmed memory failure:
+kernel193355UTC killed candidate compiler1051146; live75977b02 stayed unchanged
+and recovered HTTPS. Extra private preview stopped. Under both original locks,
+failed source/config was retained as failed-premium-f9bb9b16398de23fc7db46c329dc62c8f4e53f35-20261014
+in maintenance backups, with only generated outputs retired. Temporary2GiB
+/var/tmp/atlas-release-build.swap activated for the pinned retry. Original193106
+recovery/logs and premium-build-memory-20261014.txt retained. Apply the same safe
+post-build swap cleanup requirements above; no permanent service/config change.
 
 ## Usability/Guides/production handoff acceptance
 

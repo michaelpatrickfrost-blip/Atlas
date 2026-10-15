@@ -1,3 +1,4 @@
+import { PageMotion } from "@/components/shell/page-motion";
 import type { Metadata } from "next";
 import { getSession } from "@/core/auth/session";
 import { redirect } from "next/navigation";
@@ -9,5 +10,5 @@ export default async function StudioLayout({ children }: { children: React.React
   const actor = await getSession();
   if (!actor) redirect("/login");
   assertCapability(actor, STUDIO_CAPABILITIES.read);
-  return <main className="min-h-dvh bg-slate-50 text-[var(--color-ink)]">{children}</main>;
+  return <main className="atlas-studio-surface min-h-dvh bg-slate-50 text-[var(--color-ink)]"><PageMotion>{children}</PageMotion></main>;
 }

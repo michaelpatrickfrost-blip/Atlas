@@ -1,3 +1,45 @@
+## 15 October 2026 — visual closure checkpoint ready for original live gate
+
+Reviewed bounded source diff and independent inspection review; original native
+business logic/CAS/Audit and current-authority boundaries preserved. Full strict
+14764, scoped lint79830 and production5280 EXIT0. Combined173tests:172passed; the
+one disabled-click test corrected to wait for actual enabled refresh, then affected
+21/2 PASS30285. Existing74/4 control tests and17/4 premium integration PASS. No new
+DDL/dependencies/copies/dumps. Actual Chromium label reproduction confirmed fix.
+WholePhase2 FAIL pending actual original compatible release and subsequent positive
+new-family pair. Exact next commit this coherent source/memory and run the original
+pinned Studio candidate/public pipeline; hold HEAD through completion.
+
+## 15 October 2026 — original template review integrated; source verification
+
+Projected only owned helper files after baseline/diff review: original parser
+extraction, metadata-only current-authority inspector/typed DTO, existing native
+TemplateEditor optional continuous checks/visual comparison/Back Keep Use, exact
+protected-detail source/use and draft-removal impact. Same renderer/CAS/generator;
+original native caller already keys by saved version. Studio actions bind genuine
+selected-business authority; two exact native forwards added. Independent source
+review found no unresolved authority/provider/parser/async adoption issue.
+
+Page labels/repeated component addition plus related selected-business control
+labels corrected; actual Chromium reproducer and focused74/4 PASS. Combined173
+source tests:172 PASS, one original async UI test clicked while refresh disabled;
+corrected to wait for the actual enabled control, bounded21/2 rerun pending. Full
+strict types and scoped lint PASS. Production build5280 running. Original actual
+document/View fixtures extended, not yet executed. No schema/dependency/dump/copy.
+Liveee18 and151GiB free server disk confirmed. WholePhase2 FAIL. Next complete
+build/recheck, save reviewed checkpoint, original exact-pinned compatible release.
+
+## 15 October 2026 — visual control and original Templates closure in progress
+
+Chromium reproduced the exact-label failure: wrapped select returned0 exact labels,
+explicit sibling label returned1. Page Property now uses stable htmlFor/id, related
+condition/setup/dashboard controls match their visible names. Builder keeps its
+component library open after adding; multi-add regression added. Checks in progress.
+Original Templates parser/metadata inspection and optional visual compare/continuous
+feedback/source-use UI proceeding in existing helper worktrees, no new copies/DDL.
+Ledger contains purposes/dependencies/files/tests and exact next action. Source
+checks/build and original compatible candidate/public gates remain; Phase2 FAIL.
+
 ## 15 October 2026 — accepted live visual system integrated into Studio branch
 
 Merged accepted live ee18a268 with original Studio authentication, customer Home

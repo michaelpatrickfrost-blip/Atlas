@@ -37,7 +37,7 @@ export default async function BusinessDashboards({ searchParams }: { searchParam
         {workspace.canEdit && workspace.measures.length ? <ActionForm action={createBusinessDashboard} label="Start designing" className="mt-5 space-y-5">
           {business && <input type="hidden" name="business" value={business}/>}
           <label className="grid gap-2 text-sm font-medium">Dashboard name<input className={inputClass} name="name" defaultValue="Business overview" maxLength={150} required/></label>
-          <label className="grid gap-2 text-sm font-medium">Start with<select className={inputClass} name="measure">{workspace.measures.map(measure => <option key={measure.id} value={measure.id}>{measure.name}</option>)}</select></label>
+          <label className="grid gap-2 text-sm font-medium">Start with<select aria-label="Start with" className={inputClass} name="measure">{workspace.measures.map(measure => <option key={measure.id} value={measure.id}>{measure.name}</option>)}</select></label>
           <p className="text-xs leading-5 text-slate-500">You can add more charts, change their appearance and rearrange them in the designer.</p>
         </ActionForm> : <p className="mt-5 text-sm leading-6 text-slate-500">{workspace.canEdit ? "Enable an app with an approved business measure to start designing." : "Ask your business administrator for dashboard design access."}</p>}
       </section>

@@ -17,7 +17,7 @@ export function RecordSetupChoices({ pages, fields, page, requiredFields = [], i
   const missing = requiredFields.filter(id => !fields.some(field => field.id === id));
   return <div className="space-y-5">
     <label className="grid gap-2 text-sm font-medium">Record screen
-      <select name="page" disabled={disabled} className={inputClass} value={selectedPage} onChange={event => { setSelectedPage(event.target.value); setPageChanged(true); }}>
+      <select name="page" aria-label="Record screen" disabled={disabled} className={inputClass} value={selectedPage} onChange={event => { setSelectedPage(event.target.value); setPageChanged(true); }}>
         {inherit && <option value="inherit">Use the business&apos;s base screen</option>}
         <option value="">Use the app&apos;s standard screen</option>
         {page && !pages.some(choice => choice.id === page) && <option value={page}>Previously selected screen · currently unavailable</option>}

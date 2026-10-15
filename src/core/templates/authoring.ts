@@ -6,37 +6,10 @@ import { ATLAS_CAPABILITIES } from "@/core/admin/access";
 import { assertCapability } from "@/core/permissions/check";
 import { writeAudit } from "@/core/audit/log";
 import { nativeFieldMutationSessionInTransaction } from "@/core/studio/fields/runtime-authority";
-import { parseBlocks, validateFields } from "./domain";
-import { TARGET_MODULES } from "./types";
+import { parseTemplateSave } from "./authoring-input";
 
-const versionSchema = z.number().int().positive().max(2147483646);
 const sqlFailure = z.object({ code: z.string().optional(), driverAdapterError: z.object({ cause: z.object({ originalCode: z.string().optional() }).optional() }).optional() });
 function conflict(): never { throw new Error("CONFLICT: another person changed this template or your access. Your changes are kept; reload the saved template before trying again."); }
-function string(form: FormData, key: string, max = 300) {
-  const value = form.get(key);
-  if (value !== null && typeof value !== "string") throw new Error(`${key} must be text.`);
-  const text = (value ?? "").trim();
-  if (text.length > max) throw new Error(`${key} is too long.`);
-  return text;
-}
-function parseSave(form: FormData) {
-  const id = string(form, "id", 100), name = string(form, "name"), titleTemplate = string(form, "titleTemplate"),
-    description = string(form, "description", 2000), category = string(form, "category", 60), status = string(form, "status");
-  if (!name || !titleTemplate) throw new Error("Enter a name and document title.");
-  if (status !== "DRAFT" && status !== "PUBLISHED") throw new Error("Choose draft or published.");
-  let raw: unknown;
-  try { raw = JSON.parse(string(form, "blocks", 70000)); }
-  catch { throw new Error("The template sections are invalid."); }
-  const blocks = parseBlocks(raw);
-  validateFields(`${titleTemplate}\n${blocks.map(block => block.text).join("\n")}`);
-  const targets = form.getAll("targetModules");
-  if (!targets.length || targets.some(target => typeof target !== "string" || !TARGET_MODULES.includes(target as typeof TARGET_MODULES[number])))
-    throw new Error("Choose at least one target app.");
-  const targetModules = targets.map(String);
-  const parsedVersion = id ? versionSchema.safeParse(Number(string(form, "version", 20))) : null;
-  if (id && !parsedVersion?.success) throw new Error("Reload this template.");
-  return { id, version: parsedVersion?.success ? parsedVersion.data : null, data: { name, titleTemplate, description, category, blocks, targetModules, status } };
-}
 
 /** Original Templates authoring engine, shared by native and Studio adapters.
  * The caller supplies an authenticated server Session, never a tenant/grant DTO.
@@ -69,7 +42,7 @@ export async function saveTemplateInTransaction(authenticated: Session, transact
   if (!session.capabilities.has(ATLAS_CAPABILITIES.staff) && !await transaction.moduleState.findFirst({ where: {
     organisationId: session.organisationId, moduleId: "templates", enabled: true, entitled: true }, select: { id: true } }))
     throw new Error("Templates is not enabled for this company.");
-  const input = parseSave(form);
+  const input = parseTemplateSave(form);
   let result: { id: string; version: number };
   if (input.id) {
     const changed = await transaction.documentTemplate.updateMany({ where: { id: input.id, organisationId: session.organisationId,

@@ -14,6 +14,21 @@ before the complete Phase2 gate passes. Foundation-first order remains authorise
 
 # Current Workstream
 
+IMPLEMENTED/source-verified — final visual closure ready for original live gate.
+Full strict14764/scoped lint79830/production5280 EXIT0; combined173 tests172pass,
+one UI disabled-click wait corrected and affected21/2 PASS30285. Final diff/review
+complete; no DB changes. Commit then original pinned candidate/public pipeline;
+wholePhase2 FAIL pending actual bridge and next compatible new-family positives.
+
+
+IMPLEMENTED — original Templates inspection/editor/adapters/actual fixture closure,
+Page label and repeated-add corrections. Only owned helper paths projected. Full
+strict/scoped lint PASS; combined173 checks172pass plus one disabled-click test
+corrected, bounded21rerun pending; production5280 running. No DDL. Exact next finish
+checks/review/checkpoint then original compatible candidate/public release. Actual
+new comparison/reference/keyboard branches are not verified yet. WholePhase2 FAIL.
+
+
 IMPLEMENTED — accepted liveee18 premium visual integration. Original Studio login/
 capabilities and Home current-business discovery retained; independent memory blocks
 both preserved. Focused integration17/4 PASS, diff check PASS. No schema/dependencies.
@@ -197,6 +212,27 @@ source coverage, phase plan and this ledger. No rewritten specification.
 
 # Current Workstream Detail
 
+15 October bounded visual closure plan:
+- Control accessibility and repeated component addition: IMPLEMENTED, checking.
+  Page Property uses an explicit sibling label/control association; related exact
+  selected-business controls have matching accessible names. Library stays open
+  after addition. Expected Page editor/CSS, conditions/setup/dashboard controls and
+  existing editor regression; no DB changes. Real Chromium reproducer confirmed
+  wrapped select exact label0 versus explicit association1; original gate unchanged.
+- Original Templates input/inspection: IN PROGRESS in existing cutover-identity
+  worktree. Extract original parser unchanged; current selected-business/native
+  Manage checks before same-tenant saved snapshot; closed metadata-only differences,
+  protected-detail source/use and approved context discovery; no providers/writes.
+  Expected core/templates input/contract/inspection/authoring plus focused tests.
+- Original TemplateEditor: IN PROGRESS in existing required-receipts worktree.
+  Optional metadata callbacks, continuous feedback, visual saved/local comparison,
+  explicit Back/Keep/Use, current-template detail navigation and keyboard dialog.
+  Original renderer/CAS/real preview/generator preserved. No new engine/schema.
+- Root adapters/actual fixture: NOT STARTED. Bind original Studio authority/actions
+  and native action forwards, extend existing document journey with read-only
+  comparison/reference/keyboard/current-rights evidence, then original live gates.
+
+
 Additional confirmed Phase2 desktop closure: IMPLEMENTED source; actual runtime pending.
 Original web build does not regenerate checked-in actionallowlist:43current Phase2
 actions missing, although direct web Next actions bypass it. Existing native staging
@@ -279,6 +315,14 @@ original service, without labels/counts/native/progress. New non-Test conditiona
 
 # Files Changed
 
+15 October closure: core/templates/{authoring,authoring-input,inspection-contract,
+inspection}.ts; native templates/components/{editor,review}.tsx; Studio documents
+routes/actions; exact data-api action-registry forwards; Page editor/CSS/conditions,
+field setup/requirement/setup choices and dashboard controls; original document/
+business-dashboard checkers; focused existing/new tests and shared docs/memory.
+No Prisma changes or migrations in this checkpoint.
+
+
 14 October bounded correction: original Home route and Analytics business View
 discovery service; existing runtime test +new Home test; original default checker.
 Shared CURRENT_STATE/DECISIONS/ledger/coverage/phase plan/Analytics contract updated.
@@ -335,6 +379,14 @@ Required recovery233012/fixture233203 preserved; no destructive rollback/reset.
 Other concurrent module migrations untouched.
 
 # Tests Added
+
+15 October: template-inspection service tests cover current rights/tenant/module,
+parser preservation, structural changes and exact source/usage with no provider;
+editor interaction tests cover full captured inputs, stale replies, Back/Keep/Use,
+focus/Escape, current metadata navigation, cleared actual preview and removal impact.
+Original Page regression covers exact labels and successive component additions.
+Existing document and View actual fixtures extended; execution pending.
+
 
 Setup current-authority/no-write inspection and saved/local summaries/strict input,
 production explicit feedback and original unsaved/Back/Keep baseline DOM evidence;
@@ -630,11 +682,12 @@ journeys mandatory. No later phase starts.
 
 # Exact Next Action
 
-Inspect original94378 exact46d12124 candidate/public result; keep HEAD fixed until
-original gates finish. Preserve/fix genuine failure with evidence if needed.
-After accepted bridge, next compatible
-candidate/public pair must positively exercise all new panels/KPI/View/embedding/
-non-Test conditional/staff authoring families before Phase2 PASS. No later engines.
+Save the reviewed visual closure checkpoint, then run the original exact-pinned
+Studio candidate/public release on codex/studio-phase2. Liveee18 ancestry integrated.
+Keep HEAD fixed until it completes. Preserve/fix any actual failure; no activation
+or Phase2 PASS inferred from source checks. After accepted bridge, next compatible
+candidate/public pair must positively exercise new panels/KPI/View/embedding/non-Test
+conditional/staff authoring families. No later-phase engines.
 
 # Historical checkpoint evidence
 

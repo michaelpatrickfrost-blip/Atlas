@@ -10,6 +10,21 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { listDocumentPreviewRecordsInTransaction, previewDocumentInTransaction } from "@/core/templates/preview";
 import { withFormFeedback } from "@/core/shared/form-feedback";
+import { inspectTemplateDraftInTransaction } from "@/core/templates/inspection";
+
+export async function inspectStudioDocumentDraft(business: string | undefined, form: FormData) {
+  const actor = await requireSession();
+  assertCapability(actor, CAP.edit);
+  return withFormFeedback(() => withStudioAuthoringAuthority(actor, CAP.edit, z.string().min(1).max(100).optional().parse(business),
+    authority => inspectTemplateDraftInTransaction(authority, form)));
+}
+
+export async function compareStudioDocumentDraft(business: string | undefined, form: FormData) {
+  const actor = await requireSession();
+  assertCapability(actor, CAP.edit);
+  return withFormFeedback(() => withStudioAuthoringAuthority(actor, CAP.edit, z.string().min(1).max(100).optional().parse(business),
+    authority => inspectTemplateDraftInTransaction(authority, form)));
+}
 
 export async function saveStudioDocument(business: string | undefined, form: FormData) {
   const actor = await requireSession();

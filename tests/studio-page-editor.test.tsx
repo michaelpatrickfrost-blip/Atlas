@@ -71,6 +71,21 @@ describe('controlled business page design workspace', () => {
     expect(screen.getByText('Unsaved changes')).toBeTruthy();
     expect((screen.getByRole('button', { name: 'Review & publish' }) as HTMLButtonElement).disabled).toBe(true);
   });
+  it('associates property names with their controls without including selectable choices in labels', () => {
+    const view = mount();
+    const properties = screen.getByRole('complementary', { name: 'Selected item properties' });
+    const columns = within(properties).getByRole('combobox', { name: 'Desktop columns' }) as HTMLSelectElement;
+    // Chromium's exact getByLabel reads label text including descendants. Keep
+    // option text outside the label, while the actual input remains associated.
+    expect(columns.labels).toHaveLength(1);
+    expect(columns.labels![0].textContent).toBe('Desktop columns');
+    expect(columns.labels![0].htmlFor).toBe(columns.id);
+    fireEvent.change(columns, { target: { value: '1' } });
+    expect(view.value().sections[0].columns.desktop).toBe(1);
+    const name = within(properties).getByLabelText('Display name', { exact: true }) as HTMLInputElement;
+    expect(name.labels![0].textContent).toBe('Display name');
+    expect(name.id).not.toBe(columns.id);
+  });
   it('edits component device visibility without removing the last representation or changing the business field', () => {
     const view = mount(); chooseCanvas('Next steps');
     fireEvent.click(screen.getByRole('checkbox', { name: 'Phone' }));
@@ -90,6 +105,14 @@ describe('controlled business page design workspace', () => {
     expect(item).toMatchObject({ type: 'instructions', text: 'Arrange a delivery time.', id: 'node_1' });
     expect(view.value().sections[0].components).toHaveLength(2);
     expect(screen.queryByRole('button', { name: /Arbitrary script/ })).toBeNull();
+  });
+  it('keeps the library available for building a screen with several components', () => {
+    const view = mount(); chooseCanvas('Delivery');
+    fireEvent.click(screen.getByRole('button', { name: 'Add Instructions' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Add Confirm order' }));
+    expect(view.value().sections[1].components.map(component => component.type)).toEqual(['callout', 'instructions', 'action']);
+    expect(screen.getByLabelText('Display name')).toHaveProperty('value', 'Confirm order');
+    expect(screen.getByRole('button', { name: 'Add Instructions' })).toBeTruthy();
   });
   it('reorders and duplicates selected components with unique generated node identities', () => {
     const view = mount(); chooseCanvas('Next steps');

@@ -1,6 +1,6 @@
 # Atlas Studio specification coverage
 
-12 October 2026. Execution index for the unchanged supplied
+15 October 2026. Execution index for the unchanged supplied
 `ATLAS_STUDIO_SOURCE.docx`, not a replacement specification. Original and repository
 copy SHA256: `4afb01d98ead51cd70ec4958620eb9d27a19a0298cd0fa1cb8bd0aee69d9198d`.
 The full document was re-read after Michael requested an explicit scope check.
@@ -77,6 +77,15 @@ personal dashboards and other tenants. These requirements are recorded in
 STUDIO_VISUAL_BUILDER_REQUIREMENTS.md and are still unfinished Phase 2 work.
 
 ## Exact next checkpoint
+
+15 October: accepted liveee18 UI integrated; reproduced Page label issue corrected,
+component library retained on repeated add. Native Templates current-authority
+inspection, continuous feedback, visual saved/local recovery, exact source/use and
+removal impact IMPLEMENTED. Original actual fixture extends keyboard/unchanged
+snapshots/current-rights and View measure navigation. Combined source checks/build
+in progress, then original compatible candidate/public and required next new-family
+positive pair. WholePhase2 FAIL. Earlier dated entries below are historical.
+
 
 14 October: bounded Home/defaults correction IMPLEMENTED, focused67/4/scoped lint/
 full types PASS; original production90532 running. Save reviewed source/memory then

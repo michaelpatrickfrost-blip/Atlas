@@ -4,7 +4,7 @@ import { STUDIO_CAPABILITIES as CAP } from "@/core/studio/permissions";
 import { withStudioAuthoringAuthority } from "@/core/studio/authoring/context";
 import { requireTemplateWorkspace } from "@/core/templates/service";
 import { TemplateEditor } from "@/modules/templates/components/editor";
-import { saveStudioDocument, listStudioDocumentPreviewRecords, previewStudioDocument } from "../actions";
+import { saveStudioDocument, listStudioDocumentPreviewRecords, previewStudioDocument, inspectStudioDocumentDraft, compareStudioDocumentDraft } from "../actions";
 
 export default async function NewDocument({ searchParams }: { searchParams: Promise<{ business?: string }> }) {
   const actor = await requireSession(), business = (await searchParams).business;
@@ -14,5 +14,5 @@ export default async function NewDocument({ searchParams }: { searchParams: Prom
   });
   const suffix = business ? `?business=${encodeURIComponent(business)}` : "";
   return <div className="mx-auto max-w-7xl px-5 py-8 md:px-10"><p className="mb-5 text-sm text-slate-500">Designing for {workspace}</p>
-    <TemplateEditor saveAction={saveStudioDocument.bind(null, business)} listPreviewRecords={listStudioDocumentPreviewRecords.bind(null, business)} previewRecord={previewStudioDocument.bind(null, business)} libraryHref={`/design-studio/documents${suffix}`}/></div>;
+    <TemplateEditor saveAction={saveStudioDocument.bind(null, business)} inspectDraft={inspectStudioDocumentDraft.bind(null, business)} compareSaved={compareStudioDocumentDraft.bind(null, business)} listPreviewRecords={listStudioDocumentPreviewRecords.bind(null, business)} previewRecord={previewStudioDocument.bind(null, business)} libraryHref={`/design-studio/documents${suffix}`}/></div>;
 }

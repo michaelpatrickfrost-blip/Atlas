@@ -19,7 +19,7 @@ export function AdditionalFieldSetup({ fieldTypes, referenceTargets, initial, st
   return <div className="space-y-5">
     <label className="grid gap-2 text-sm font-medium">Display name<input name="label" defaultValue={initial?.label} className={inputClass} required maxLength={100}/></label>
     <label className="grid gap-2 text-sm font-medium">Helpful description<textarea name="help" defaultValue={initial?.help} className={inputClass} rows={3} maxLength={500}/></label>
-    <label className="grid gap-2 text-sm font-medium">What kind of detail?<select name="type" className={inputClass} required value={selected} onChange={event => setSelected(event.target.value)}>
+    <label className="grid gap-2 text-sm font-medium">What kind of detail?<select name="type" aria-label="What kind of detail?" className={inputClass} required value={selected} onChange={event => setSelected(event.target.value)}>
       {!types.length && <option value="">No field types are available</option>}{types.map(type => <option key={type.id} value={type.id}>{type.name}</option>)}
     </select></label>
     {selectedType && <TypeControls key={selected} type={selectedType} referenceTargets={referenceTargets} initial={initial?.type === selected ? initial : undefined} storageRulesEditable={storageRulesEditable} retainedIndex={initial?.indexed ?? false} retainedUnique={initial?.unique ?? false}/>}

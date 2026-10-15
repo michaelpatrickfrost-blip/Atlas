@@ -8,6 +8,9 @@ import { readStudioRuntimeFeatureEvidence, STUDIO_PAGE_FEATURE } from "../../src
 import { saveTemplateForSession } from "../../src/core/templates/authoring";
 import { renderTemplate } from "../../src/core/templates/service";
 import { parseBlocks } from "../../src/core/templates/domain";
+import { withStudioAuthoringAuthority } from "../../src/core/studio/authoring/context";
+import { STUDIO_CAPABILITIES as CAP } from "../../src/core/studio/permissions";
+import { inspectTemplateDraftInTransaction } from "../../src/core/templates/inspection";
 
 export interface VisualDocumentFixture {
   organisationId: string; foreignOrganisationId: string; orderId: string; orderReference: string;
@@ -80,6 +83,21 @@ export async function checkVisualDocuments(base: string, page: Page, fixture: Vi
     const snapshot = async () => ({ template: await template(), audit: await db.auditEntry.findMany({ where: scope, orderBy: { id: "asc" } }),
       documents: await db.contractDocument.findMany({ where: scope, orderBy: { id: "asc" } }) });
     const beforePreview = await snapshot();
+    await page.getByLabel("Template name", { exact: true }).fill("");
+    await expect(page.getByRole("region", { name: "Template checks", exact: true })).toContainText("Enter a name and document title.");
+    await page.getByLabel("Template name", { exact: true }).fill(name);
+    await expect(page.getByRole("region", { name: "Template checks", exact: true })).toContainText("Your template is ready to save");
+    assert.deepEqual(await snapshot(), beforePreview, "Continuous document checks cannot save, publish or create an Audit entry.");
+    await page.getByRole("button", { name: "Go to source", exact: true }).click();
+    const detail = page.getByRole("dialog", { name: "Customer name", exact: true });
+    await expect(detail.getByRole("heading", { name: "Customer Master", exact: true })).toBeVisible();
+    await expect(detail).not.toContainText(fixture.customerName);
+    await detail.getByRole("button", { name: "Where used in this template", exact: true }).click();
+    await expect(detail.getByRole("button", { name: "Document title", exact: true })).toBeVisible();
+    await expect(detail.getByRole("button", { name: "Section 1 · Heading", exact: true })).toBeVisible();
+    await detail.getByRole("button", { name: "Document title", exact: true }).click();
+    await expect(page.getByLabel("Document title", { exact: true })).toBeFocused();
+    assert.deepEqual(await snapshot(), beforePreview, "Detail source and exact template usage are read-only metadata navigation.");
     await page.getByLabel("Preview content", { exact: true }).selectOption({ label: "Business record" });
     await page.getByLabel("Preview record", { exact: true }).selectOption(`sales/order/${fixture.orderId}`);
     await page.getByRole("button", { name: "Refresh business preview", exact: true }).click();
@@ -102,7 +120,29 @@ export async function checkVisualDocuments(base: string, page: Page, fixture: Vi
     await second.getByRole("button", { name: "Save template", exact: true }).click();
     await expect(second.getByRole("alert")).toContainText(/CONFLICT|another person changed/i);
     await expect(second.getByLabel("Section 1 text", { exact: true })).toHaveValue("Unsaved second editor ");
-    assert.deepEqual(await snapshot(), beforeStale); await second.close(); second = undefined;
+    assert.deepEqual(await snapshot(), beforeStale);
+    const compare = second.getByRole("button", { name: "Compare with saved template", exact: true });
+    const comparison = second.getByRole("dialog", { name: "Compare with saved template", exact: true });
+    await compare.click(); await expect(comparison).toBeVisible();
+    await expect(comparison.getByRole("region", { name: "Your unsaved template", exact: true })).toContainText("Unsaved second editor");
+    await expect(comparison.getByRole("region", { name: "Current saved template", exact: true })).toContainText("Prepared for Example customer");
+    await expect(comparison).not.toContainText(fixture.customerName);
+    const back = comparison.getByRole("button", { name: "Back to editing", exact: true });
+    await expect(back).toBeFocused(); await second.keyboard.press("Shift+Tab");
+    await expect(comparison.getByRole("button", { name: "Keep my changes", exact: true })).toBeFocused();
+    await second.keyboard.press("Tab"); await expect(back).toBeFocused();
+    await second.keyboard.press("Escape"); await expect(comparison).toHaveCount(0); await expect(compare).toBeFocused();
+    await expect(second.getByLabel("Section 1 text", { exact: true })).toHaveValue("Unsaved second editor ");
+    assert.deepEqual(await snapshot(), beforeStale, "Escape preserves local edits and their old save baseline without writes.");
+    await compare.click(); await comparison.getByRole("button", { name: "Keep my changes", exact: true }).click();
+    await expect(second.getByLabel("Section 1 text", { exact: true })).toHaveValue("Unsaved second editor ");
+    await expect(second.locator('input[name="version"]')).toHaveValue("2");
+    assert.deepEqual(await snapshot(), beforeStale, "Keep adopts only the reviewed local baseline, without saving or publishing.");
+    await compare.click(); await comparison.getByRole("button", { name: "Use saved template", exact: true }).click();
+    await expect(second.getByLabel("Section 1 text", { exact: true })).toHaveValue("Prepared for ");
+    await expect(second.getByLabel("Status", { exact: true })).toHaveValue("PUBLISHED");
+    assert.deepEqual(await snapshot(), beforeStale, "Use saved only replaces the local editor; existing version and Audit stay unchanged.");
+    await second.close(); second = undefined;
     function form(version: number, description: string) {
       const input = new FormData(); for (const [key, value] of Object.entries({ id: templateId, version: String(version), name,
         titleTemplate: published.titleTemplate, status: "PUBLISHED", blocks: JSON.stringify(parseBlocks(published.blocks)), description })) input.set(key, value);
@@ -133,10 +173,18 @@ export async function checkVisualDocuments(base: string, page: Page, fixture: Vi
     await saveTemplateForSession(await fixture.freshSession(), form(2, "Later version preserves original documents")); assert.equal((await template()).version, 3);
     assert.deepEqual(await db.contractDocument.findFirstOrThrow({ where: { ...scope, id: generated.id } }), generated, "Later template saves cannot rewrite the existing PDF or resolved version snapshot.");
     const beforeForeign = await snapshot();
+    await assert.rejects(() => fixture.freshSession(fixture.foreignOrganisationId).then(session => withStudioAuthoringAuthority(session, CAP.edit, undefined,
+      authority => inspectTemplateDraftInTransaction(authority, form(3, "Foreign inspection denied")))), /unavailable|outside your access|FORBIDDEN/i);
     await assert.rejects(() => fixture.freshSession(fixture.foreignOrganisationId).then(session => saveTemplateForSession(session, form(3, "Foreign denied"))), /CONFLICT/);
     await assert.rejects(() => fixture.freshSession(fixture.foreignOrganisationId).then(session => renderTemplate(session, templateId, { sourceModule: "sales", sourceType: "order", sourceId: fixture.orderId })), /published template/);
+    const beforeRevocation = await fixture.freshSession();
+    await db.membership.update({ where: membership, data: { deniedCapabilities: [...originalMembership.deniedCapabilities, "core.contract.manage"] } });
+    try {
+      await assert.rejects(() => withStudioAuthoringAuthority(beforeRevocation, CAP.edit, undefined,
+        authority => inspectTemplateDraftInTransaction(authority, form(3, "Revoked inspection denied"))), /FORBIDDEN/i);
+    } finally { await db.membership.update({ where: membership, data: { deniedCapabilities: originalMembership.deniedCapabilities } }); }
     assert.deepEqual(await snapshot(), beforeForeign);
-    console.log("PASS original document designer: protected friendly details, per-document inputs/table cells/sample+authorised actual preview, current source denial clears prior values, stale editor retention, template Audit atomicity, native generated PDF+version snapshot preserved after later edits, cross-tenant denial. No sharing/signing/email or second template engine.");
+    console.log("PASS original document designer: protected friendly details, continuous metadata checks, exact detail source/usage, visual saved/local comparison and keyboard Escape/Back/Keep/Use with unchanged persistence, per-document inputs/table cells/sample+authorised actual preview, current source denial clears prior values, stale editor retention, template Audit atomicity, native generated PDF+version snapshot preserved after later edits, cross-tenant denial. No sharing/signing/email or second template engine.");
     return { templateId };
   } finally {
     const cleanup = await Promise.allSettled([second?.close() ?? Promise.resolve(),

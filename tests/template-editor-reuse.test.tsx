@@ -99,7 +99,9 @@ it("clears old authorised values before refresh and keeps them absent when curre
   await waitFor(() => expect(screen.getByRole("option", { name: "Order" })).toBeTruthy());
   fireEvent.change(screen.getByLabelText("Preview record"), { target: { value: "sales/order/order" } });
   await waitFor(() => expect(screen.getByLabelText("Document preview").textContent).toContain("Actual business customer"));
-  fireEvent.click(screen.getByRole("button", { name: "Refresh business preview" }));
+  const refresh = screen.getByRole("button", { name: "Refresh business preview" }) as HTMLButtonElement;
+  await waitFor(() => expect(refresh.disabled).toBe(false));
+  fireEvent.click(refresh);
   await waitFor(() => expect(screen.getByRole("alert").textContent).toContain("Current source access denied"));
   expect(screen.queryByLabelText("Document preview")).toBeNull();
   expect(read.mock.calls[0][0]).toMatchObject({ sourceModule: "sales", sourceType: "order", sourceId: "order" });
@@ -123,6 +125,7 @@ it("removing a selected table row clears its insertion target and preserves othe
   render(<TemplateEditor initial={{ name: "Business", description: "", category: "", status: "DRAFT", targetModules: ["sales"], titleTemplate: "Business", blocks: [{ id: "body", type: "table", text: "Item|{{record.reference}}\nDelivery|Monday" }] }} />);
   fireEvent.focus(screen.getByLabelText("Section 1 row 2 column 2"));
   fireEvent.click(screen.getByRole("button", { name: "Remove table row 2" }));
+  fireEvent.click(screen.getByRole("button", { name: "Remove row" }));
   fireEvent.click(screen.getByRole("button", { name: "Insert in selected section" }));
   expect(screen.getByLabelText("Business detail: Record number")).toBeTruthy();
   expect(screen.queryByLabelText("Section 1 row 2 column 2")).toBeNull();

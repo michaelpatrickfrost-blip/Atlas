@@ -1,3 +1,23 @@
+## 15 October 2026 — visual review reuses original native Templates authority
+
+Templates authoring remains the existing DocumentTemplate engine with its original
+validated input, current native Manage permission, staff workspace exception, tenant
+scope, version CAS and atomic Audit. Reuse the exact parser for read-only continuous
+checks and saved/local comparison. These reads do not invoke record providers,
+branding/PDF generation or writes. Back keeps the baseline; explicit Keep/Use adopts
+only the observed version locally, so a later save still checks the genuine CAS.
+Comparison previews share the original block renderer and fixed example values;
+real source preview remains a separate explicitly authorised operation.
+
+Native templates have no sealed Studio dependency edges or immutable template-version
+archive. Show exact title/section/table-cell usage within the current template and
+its genuine metadata source; available target-app contexts are not dependencies or
+permission grants. Preserve generated documents' existing immutable snapshots. This
+fulfils draft review/reference UX without inventing a second renderer, publisher,
+version archive or misleading cross-template field identity. Draft section/row/column
+removal explains local content impact before confirmation; saved/generated data stays
+unchanged until an explicit original Save. No schema migration is required.
+
 ## 12 October 2026 — owning form readiness and genuine dashboard discovery
 
 Use an actual successful document response and owning native/typed form controls

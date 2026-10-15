@@ -67,7 +67,7 @@
 .nodeActions { margin-bottom: 18px; gap: 6px; }
 .nodeActions button { width: 32px; height: 32px; background: #f8fafc; border: 1px solid var(--studio-line); }
 .property { display: block; margin-bottom: 14px; }
-.property > span { display: block; margin-bottom: 6px; font-size: 11px; font-weight: 650; color: #475569; }
+.property > label { display: block; margin-bottom: 6px; font-size: 11px; font-weight: 650; color: #475569; }
 .propertySubheading { margin: 20px 0 12px; font-size: 12px; font-weight: 750; }
 .fieldProperty { margin-bottom: 12px; padding: 12px; border: 1px solid var(--studio-line); border-radius: 9px; }
 .fieldHeading { justify-content: space-between; gap: 4px; margin-bottom: 12px; }

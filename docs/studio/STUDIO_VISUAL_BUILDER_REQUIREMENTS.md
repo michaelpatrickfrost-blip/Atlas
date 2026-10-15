@@ -180,3 +180,18 @@ no preview writes/store/PDF. Saved version/current publication remains visible w
 unsaved status changes wait for Save. Original parser/merge/PDF and native save/version
 engine remain authoritative. Focused checks passed; latest actual compatible visual
 journeys pending, so this source checkpoint does not pass the Phase2 gate.
+
+## 15 October — original document design review and accessible controls
+
+IMPLEMENTED source: original Templates parser reused for current selected-business
+metadata inspection; continuous feedback, saved/local visual comparison with fixed
+examples, explicit Back/Keep/Use and exact protected-detail source/current-template
+usage. Same native renderer, permissions, CAS, generator and document snapshots.
+Section/table removal now explains affected draft content before confirmation.
+Approved context labels describe available sources, not a fabricated dependency graph.
+Original Page property controls have explicit label associations; related setup,
+condition and dashboard controls expose their visible names. Repeated component
+addition keeps the library open while the new item's properties remain selected.
+Actual original document fixture now covers read-only checks/reference navigation,
+comparison/keyboard/retention/foreign and revoked access. Dashboard fixture opens
+its View-family measure source/usage. Runtime execution is pending, not PASS.

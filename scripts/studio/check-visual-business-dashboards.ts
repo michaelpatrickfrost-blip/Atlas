@@ -164,6 +164,22 @@ export async function checkVisualBusinessDashboards(base: string, page: Page, fi
     assert.equal(first.dataByWidget[zeroWidget.id].points.reduce((sum, point) => sum + point.value, 0), 0);
     for (const action of ["studio.definition.published", "studio.definition.activated"])
       assert.equal(await db.auditEntry.count({ where: { ...scope, actorUserId: fixture.userId, entityId: definitionId, action } }), 1);
+    // Review the actual View-family source and immutable reverse use in the same
+    // browser/company. This is metadata navigation, never a measure execution.
+    const beforeReference = await snapshot();
+    await page.getByRole("button", { name: "Configure widget 1", exact: true }).click();
+    const sourceLink = inspector.getByRole("link", { name: "Go to source", exact: true });
+    const sourceHref = await sourceLink.getAttribute("href");
+    assert(sourceHref?.startsWith("/design-studio/capabilities/") && new URL(sourceHref, base).searchParams.get("family") === "view");
+    const sourceOpened = page.waitForEvent("popup"); await sourceLink.click();
+    const reference = await sourceOpened; pages.push(reference);
+    await expect(reference.getByText("Sales · Approved measure", { exact: true })).toBeVisible();
+    await expect(reference.getByText(/This is an approved part of the app/)).toBeVisible();
+    await reference.getByRole("navigation", { name: "App reference review" }).getByRole("link", { name: "Where used", exact: true }).click();
+    await expect(reference.getByRole("heading", { name: "Saved designs using this app reference", exact: true })).toBeVisible();
+    await expect(reference.getByText(savedName, { exact: true })).toBeVisible();
+    assert.deepEqual(await snapshot(), beforeReference, "Measure source/usage navigation cannot change metadata, Audit or native records.");
+    await reference.close();
     const customer = await page.context().newPage(); pages.push(customer);
     customer.on("pageerror", error => browserErrors.push(error.message));
     customer.on("response", response => { if (response.url().startsWith(base) && /\/_next\/static\//.test(response.url()) && response.status() >= 400) failedAssets.push(`${response.status()}:${response.url()}`); });

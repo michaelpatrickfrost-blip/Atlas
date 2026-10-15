@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useId, useState, useRef, type ReactNode } from 'react';
+import { cloneElement, useEffect, useId, useState, useRef, type ReactElement, type ReactNode } from 'react';
 import { ArrowLeft, ArrowDown, ArrowUp, Check, Copy, Eye, LayoutPanelLeft, Monitor, Plus, Search, Smartphone, Tablet, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { inputClass } from '@/components/ui/service-fields';
@@ -107,7 +107,7 @@ export function StudioPageEditor(props: PageEditorProps) {
   });
   const addComponent = (item: PageEditorPaletteItem) => edit(() => {
     const component = { ...structuredClone(item.component), id: createNodeId() } as PageComponent;
-    const next = addPageComponent(page, selectedSection.id, component); setSelection({ kind: 'component', id: component.id }); setTab('outline'); return next;
+    const next = addPageComponent(page, selectedSection.id, component); setSelection({ kind: 'component', id: component.id }); return next;
   });
   const duplicate = () => { if (selection) edit(() => { const copy = duplicatePageNode(page, selection, createNodeId); setSelection(copy.selection); return copy.page; }); };
   const remove = () => {
@@ -187,7 +187,10 @@ export function StudioPageEditor(props: PageEditorProps) {
     {confirmation && <ConfirmationDialog id={confirmationId} title={confirmation.title} detail={confirmation.detail} cancel={() => setConfirmation(null)} confirm={() => { confirmation.apply(); setConfirmation(null); }}/>}
   </main>;
 }
-function Property({ label, children }: { label: string; children: ReactNode }) { return <label className={styles.property}><span>{label}</span>{children}</label>; }
+function Property({ label, children }: { label: string; children: ReactElement<{ id?: string }> }) {
+  const generatedId = useId(), controlId = children.props.id || generatedId;
+  return <div className={styles.property}><label htmlFor={controlId}>{label}</label>{cloneElement(children, { id: controlId })}</div>;
+}
 function FieldProperties({ component, choices, change }: { component: Extract<PageComponent, { type: 'fields' }>; choices: readonly PageEditorFieldChoice[]; change: (change: (component: Extract<PageComponent, { type: 'fields' }>) => Extract<PageComponent, { type: 'fields' }>) => void }) {
   const update = (index: number, field: PageEditorField) => change(current => ({ ...current, fields: current.fields.map((item, i) => i === index ? field : item) }));
   const move = (index: number, direction: -1 | 1) => change(current => { const fields = [...current.fields]; [fields[index], fields[index + direction]] = [fields[index + direction], fields[index]]; return { ...current, fields }; });

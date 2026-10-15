@@ -50,6 +50,7 @@ import {withAdminActionAliases} from "./action-aliases";
 import {findTicketAdditionalDetailReferences} from "@/core/service-work/field-search-actions";
 import {findTicketsByAdditionalDetail} from "@/core/service-work/field-search-actions";
 import {previewStudioDocument} from "@/app/(studio)/design-studio/documents/actions";
+import {inspectStudioDocumentDraft,compareStudioDocumentDraft} from "@/app/(studio)/design-studio/documents/actions";
 import {listStudioDocumentPreviewRecords} from "@/app/(studio)/design-studio/documents/actions";
 import { searchTicketFieldReferences } from "@/core/service-work/field-form-actions";
 import {updateCompanyAccount as action0} from "@/app/(admin)/atlas/actions";
@@ -1034,6 +1035,8 @@ export const DATA_ACTIONS:Record<string,(...args:never[])=>Promise<unknown>>=wit
 "src/core/service-work/field-search-actions:findTicketAdditionalDetailReferences":findTicketAdditionalDetailReferences as (...args:never[])=>Promise<unknown>,
 "src/core/service-work/field-search-actions:findTicketsByAdditionalDetail":findTicketsByAdditionalDetail as (...args:never[])=>Promise<unknown>,
 "src/app/(studio)/design-studio/documents/actions:previewStudioDocument":previewStudioDocument as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/documents/actions:inspectStudioDocumentDraft":inspectStudioDocumentDraft as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/documents/actions:compareStudioDocumentDraft":compareStudioDocumentDraft as (...args:never[])=>Promise<unknown>,
 "src/app/(studio)/design-studio/documents/actions:listStudioDocumentPreviewRecords":listStudioDocumentPreviewRecords as (...args:never[])=>Promise<unknown>,
 "src/core/service-work/field-form-actions:searchTicketFieldReferences":searchTicketFieldReferences as (...args:never[])=>Promise<unknown>,
 "src/app/(admin)/atlas/actions:updateCompanyAccount":action0 as (...args:never[])=>Promise<unknown>,

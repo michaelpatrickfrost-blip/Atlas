@@ -1,6 +1,6 @@
 # Atlas Studio implementation progress
 
-Updated: 14 October 2026. This dashboard supersedes historical next steps below.
+Updated: 15 October 2026. This dashboard supersedes historical next steps below.
 The unchanged source is ATLAS_STUDIO_SOURCE.docx; SHA256 matches Michael's original:
 4afb01d98ead51cd70ec4958620eb9d27a19a0298cd0fa1cb8bd0aee69d9198d.
 STUDIO_SPECIFICATION_COVERAGE.md traces the source requirements across all phases.
@@ -13,6 +13,26 @@ phase wording on9 October: proceed in the document's order. No Phase3 features
 before the complete Phase2 gate passes. Foundation-first order remains authorised.
 
 # Current Workstream
+
+IN PROGRESS — recovery/live UI integration and final visual quality closures.
+Original94378 failed preactivation at Page Desktop columns exact label lookup;
+forms/defaults/search/Create-only types/profiles actual PASS. Test cleanup preserved
+QA/Audit. HEAD no longer pinned. Liveee18a268 confirmed15October, accepted premium
+UI must merge before release. Then original Templates comparison/reference controls
+and actual visual keyboard proof; no new engine/schema/copy. WholePhase2 FAIL.
+Following run-in-progress entries are historical and superseded by this recovery.
+
+IN PROGRESS — original94378 candidateO1IsE5. Server134849 production finished,
+original4family pair; recovery134849/fixture135052 retained. Native Ticket forms,
+literal defaults and complete configured field search actual PASS. Type/profile/
+visual/public pending. HEAD46d12124 remains pinned, no commit/branch/source changes.
+WholePhase2 FAIL; document comparison/reference/keyboard gaps also recorded below.
+
+IN PROGRESS — original94378 exact46d12124 Studio release. Log
+/tmp/atlas-studio-home-correction-release.txt. HEAD pinned until original gates end;
+no commit/branch/source changes during run. Source67/4/lint/types/build PASS does
+not establish runtime acceptance. WholePhase2 FAIL pending bridge then new-family
+actual positives. Live75977 is prior verified state. Historical entries below.
 
 IMPLEMENTED/source checks complete — bounded Home/defaults checkpoint ready for
 original actual retry. Focused67/4 PASS35327, scoped lint76275 EXIT0, full types77789
@@ -565,6 +585,13 @@ Decisions and rationale recorded in .ai/DECISIONS.md; no silent source divergenc
 
 # Known Issues
 
+- 14 October read-only audit: reused original Templates editor still lacks saved/local
+  structural comparison and Go to source/Where used for approved context references;
+  original template checker proves stale local retention only. Section6.2/18.2 closure
+  needed before Phase2 PASS. Actual keyboard modal sequence also absent from visual
+  browser checker although source/tests exist. Read-only solution exploration during
+  pinned94378; no source edits until release ends and no new engine/schema proposed.
+
 - b30 actual visual/public gate not reached because defaults navigation timed out.
   Semantic owning-form readiness correction IMPLEMENTED, actual retry pending.
   Separate confirmed staff Home discovery mismatch IMPLEMENTED and source tested;
@@ -596,8 +623,8 @@ journeys mandatory. No later phase starts.
 
 # Exact Next Action
 
-Save reviewed bounded Home/defaults source and shared memory checkpoint, then original
-pinned Studio bridge retry. Keep HEAD fixed until original gates finish.
+Inspect original94378 exact46d12124 candidate/public result; keep HEAD fixed until
+original gates finish. Preserve/fix genuine failure with evidence if needed.
 After accepted bridge, next compatible
 candidate/public pair must positively exercise all new panels/KPI/View/embedding/
 non-Test conditional/staff authoring families before Phase2 PASS. No later engines.

@@ -1,3 +1,59 @@
+## 15 October 2026 — recovered actual46d failure and newer live visual system
+
+Original94378 ended before activation: native forms/defaults/configured search,
+Create-only type forms and record profiles actual PASS. Visual Page editor reached
+but exact Desktop columns label lookup timed out. Test companies suspended safely,
+Audit/QA retained; recovery134849/fixture135052 and candidateO1IsE5 evidence retained.
+No release/checker process remains; HEAD46d12124 no longer pinned. New live health/
+pointer ee18a2689d592dc0c837fb42c74c3a7fc739d487 confirmed15October. Its five accepted
+premium UI commits descend from75977 and must be merged before any new deployment.
+Do not overwrite current live theme/transition/launcher/deployment changes.
+
+Active bounded workstreams: (1) preserve this recovery checkpoint, integrate accepted
+live UI and reconcile source/memory conflicts; (2) diagnose/fix real Page control
+accessible-name failure; (3) original Templates continuous validation, saved/local
+visual comparison and exact context/detail source/usage navigation with unchanged
+native engine/CAS, no DB changes; (4) original visual fixture keyboard/current-rights/
+business isolation checks; (5) original compatible candidate/public acceptance.
+WholePhase2 FAIL. Exact next save recovery memory, merge accepted liveee18, review
+integration, then implement these owned bounded workstreams. No later-phase engine.
+
+## 14 October 2026 —46d candidate defaults/search actual PASS
+
+Original94378 remains IN PROGRESS, HEAD46d12124 pinned. Server134849 production
+finished; sealed compatible pair retains original4 families. Recovery134849 and
+fixture135052 retained; actual candidate /tmp/atlas-studio-candidate-O1IsE5.
+Original native forms, literal defaults and complete configured Ticket field search
+actual PASS. Semantic document/form readiness passed real0/false INSERT, explicit
+null/edit omission, replay/current-rights/SQL/Audit rollback checks. Type/profile/
+visual/public not yet complete; no activation or full Phase2 PASS inferred.
+Exact next inspect original94378 through final result, retain HEAD; afterwards close
+document comparison/reference/keyboard gaps then required new-family positive pair.
+
+## 14 October 2026 — read-only visual acceptance audit during pinned release
+
+Customer author and staff QA provenance/current affiliation/pair-before-fixture checks
+confirmed in original source, no runtime PASS inferred. Page/setup/dashboard actual
+checkers cover current saved/local comparison and explicit choices. Confirmed remaining
+source6.2/18.2 gap: reused native TemplateEditor has protected chips/real preview/CAS
+but lacks saved/local structural comparison and source/Where used reference controls;
+actual checker currently proves retained stale input only. Keyboard modal/focus source
+tests exist but actual visual browser keyboard sequence is absent. WholePhase2 cannot
+PASS with these unresolved. Bounded original-engine solution explored read-only while
+94378 remains pinned; no source change/commit during release, no later engine/schema.
+Exact next: finish original94378, preserve outcome then close these bounded visual
+quality gaps through existing Templates/services/checkers before final compatible pair.
+
+## 14 October 2026 — original46d12124 Studio release running
+
+Reviewed11file checkpoint46d12124ff76f641a0d92d9800307a69fd3d4c85 saved clean.
+Original deploy94378 IN PROGRESS, log /tmp/atlas-studio-home-correction-release.txt.
+HEAD pinned until original locks/backups/compatibility/candidate/public completion;
+no source commit or branch movement during run. Source67/4/lint/types/build PASS,
+runtime result not inferred. WholePhase2 FAIL. Exact next inspect original actual
+result; preserve/fix genuine failure if any, otherwise required next compatible
+new-family positive pair. Live75977 is prior health/pointer verified state.
+
 ## 14 October 2026 — bounded Home/defaults checkpoint ready for actual retry
 
 Focused67/4 PASS35327; scoped lint76275 EXIT0 (existing Home img warning);

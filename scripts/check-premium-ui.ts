@@ -69,14 +69,14 @@ async function main() {
           };
         });
         assert(layout.rootFits && layout.mainFits, `${path} ${viewport}: page and main must fit`);
-        assert(layout.headings > 0 && layout.theme === "#18263e", `${path}: rendered premium foundation`);
+        assert(layout.headings > 0 && layout.theme === "#1b1a17", `${path}: rendered Macro editorial foundation`);
         assert(layout.cardFilters, `${path}: cards must not trap overlays`);
         if (["/finance", "/service", "/manufacturing", "/guides"].includes(path)) {
           const banner = page.locator("main .atlas-workspace-heading").first();
           await expect(banner).toBeVisible();
           assert(await banner.evaluate(el => {
             const style = getComputedStyle(el);
-            return style.backgroundImage.includes("linear-gradient") && style.color !== "rgb(255, 255, 255)";
+            return style.backgroundImage === "none" && style.color !== "rgb(255, 255, 255)";
           }), `${path}: workspace banner follows the shared light surface and readable ink palette`);
         }
         await page.screenshot({ path: `${evidence}/${path.replaceAll("/", "-").slice(1) || "root"}-${viewport}.png` });
@@ -96,7 +96,7 @@ async function main() {
     await page.getByRole("button", { name: "Apps", exact: true }).click();
     const menu = page.getByRole("region", { name: "Apps menu" });
     await expect(menu).toBeVisible();
-    assert(await menu.evaluate(el => { const r = el.getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight && getComputedStyle(el).backgroundColor === "rgb(255, 255, 255)"; }), "Phone Apps popup is opaque and entirely in bounds");
+    assert(await menu.evaluate(el => { const r = el.getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight && /^rgb\(\d+, \d+, \d+\)$/.test(getComputedStyle(el).backgroundColor); }), "Phone Apps popup is opaque and entirely in bounds");
     await page.keyboard.press("Escape");
     await expect(page.getByRole("button", { name: "Apps", exact: true })).toBeFocused();
     await expect(menu).toBeHidden();

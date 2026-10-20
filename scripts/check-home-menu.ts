@@ -211,7 +211,10 @@ async function main() {
         const triggerBounds = await trigger.boundingBox();
         assert(popupBounds && triggerBounds);
         assert(popupBounds.width <= 900 && popupBounds.height <= height - triggerBounds.height, "Apps remains a compact popup.");
-        assert((width < 640 || Math.abs(popupBounds.x - triggerBounds.x) < 2) && popupBounds.y >= triggerBounds.y + triggerBounds.height, "Popup is anchored below Apps.");
+        assert(width >= 1024
+          ? popupBounds.x >= triggerBounds.x + triggerBounds.width && popupBounds.y <= triggerBounds.y
+          : (width < 640 || Math.abs(popupBounds.x - triggerBounds.x) < 2) && popupBounds.y >= triggerBounds.y + triggerBounds.height,
+          "Popup is anchored beside the rail's Apps button on desktop and below Apps otherwise.");
         await page.screenshot({
           path: `${evidence}/apps-menu-${name}.png`,
           fullPage: false,

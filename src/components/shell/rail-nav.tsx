@@ -24,11 +24,12 @@ export function RailNav({ links, directory, footer }: { links: RailLink[]; direc
     || (name === "Guides" && pathname.startsWith("/guides/"))
     || (name === "Settings" && (pathname.startsWith("/settings/") || pathname === "/profile/email"));
   return (
-    <nav aria-label="Atlas" className="atlas-rail">
+    <div className="atlas-rail">
       <Link href="/home" aria-label="Atlas Home" className="atlas-rail-brand"><img src="/brand/atlas-icon.png" alt="" /></Link>
       <RailApps key={pathname}>{directory}</RailApps>
       <button type="button" aria-label="Search" data-label="Search  ⌘K" className="atlas-rail-item" onClick={() => window.dispatchEvent(new CustomEvent("atlas:open-search"))}><Search size={18} aria-hidden="true" /></button>
       <span className="atlas-rail-gap" aria-hidden="true" />
+      <nav aria-label="Workspace utilities" className="atlas-rail-links">
       {links.map(({ name, href }) => {
         const Icon = ICONS[name];
         const count = name === "My tasks" ? tasks ?? 0 : name === "Messages" ? messages : 0;
@@ -43,8 +44,9 @@ export function RailNav({ links, directory, footer }: { links: RailLink[]; direc
           </Link>
         );
       })}
+      </nav>
       <div className="atlas-rail-footer">{footer}</div>
-    </nav>
+    </div>
   );
 }
 

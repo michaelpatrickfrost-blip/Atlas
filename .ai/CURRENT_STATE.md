@@ -1,3 +1,41 @@
+## 20 October 2026 — Macro ink-on-paper redesign LIVE at https://atlassystem.online
+
+Supersedes the "build and deploy delegated" status of the entry below. Deployed
+commit dda7609b7680bb79cf2cabd6a392d84805ad021d (branch
+codex/macro-ui-overhaul-20261020, worktree /Users/michael/Desktop/atlas-macro-ui,
+pushed to origin) = the design head f4250d6f plus one gate fix. Pre-deploy backup
+of the activated release: /home/administrator/backups/atlas-pre-deploy-20261020-214047.
+Rollback runtime retained: /opt/atlas-releases/ee18a2689d592dc0c837fb42c74c3a7fc739d487
+(the previous live release; database was not changed by the release).
+Checks that actually ran (all PASS unless stated):
+- npx tsc --noEmit; eslint src/app src/components/shell src/components/ui (0 errors,
+  8 pre-existing warnings: unused vars, <img>); npm run build (exit 0).
+- First deploy of f4250d6f FAILED at candidate acceptance (/home: "rendered Macro
+  editorial foundation", scripts/check-premium-ui.ts:72): the ink-on-paper pass moved
+  --m-ink from #1b1a17 to #1a1917 but the gate still pinned the old hex. The live
+  pointer was never switched (still ee18a268); backup of that attempt:
+  /home/administrator/backups/atlas-pre-deploy-20261020-213402.
+- Only script change: check-premium-ui.ts expects --color-ink "#1a1917" (commit
+  dda7609b). No other assertion changed; waitUntil "networkidle" left as is.
+  Before redeploying, both gates were rerun read-only (GET-only) against the sealed
+  candidate on loopback :3011 from a scratch overlay (since removed): 36 routes x 3
+  widths and the home-menu gate passed.
+- Redeploy (ATLAS_RELEASE_ACCEPTANCE=polish): candidate polish acceptance PASS
+  (36 routes x 3 widths, phone Apps/focus, client crossfade, reduced motion, writes
+  blocked; home-menu desktop/tablet/phone), runtime switched, then public-HTTPS polish
+  acceptance PASS (same gates, evidence /tmp/atlas-polish-public-wf2mDT on the
+  server), no restore. The earlier public `networkidle` timeout at /home (attempt of
+  dcd33f55) did not recur; its cause was not isolated.
+- Live verification: https://atlassystem.online/login 200; /api/health/release
+  reports dda7609b7680bb79cf2cabd6a392d84805ad021d; /opt/atlas-current resolves to
+  that release; atlas.service active. Public screenshots home-desktop/sales-desktop
+  were reviewed. The Home capture shows the slide-out rail open over the content
+  (pointer parked at the left edge in the test run); not investigated as a defect.
+Not run: manual click-through of every app in a signed-in browser; Desktop main
+checkout untouched.
+Next: reconcile the Desktop main checkout (~560 commits behind) and merge this branch
+lineage into main; keep ee18a268 as the rollback runtime until then.
+
 ## 20 October 2026 — Macro-inspired total visual redesign (release branch)
 
 Branch codex/macro-ui-overhaul-20261020 (worktree /Users/michael/Desktop/atlas-macro-ui),

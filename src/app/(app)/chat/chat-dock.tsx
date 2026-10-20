@@ -598,8 +598,8 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
     historyOptions.current.before === historyBefore;
   if (duplicate) return null;
   const panel = (
-    <div ref={panelRoot} className={`flex h-full min-h-0 flex-col overflow-hidden bg-white ${page ? "rounded-[28px] border border-white shadow-[0_24px_90px_-25px_rgba(100,74,43,0.28)]" : ""}`}>
-      <header className="flex shrink-0 items-center gap-3 border-b border-blue-100/70 bg-gradient-to-r from-[#faf8f6] via-white to-white px-5 py-4">
+    <div ref={panelRoot} className={`flex h-full min-h-0 flex-col overflow-hidden bg-white ${page ? "rounded-2xl border border-white shadow-[0_24px_90px_-25px_rgba(100,74,43,0.28)]" : ""}`}>
+      <header className="flex shrink-0 items-center gap-3 border-b border-blue-100/70 bg-[var(--color-surface)] px-5 py-4">
         <span className="flex size-11 items-center justify-center rounded-2xl bg-[#966e40] text-white shadow-lg shadow-blue-500/15">
           <MessageCircle size={22} />
         </span>
@@ -657,7 +657,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
           className={`${active ? (page ? "hidden md:flex" : "hidden") : "flex"} min-h-0 flex-col border-r border-blue-100/70 bg-[#fdfcfb]`}
         >
           <div className="flex items-center justify-between px-4 pb-2 pt-4">
-            <h3 className="text-xs font-semibold uppercase tracking-[.14em] text-[#8d867e]">
+            <h3 className="text-xs font-semibold tracking-[.14em] text-[#8d867e]">
               Your conversations
             </h3>
             <button
@@ -922,11 +922,11 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                             </p>
                           )}
                           <div
-                            className={`rounded-[20px] px-4 py-3 text-sm leading-relaxed ${entry.mine ? "rounded-br-md bg-gradient-to-br from-[#9f7544] to-[#8d683d] text-white shadow-sm" : "rounded-bl-md border border-blue-100/80 bg-white text-slate-800 shadow-sm"}`}
+                            className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${entry.mine ? "rounded-br-md bg-[var(--color-ink)] text-white shadow-sm" : "rounded-bl-md border border-blue-100/80 bg-white text-slate-800 shadow-sm"}`}
                           >
                             {entry.kind !== "TEXT" && (
                               <p
-                                className={`mb-1.5 text-[10px] font-semibold uppercase tracking-[.14em] ${entry.mine ? "text-blue-100" : "text-[#966e40]"}`}
+                                className={`mb-1.5 text-[10px] font-semibold tracking-[.14em] ${entry.mine ? "text-blue-100" : "text-[#966e40]"}`}
                               >
                                 {entry.kind === "NOTE"
                                   ? "Note"
@@ -961,7 +961,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                                   <Paperclip size={17} className="shrink-0" />
                                   <span className="min-w-0 flex-1">
                                     <span
-                                      className={`block text-[9px] font-semibold uppercase tracking-wider ${entry.mine ? "text-blue-100" : "text-[#966e40]"}`}
+                                      className={`block text-[9px] font-semibold ${entry.mine ? "text-blue-100" : "text-[#966e40]"}`}
                                     >
                                       {LINK_LABELS[link.type]}
                                     </span>
@@ -1303,7 +1303,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                     </button>
                   </div>
                   <div className="min-h-0 flex-1 overflow-y-auto p-5">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-[#a39d97]">
+                    <p className="text-xs font-semibold text-[#a39d97]">
                       Participants · {active.peopleCount}
                     </p>
                     <div className="mt-4 space-y-3">
@@ -1329,7 +1329,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                         </div>
                       ))}
                     </div>
-                    <p className="mt-8 text-xs font-semibold uppercase tracking-wider text-[#a39d97]">
+                    <p className="mt-8 text-xs font-semibold text-[#a39d97]">
                       Shared in these messages
                     </p>
                     <div className="mt-3 space-y-2">
@@ -1340,7 +1340,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                             href={link.href}
                             className="block rounded-xl border border-blue-100 p-3 hover:bg-blue-50"
                           >
-                            <span className="block text-[9px] font-semibold uppercase text-[#966e40]">
+                            <span className="block text-[9px] font-semibold text-[#966e40]">
                               {LINK_LABELS[link.type]}
                             </span>
                             <span className="mt-1 block break-words text-xs font-semibold">
@@ -1522,7 +1522,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                 const records = hits.filter((item) => item.type === type);
                 return records.length ? (
                   <div key={type} className="mb-5">
-                    <h4 className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[#a39d97]">
+                    <h4 className="mb-2 text-[10px] font-semibold text-[#a39d97]">
                       {label}
                     </h4>
                     {records.map((item) => {

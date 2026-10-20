@@ -26,7 +26,7 @@ export default async function Templates({ searchParams }: { searchParams: Promis
       <div className="grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)]">
         <aside className="space-y-4">
           <div className="space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Your templates</p>
+            <p className="text-xs font-semibold text-slate-500">Your templates</p>
             {templates.map((t) => (
               <div key={t.id} className={`flex items-center justify-between rounded-xl border px-3 py-2 text-sm ${t.id === q.id ? "border-blue-300 bg-blue-50" : "border-slate-200 bg-white"}`}>
                 <Link href={`/settings/it/templates?id=${t.id}`} className="min-w-0 flex-1 truncate">{t.name}<span className="block text-[11px] text-slate-400">{t.category.toLowerCase()}</span></Link>
@@ -36,7 +36,7 @@ export default async function Templates({ searchParams }: { searchParams: Promis
             {!templates.length && <p className="text-sm text-slate-500">None yet. Start from a ready-made one.</p>}
           </div>
           <div className="space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Start from</p>
+            <p className="text-xs font-semibold text-slate-500">Start from</p>
             {STARTER_TEMPLATES.map((s) => <Link key={s.key} href={`/settings/it/templates?starter=${s.key}`} className="block rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm hover:border-slate-300">{s.name}<span className="block text-[11px] text-slate-400">{s.hint}</span></Link>)}
             <Link href="/settings/it/templates?starter=blank" className="block rounded-xl border border-dashed border-slate-300 px-3 py-2 text-sm">Blank template</Link>
           </div>

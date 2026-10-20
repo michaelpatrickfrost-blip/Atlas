@@ -13,15 +13,15 @@ export function WorkspaceHeading({
   actions?: React.ReactNode;
 }) {
   return (
-    <div className="atlas-workspace-heading flex flex-wrap items-end justify-between gap-5 rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-white p-5 sm:p-7">
+    <div className="atlas-workspace-heading flex flex-wrap items-end justify-between gap-5 border-b border-[var(--color-border)] pb-6 pt-2">
       <div className="max-w-2xl">
-        <p className="text-xs font-semibold uppercase tracking-[.16em] text-blue-600">
+        <p className="text-[12px] font-medium text-[var(--color-ink-faint)]">
           {eyebrow}
         </p>
-        <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+        <h2 className="atlas-serif mt-1.5 text-[30px] leading-[1.1] text-[var(--color-ink)] sm:text-[40px]">
           {title}
         </h2>
-        <p className="mt-2 text-sm leading-relaxed text-slate-500">
+        <p className="mt-2.5 text-[14px] leading-relaxed text-[var(--color-ink-muted)]">
           {description}
         </p>
       </div>
@@ -43,20 +43,20 @@ export function WorkspaceStats({
   }[];
 }) {
   return (
-    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+    <div className="atlas-stat-row grid grid-cols-2 lg:grid-cols-4">
       {items.map(({ label, value, hint, icon: Icon }) => (
         <div
           key={label}
-          className="atlas-stat-card min-w-0 rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5"
+          className="atlas-stat-cell min-w-0 px-1 py-4 sm:px-5 sm:py-5"
         >
           <div className="flex items-center justify-between gap-2">
-            <p className="text-xs font-medium text-slate-500">{label}</p>
-            <Icon size={17} className="shrink-0 text-blue-500" aria-hidden />
+            <p className="text-[12px] text-[var(--color-ink-muted)]">{label}</p>
+            <Icon size={15} className="shrink-0 text-[var(--color-ink-faint)]" aria-hidden />
           </div>
-          <p className="mt-3 break-words text-2xl font-semibold tracking-tight text-slate-900">
+          <p className="atlas-serif mt-2 break-words text-[34px] leading-none text-[var(--color-ink)]">
             {value}
           </p>
-          {hint && <p className="mt-1 text-xs text-slate-400">{hint}</p>}
+          {hint && <p className="mt-2 text-[12px] text-[var(--color-ink-faint)]">{hint}</p>}
         </div>
       ))}
     </div>
@@ -79,22 +79,22 @@ export function WorkspaceLinks({
         <Link
           key={href}
           href={href}
-          className="atlas-workspace-link group flex min-w-0 items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 transition-colors hover:border-blue-300 hover:bg-blue-50/40"
+          className="atlas-workspace-link group flex min-w-0 items-start gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4"
         >
-          <span className="rounded-xl bg-blue-50 p-2.5 text-blue-600">
-            <Icon size={19} aria-hidden />
+          <span className="rounded-lg p-2">
+            <Icon size={18} aria-hidden />
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block text-sm font-semibold text-slate-900">
+            <span className="block text-[14px] font-medium text-[var(--color-ink)]">
               {title}
             </span>
-            <span className="mt-1 block text-xs leading-relaxed text-slate-500">
+            <span className="mt-1 block text-[12px] leading-relaxed text-[var(--color-ink-muted)]">
               {description}
             </span>
           </span>
           <ArrowUpRight
             size={15}
-            className="shrink-0 text-slate-300 group-hover:text-blue-600"
+            className="shrink-0 text-[var(--color-ink-faint)] transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[var(--color-ink)]"
             aria-hidden
           />
         </Link>

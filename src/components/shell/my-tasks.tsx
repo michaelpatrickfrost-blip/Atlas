@@ -98,7 +98,7 @@ export function MyTasksPanel() {
   const visibleList = !selected;
   return <SidePanel open={open} label="My tasks" onClose={close} onAfterClose={reset}>
       <div className="flex h-full min-h-0 flex-col">
-        <header className="flex shrink-0 items-center justify-between gap-3 border-b border-blue-100 bg-gradient-to-r from-blue-50 to-white p-4 sm:px-6 sm:py-5">
+        <header className="flex shrink-0 items-center justify-between gap-3 border-b border-blue-100 bg-[var(--color-surface)] p-4 sm:px-6 sm:py-5">
           <div className="flex min-w-0 items-center gap-3"><span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-blue-600 text-white"><ListTodo size={23} /></span>
             <div><h2 id="my-tasks-title" className="text-xl font-semibold tracking-tight text-slate-900">My tasks</h2><p className="mt-0.5 text-xs text-slate-500">Your assigned work, all in one place.</p></div></div>
           <div className="flex shrink-0 gap-1"><button type="button" aria-label="Refresh tasks" disabled={loading || saving} onClick={() => void refresh()} className="flex size-10 items-center justify-center rounded-full text-slate-500 hover:bg-blue-100 disabled:opacity-40"><RefreshCw size={18} className={loading ? "animate-spin" : ""} /></button>
@@ -142,7 +142,7 @@ export function MyTasksPanel() {
                 {!!detail.attachments.length && <section className="mt-6"><h4 className="flex items-center gap-2 text-sm font-semibold"><Paperclip size={15} />Attached records</h4><div className="mt-3 space-y-2">{detail.attachments.map((attachment) => attachment.href ? <Link key={attachment.key} href={attachment.href} onClick={close} className="flex items-center justify-between gap-3 rounded-2xl border border-blue-100 bg-blue-50/40 p-4 hover:bg-blue-50"><span className="min-w-0"><span className="block break-words text-sm font-medium text-blue-700">{attachment.title}</span><span className="mt-1 block text-xs text-slate-400">{attachment.detail}</span></span><ArrowUpRight size={16} className="shrink-0 text-blue-400" /></Link> : <p key={attachment.key} className="rounded-2xl border border-slate-100 p-4 text-xs text-slate-400">{attachment.title} · {attachment.detail}</p>)}</div></section>}
                 <Link href={detail.href} onClick={close} className="mt-7 inline-flex items-center gap-1.5 text-xs font-medium text-blue-700">Open full task<ArrowUpRight size={14} /></Link>
               </>}
-              {!selected && <div className="flex h-full flex-col items-center justify-center px-6 text-center"><span className="flex size-16 items-center justify-center rounded-[22px] bg-blue-50 text-blue-400"><ListTodo size={31} strokeWidth={1.5} /></span><h3 className="mt-5 text-lg font-semibold">A little focus for your day</h3><p className="mt-2 max-w-xs text-sm leading-6 text-slate-400">Choose a task to see its notes, open attached records and update its status.</p></div>}
+              {!selected && <div className="flex h-full flex-col items-center justify-center px-6 text-center"><span className="flex size-16 items-center justify-center rounded-2xl bg-blue-50 text-blue-400"><ListTodo size={31} strokeWidth={1.5} /></span><h3 className="mt-5 text-lg font-semibold">A little focus for your day</h3><p className="mt-2 max-w-xs text-sm leading-6 text-slate-400">Choose a task to see its notes, open attached records and update its status.</p></div>}
             </div>
           </section>
         </div>

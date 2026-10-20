@@ -145,7 +145,7 @@ export default async function ProfilePage() {
       </div>
       <div className="mt-4 divide-y divide-black/[0.06]">
         {assignments.map((item) => <Link key={`${item.kind}:${item.id}`} href={item.href} className="flex flex-wrap items-baseline justify-between gap-3 py-3">
-          <span><span className="text-[11px] font-medium uppercase tracking-wide text-[#6e6e73]">{item.kind}</span><span className="mt-0.5 block text-sm font-medium text-[#1d1d1f]">{item.title}</span></span>
+          <span><span className="text-[11px] font-medium text-[#6e6e73]">{item.kind}</span><span className="mt-0.5 block text-sm font-medium text-[#1d1d1f]">{item.title}</span></span>
           {item.detail && <span className="text-xs text-[#6e6e73]">{item.detail}</span>}
         </Link>)}
         {!assignments.length && <p className="py-4 text-sm text-[#6e6e73]">Nothing is assigned to you right now.</p>}

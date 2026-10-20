@@ -53,7 +53,7 @@ export default async function PlanningCockpitPage() {
       <section>
         <div className="flex items-end justify-between gap-4">
           <div>
-            <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Planned production</h2>
+            <h2 className="text-xs font-semibold tracking-[0.16em] text-[var(--color-ink-faint)]">Planned production</h2>
             <p className="mt-1 text-sm text-[var(--color-ink-muted)]">
               What the plan says to make and the hours each takes. Planned orders shows the same rows in detail.
               {canReadCost && <> Estimated costs are included with cost access.</>}
@@ -68,7 +68,7 @@ export default async function PlanningCockpitPage() {
         ) : (
           <div className="mt-3 overflow-hidden rounded-3xl border border-[var(--color-border)] bg-white">
             <table className="w-full text-sm">
-              <thead className="bg-[var(--color-surface-sunken)] text-left text-xs uppercase tracking-wide text-[var(--color-ink-faint)]">
+              <thead className="bg-[var(--color-surface-sunken)] text-left text-xs text-[var(--color-ink-faint)]">
                 <tr>
                   <th className="px-5 py-3">Make</th>
                   <th className="px-5 py-3 text-right">Qty</th>
@@ -107,14 +107,14 @@ export default async function PlanningCockpitPage() {
       <section>
         <div className="flex items-end justify-between gap-4">
           <div>
-            <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Work centre load</h2>
+            <h2 className="text-xs font-semibold tracking-[0.16em] text-[var(--color-ink-faint)]">Work centre load</h2>
             <p className="mt-1 text-sm text-[var(--color-ink-muted)]">Hours every pending proposal would add over the next 4 weeks, against the hours each centre opens for.</p>
           </div>
           <Link href="/manufacturing/schedule" className="text-sm font-medium text-[var(--color-atlas-blue)]">Open the schedule</Link>
         </div>
         <div className="mt-3 overflow-hidden rounded-3xl border border-[var(--color-border)] bg-white">
           <table className="w-full text-sm">
-            <thead className="bg-[var(--color-surface-sunken)] text-left text-xs uppercase tracking-wide text-[var(--color-ink-faint)]">
+            <thead className="bg-[var(--color-surface-sunken)] text-left text-xs text-[var(--color-ink-faint)]">
               <tr>
                 <th className="px-5 py-3">Work centre</th>
                 <th className="px-5 py-3 text-right">Planned hours</th>
@@ -148,16 +148,16 @@ export default async function PlanningCockpitPage() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <section>
-          <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Demand outlook</h2>
+          <h2 className="text-xs font-semibold tracking-[0.16em] text-[var(--color-ink-faint)]">Demand outlook</h2>
           <div className="mt-3 grid grid-cols-2 gap-4">
             <Card className="p-4">
               <div className="text-sm font-semibold">Next 7 days</div>
-              <div className="text-3xl font-bold">{cockpit.demand7.reduce((sum, row) => sum + row.quantity, 0).toLocaleString("en-GB")}</div>
+              <div className="text-3xl font-semibold">{cockpit.demand7.reduce((sum, row) => sum + row.quantity, 0).toLocaleString("en-GB")}</div>
               <p className="text-xs text-[var(--color-ink-muted)]">units across {cockpit.demand7.length} day{cockpit.demand7.length === 1 ? "" : "s"}</p>
             </Card>
             <Card className="p-4">
               <div className="text-sm font-semibold">Next 30 days</div>
-              <div className="text-3xl font-bold">{cockpit.demand30.reduce((sum, row) => sum + row.quantity, 0).toLocaleString("en-GB")}</div>
+              <div className="text-3xl font-semibold">{cockpit.demand30.reduce((sum, row) => sum + row.quantity, 0).toLocaleString("en-GB")}</div>
               <p className="text-xs text-[var(--color-ink-muted)]">units across {cockpit.demand30.length} day{cockpit.demand30.length === 1 ? "" : "s"}</p>
             </Card>
           </div>
@@ -165,11 +165,11 @@ export default async function PlanningCockpitPage() {
         </section>
 
         <section>
-          <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Shortages by priority</h2>
+          <h2 className="text-xs font-semibold tracking-[0.16em] text-[var(--color-ink-faint)]">Shortages by priority</h2>
           <div className="mt-3 grid grid-cols-3 gap-4">
             {(["CRITICAL", "HIGH", "NORMAL"] as const).map((priority) => (
               <Card key={priority} className="p-4 text-center">
-                <div className={`text-2xl font-bold ${priority === "CRITICAL" ? "text-rose-600" : priority === "HIGH" ? "text-amber-600" : "text-slate-600"}`}>
+                <div className={`text-2xl font-semibold ${priority === "CRITICAL" ? "text-rose-600" : priority === "HIGH" ? "text-amber-600" : "text-slate-600"}`}>
                   {cockpit.shortagesByPriority[priority].length}
                 </div>
                 <div className="text-xs text-[var(--color-ink-muted)]">{priority}</div>
@@ -211,7 +211,7 @@ function MetricCard({ label, value, variant = "default", icon: Icon }: { label: 
       <div className="p-5">
         <div className="flex items-end gap-2">
           <div>
-            <div className="text-3xl font-bold">{value}</div>
+            <div className="text-3xl font-semibold">{value}</div>
             <p className="text-xs text-[var(--color-ink-muted)]">{label}</p>
           </div>
           {Icon && <Icon className="mb-1 h-5 w-5 opacity-50" />}

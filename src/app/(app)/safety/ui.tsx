@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export function Eyebrow({ children }: { children: React.ReactNode }) {
-  return <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">{children}</h2>;
+  return <h2 className="text-xs font-semibold tracking-[0.16em] text-[var(--color-ink-faint)]">{children}</h2>;
 }
 
 export function Panel({ children }: { children: React.ReactNode }) {

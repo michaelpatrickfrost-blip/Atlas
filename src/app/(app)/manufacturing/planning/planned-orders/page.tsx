@@ -100,7 +100,7 @@ export default async function PlannedOrdersPage() {
 
               <div className="grid gap-6 px-5 py-5 lg:grid-cols-3">
                 <section>
-                  <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Materials</h3>
+                  <h3 className="text-xs font-semibold tracking-[0.16em] text-[var(--color-ink-faint)]">Materials</h3>
                   <div className="mt-2 space-y-2">
                     {(proposal.materials ?? []).length === 0 && <p className="text-sm text-[var(--color-ink-muted)]">No components on this recipe.</p>}
                     {(proposal.materials ?? []).map((material, index) => (
@@ -119,7 +119,7 @@ export default async function PlannedOrdersPage() {
                 </section>
 
                 <section>
-                  <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Machines and hours</h3>
+                  <h3 className="text-xs font-semibold tracking-[0.16em] text-[var(--color-ink-faint)]">Machines and hours</h3>
                   <div className="mt-2 space-y-2">
                     {(proposal.operations ?? []).length === 0 && <p className="text-sm text-[var(--color-ink-muted)]">No routing on this recipe.</p>}
                     {(proposal.operations ?? []).map((operation) => (
@@ -144,7 +144,7 @@ export default async function PlannedOrdersPage() {
                 </section>
 
                 <section>
-                  <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Estimated cost</h3>
+                  <h3 className="text-xs font-semibold tracking-[0.16em] text-[var(--color-ink-faint)]">Estimated cost</h3>
                   <div className="mt-2 space-y-1 text-sm">
                     {!canReadCost && <p className="text-[var(--color-ink-muted)]">Cost access is required to view estimates.</p>}
                     {canReadCost && !cost && <p className="text-[var(--color-ink-muted)]">No costed recipe.</p>}
@@ -176,7 +176,7 @@ export default async function PlannedOrdersPage() {
 
       {decided.length > 0 && (
         <section>
-          <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Already actioned this run</h2>
+          <h2 className="text-xs font-semibold tracking-[0.16em] text-[var(--color-ink-faint)]">Already actioned this run</h2>
           <div className="mt-3 divide-y divide-[var(--color-border)] rounded-3xl border border-[var(--color-border)] bg-white">
             {decided.map((suggestion) => {
               const detail = readSuggestionDetail(suggestion.pegging);

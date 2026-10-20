@@ -31,7 +31,7 @@ export default async function StudioWorkspace({ searchParams }: { searchParams: 
   return <div className="mx-auto max-w-7xl px-5 py-8 md:px-10 md:py-12">
     <header className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-7">
       <div><Link href={back} className="inline-flex items-center gap-2 text-sm font-medium text-slate-500"><ArrowLeft className="h-4 w-4"/>Back to {business ? "Atlas Admin" : "your business"}</Link>
-        <p className="mt-7 text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">Atlas Studio · {workspace.businessName}</p>
+        <p className="mt-7 text-xs font-semibold tracking-[0.2em] text-blue-600">Atlas Studio · {workspace.businessName}</p>
         <h1 className="mt-2 text-4xl font-semibold tracking-tight">Make this business feel like itself.</h1>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">Choose a starting layout, arrange the details your team needs, and preview the screen before it goes live.</p>
       </div><div className="rounded-2xl border border-blue-100 bg-blue-50 px-5 py-4 text-sm text-blue-800">Designing for<br/><strong>{workspace.businessName}</strong></div>

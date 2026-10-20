@@ -16,11 +16,11 @@ export function SetupPortal({ organisationId, templates }: { organisationId: str
       <div className="space-y-6">
         {groups.map((group) => (
           <section key={group}>
-            <h2 className="text-xs font-semibold uppercase tracking-[.16em] text-slate-400">{group}</h2>
+            <h2 className="text-xs font-semibold tracking-[.16em] text-slate-400">{group}</h2>
             <div className="mt-3 grid gap-3">
               {templates.filter((template) => template.group === group).map((template) => (
                 <button key={template.id} type="button" onClick={() => setEntity(template.id)} className={`rounded-2xl border p-4 text-left ${template.id === selected?.id ? "border-blue-300 bg-blue-50" : "border-slate-200 bg-white"}`}>
-                  <p className="text-[10px] font-semibold uppercase tracking-[.14em] text-blue-600">Step {templates.indexOf(template) + 1}</p>
+                  <p className="text-[10px] font-semibold tracking-[.14em] text-blue-600">Step {templates.indexOf(template) + 1}</p>
                   <p className="mt-1 text-sm font-semibold">{template.title}</p>
                   <p className="mt-1 text-xs leading-relaxed text-slate-500">{template.summary}</p>
                   <p className="mt-2 text-[10px] text-slate-400">{template.columns.slice(0, 6).join(" · ")}{template.columns.length > 6 ? " · …" : ""}</p>
@@ -34,7 +34,7 @@ export function SetupPortal({ organisationId, templates }: { organisationId: str
         <input type="hidden" name="organisationId" value={organisationId} />
         <input type="hidden" name="entity" value={entity} />
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[.14em] text-blue-600">Upload</p>
+          <p className="text-xs font-semibold tracking-[.14em] text-blue-600">Upload</p>
           <h2 className="mt-1 text-lg font-semibold">{selected?.title}</h2>
           <p className="mt-2 text-xs leading-relaxed text-slate-500">{selected?.summary}</p>
         </div>

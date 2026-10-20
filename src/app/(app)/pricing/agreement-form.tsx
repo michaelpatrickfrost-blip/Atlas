@@ -69,7 +69,7 @@ export function AgreementForm({
         <label className="text-sm sm:col-span-2">Notes<textarea name="notes" maxLength={4000} defaultValue={agreement?.notes ?? ""} rows={3} className={field} /></label>
       </section>
 
-      <section className="grid gap-4 rounded-[22px] bg-[var(--color-surface-sunken)] p-5 sm:grid-cols-2">
+      <section className="grid gap-4 rounded-2xl bg-[var(--color-surface-sunken)] p-5 sm:grid-cols-2">
         <h2 className={sectionHeading}><span className={stepNumber}>5</span>Service level agreement (SLA)</h2>
         <p className="text-sm leading-relaxed text-[var(--color-ink-muted)] sm:col-span-2">What you have promised this customer while the contract is active. Hours are clock hours, so say the working window in coverage.</p>
         <label className="text-sm">Name<input name="slaName" maxLength={120} defaultValue={agreement?.slaName ?? ""} placeholder="Standard support" className={field} /></label>

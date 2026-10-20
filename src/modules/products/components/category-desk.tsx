@@ -71,7 +71,7 @@ export function CategoryDesk(props: {
         {!props.categories.length && <li className="px-4 py-6 text-sm text-slate-500">No categories yet. Add the standard groups, then rename them.</li>}
       </ul>
       <form className="space-y-3" onSubmit={(event) => { event.preventDefault(); save(); }}>
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{current ? "Edit category" : "New category"}</p>
+        <p className="text-xs font-semibold text-slate-400">{current ? "Edit category" : "New category"}</p>
         <label className="block text-xs text-slate-500">Code<input className={field} value={code} onChange={(event) => setCode(event.target.value)} /></label>
         <label className="block text-xs text-slate-500">Name<input className={field} value={name} onChange={(event) => setName(event.target.value)} /></label>
         <label className="block text-xs text-slate-500">Class<select className={field} value={itemClass} onChange={(event) => setClass(event.target.value)}>{CATEGORY_CLASSES.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}</select></label>

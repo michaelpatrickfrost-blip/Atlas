@@ -20,7 +20,7 @@ export default async function FieldChange({ params, searchParams }: {
   const suffix = business ? `?business=${encodeURIComponent(business)}` : "";
   return <div className="mx-auto max-w-6xl space-y-7 px-5 py-8 md:px-10 md:py-12">
     <Link href={`/design-studio/setup/${definitionId}${suffix}`} className="inline-flex items-center gap-2 text-sm font-medium text-slate-500"><ArrowLeft className="h-4 w-4"/>Back to field setup</Link>
-    <header><p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">Field change · {catalogue.name}</p>
+    <header><p className="text-xs font-semibold tracking-[0.2em] text-blue-600">Field change · {catalogue.name}</p>
       <h1 className="mt-2 text-3xl font-semibold tracking-tight">Keep your details useful.</h1>
       <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">Design new settings, then review how existing values would change. Your team keeps using the current live field while you prepare.</p>
     </header>

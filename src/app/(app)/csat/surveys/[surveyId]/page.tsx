@@ -52,7 +52,7 @@ export default async function SurveyPage({ params }: { params: Promise<{ surveyI
       <div className="space-y-5">
         <section className={panel}>
           <h3 className="text-sm font-semibold">What the customer sees</h3><p className="mt-1 text-xs text-slate-500">Try it: tap a score. Nothing is saved from this preview. Save your edits to refresh it.</p>
-          <div className="mt-4 rounded-2xl bg-slate-100 p-4"><div className="rounded-2xl bg-white p-6" style={{ borderTop: `3px solid ${brand.accent}` }}><p className="mb-4 text-sm font-bold">{brand.name}</p><CsatForm preview token="" accent={brand.accent} survey={{ question: survey.question, followUpQuestion: survey.followUpQuestion, lowFollowUpQuestion: survey.lowFollowUpQuestion, thanksText: survey.thanksText, lowLabel: survey.lowLabel, highLabel: survey.highLabel, reasons: survey.reasons }} /></div></div>
+          <div className="mt-4 rounded-2xl bg-slate-100 p-4"><div className="rounded-2xl bg-white p-6" style={{ borderTop: `3px solid ${brand.accent}` }}><p className="mb-4 text-sm font-semibold">{brand.name}</p><CsatForm preview token="" accent={brand.accent} survey={{ question: survey.question, followUpQuestion: survey.followUpQuestion, lowFollowUpQuestion: survey.lowFollowUpQuestion, thanksText: survey.thanksText, lowLabel: survey.lowLabel, highLabel: survey.highLabel, reasons: survey.reasons }} /></div></div>
         </section>
         <section className={panel}>
           <h3 className="text-sm font-semibold">The email</h3>

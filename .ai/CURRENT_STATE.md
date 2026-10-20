@@ -10,10 +10,23 @@ cool blue hex/rgb literals shifted warm by script; layout.tsx uses Inter +
 Newsreader (Nunito removed); new shell/icon-rail.tsx + rail-nav.tsx; shell-chrome
 wraps content in one bordered panel; topbar.tsx is one slim header for all routes
 (TopbarVariant removed); CommandPalette also opens on "atlas:open-search".
-Checks: npx tsc --noEmit PASS; scoped eslint PASS (2 existing-style img warnings);
-npm run build PASS. No local DB run (no local business data allowed); visual
-acceptance via deploy ATLAS_RELEASE_ACCEPTANCE=polish. Deployment result: see below.
-Next: merge this branch lineage into main when the Desktop checkout is reconciled.
+Second pass (same day, after reviewing candidate screenshots): "ink on paper"
+system — paper grain, floating bordered panel, slide-out icon rail (labels glide
+in on hover/focus), solid pigment app-icon tiles with white glyphs, Figtree
+(rounded sans) + Fraunces 600 (bold soft serif titles), 16–20px rounded floating
+menus/dialogs, soft diffuse shadows, editorial Home index (serif group headings,
+compact app rows). Topbar shows company / current app title. 140 app files had
+gradients, uppercase eyebrows, 20–32px radii and bold weights normalised by script.
+Workspace primitives (heading, stat row, links, empty state, tabs, status pill,
+auth frame) rewritten. scripts/check-premium-ui.ts and check-home-menu.ts updated
+for the new tokens/rail (candidate acceptance of commit dcd33f55 PASSED all 36
+routes × 3 widths; public acceptance timed out on networkidle at /home and the
+deploy auto-restored ee18a268 — live site unchanged so far).
+Checks on current head: npx tsc --noEmit PASS; eslint on app/shell/ui PASS.
+Build and deploy of this head: delegated — see the next entry when it lands.
+Next: deploy with ATLAS_RELEASE_ACCEPTANCE=polish; if public networkidle times
+out again, inspect the public runtime for a request that never settles and then
+merge this branch lineage into main once the Desktop checkout is reconciled.
 
 ## 14 October 2026 — Premium overhaul live and publicly verified
 

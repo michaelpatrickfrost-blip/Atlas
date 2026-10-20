@@ -30,7 +30,7 @@ export async function StudioDefinitionView({session,definitionId,root="/studio",
   const check = savedCheckSchema.safeParse(draft.validation);
   return <div className="space-y-6">
     <Link className="text-sm text-blue-700" href={root}>← Business setup</Link>
-    <div><p className="mb-2 text-xs font-semibold uppercase tracking-widest text-blue-600">Advanced setup · Reference set</p><h2 className="text-2xl font-semibold">{definition.name}</h2><p className="mt-2 text-sm text-slate-500">Draft revision {draft.revision} · {definition.activeVersionId ? "A published reference set is active" : "No active reference set"}</p></div>
+    <div><p className="mb-2 text-xs font-semibold text-blue-600">Advanced setup · Reference set</p><h2 className="text-2xl font-semibold">{definition.name}</h2><p className="mt-2 text-sm text-slate-500">Draft revision {draft.revision} · {definition.activeVersionId ? "A published reference set is active" : "No active reference set"}</p></div>
     <Card className="p-6"><h3 className="font-semibold">Reference selection</h3><p className="mt-2 text-sm leading-6 text-slate-600">This technical record lists approved data references. It does not design a template, screen or dashboard. The visual designer is still being built.</p>
       {can(session, CAP.edit) ? <DraftEditor action={save}>
         {target && <input type="hidden" name="organisationId" value={target}/>}<input type="hidden" name="id" value={definition.id}/><input type="hidden" name="revision" value={draft.revision}/>

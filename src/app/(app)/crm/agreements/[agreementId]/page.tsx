@@ -45,7 +45,7 @@ export default async function AgreementPage({ params }: { params: Promise<{ agre
       <Link href="/crm/agreements" className="text-sm text-[var(--color-atlas-blue)]">All agreements</Link>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-ink-faint)]">{agreement.number}</p>
+          <p className="text-xs font-semibold text-[var(--color-ink-faint)]">{agreement.number}</p>
           <h2 className="mt-1 text-2xl font-semibold tracking-tight">{agreement.name}</h2>
           <p className="mt-2 text-sm text-[var(--color-ink-muted)]">
             <Link href={`/customers/${agreement.party.id}?tab=commercial`} className="text-[var(--color-atlas-blue)]">{agreement.party.customerCode} · {agreement.party.name}</Link>
@@ -56,12 +56,12 @@ export default async function AgreementPage({ params }: { params: Promise<{ agre
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <article className="rounded-[22px] border border-[var(--color-border)] bg-white p-5 shadow-[var(--shadow-atlas)]">
+        <article className="rounded-2xl border border-[var(--color-border)] bg-white p-5 shadow-[var(--shadow-atlas)]">
           <p className="text-xs text-[var(--color-ink-muted)]">Prices come from</p>
           <p className="mt-2 font-semibold">{agreement.priceList ? <Link href={`/sales/price-lists/${agreement.priceList.id}`} className="text-[var(--color-atlas-blue)]">{agreement.priceList.name}</Link> : "The customer’s usual list"}</p>
           <p className="mt-2 text-sm text-[var(--color-ink-muted)]">{agreement.paymentTerms || "No payment terms written down"}</p>
         </article>
-        <article className="rounded-[22px] border border-[var(--color-border)] bg-white p-5 shadow-[var(--shadow-atlas)] sm:col-span-2">
+        <article className="rounded-2xl border border-[var(--color-border)] bg-white p-5 shadow-[var(--shadow-atlas)] sm:col-span-2">
           <p className="text-xs text-[var(--color-ink-muted)]">Service promise</p>
           <p className="mt-2 font-semibold">{agreement.slaName || "No named promise"}</p>
           <p className="mt-2 text-sm text-[var(--color-ink-muted)]">{[agreement.coverage, agreement.responseMinutes ? `Respond within ${formatHours(agreement.responseMinutes)}` : "", agreement.resolutionMinutes ? `Resolve within ${formatHours(agreement.resolutionMinutes)}` : ""].filter(Boolean).join(" · ") || "Add coverage and response times when you have promised them."}</p>
@@ -69,14 +69,14 @@ export default async function AgreementPage({ params }: { params: Promise<{ agre
         </article>
       </div>
 
-      <section className="overflow-hidden rounded-[22px] border border-[var(--color-border)] bg-white shadow-[var(--shadow-atlas)]">
+      <section className="overflow-hidden rounded-2xl border border-[var(--color-border)] bg-white shadow-[var(--shadow-atlas)]">
         <div className="border-b border-[var(--color-border)] px-5 py-4">
           <h3 className="text-sm font-semibold">Special prices</h3>
           <p className="mt-1 text-sm text-[var(--color-ink-muted)]">These beat the price list while the agreement is active. Leave this empty to charge the whole list.</p>
         </div>
         <table className="w-full min-w-[640px] text-sm">
           <thead>
-            <tr className="border-b border-[var(--color-border)] text-left text-xs uppercase tracking-wide text-[var(--color-ink-faint)]">
+            <tr className="border-b border-[var(--color-border)] text-left text-xs text-[var(--color-ink-faint)]">
               <th className="px-5 py-3 font-medium">Product</th>
               <th className="px-3 py-3 font-medium">From qty</th>
               <th className="px-3 py-3 text-right font-medium">Price</th>
@@ -119,7 +119,7 @@ export default async function AgreementPage({ params }: { params: Promise<{ agre
       )}
 
       {manage && (
-        <section className="rounded-[22px] border border-[var(--color-border)] bg-white p-6 shadow-[var(--shadow-atlas)]">
+        <section className="rounded-2xl border border-[var(--color-border)] bg-white p-6 shadow-[var(--shadow-atlas)]">
           <h3 className="mb-4 text-sm font-semibold">Edit the agreement</h3>
           <AgreementForm agreement={agreement} customers={customers} lists={lists} />
         </section>

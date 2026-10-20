@@ -12,7 +12,7 @@ export async function StudioLibrary({session,root="/studio",target}: {session:Se
   assertCapability(session, CAP.read);
   const definitions = (await listDefinitions(session)).filter(definition => definition.kind === "capabilitySet");
   return <div className="space-y-6">
-    <div><p className="text-xs font-semibold uppercase tracking-widest text-blue-600">Studio · {session.organisationName}</p><h2 className="mt-2 text-3xl font-semibold tracking-tight">Business setup</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">Tailor the software for this business: its screens, documents and dashboards.</p></div>
+    <div><p className="text-xs font-semibold text-blue-600">Studio · {session.organisationName}</p><h2 className="mt-2 text-3xl font-semibold tracking-tight">Business setup</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">Tailor the software for this business: its screens, documents and dashboards.</p></div>
     <Card className="overflow-hidden">
       <div className="border-b border-blue-100 bg-blue-50/60 p-6"><span className="inline-flex rounded-full border border-blue-200 bg-white px-3 py-1 text-xs font-semibold text-blue-700">Visual business designer</span><h3 className="mt-4 text-lg font-semibold">Choose a layout, customise it, preview and publish</h3><p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">Open your design workspace to arrange business screens, preview real or sample records and make an approved design live.</p>
         {target ? <ActionForm action={openVisualStudio} label="Open visual Studio" className="mt-5"><input type="hidden" name="organisationId" value={target}/></ActionForm>

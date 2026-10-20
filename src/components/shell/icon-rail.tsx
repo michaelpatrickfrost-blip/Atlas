@@ -27,8 +27,8 @@ export async function IconRail({ session }: { session: Session }) {
       links={links}
       directory={<AppDirectory session={session} />}
       footer={<>
-        <Link href="/profile" aria-label="My work" data-label="My work" className="atlas-rail-item atlas-rail-avatar"><Avatar name={session.userName} size="sm" /></Link>
-        <form action={logoutAction}><button type="submit" aria-label="Sign out" data-label="Sign out" className="atlas-rail-item"><LogOut size={17} aria-hidden="true" /></button></form>
+        <Link href="/profile" aria-label="My work" className="atlas-rail-item atlas-rail-avatar"><Avatar name={session.userName} size="sm" /><span className="atlas-rail-label"><span className="block truncate">{session.userName}</span><span className="block truncate text-[11px] font-normal text-[var(--color-ink-faint)]">{session.organisationName}</span></span></Link>
+        <form action={logoutAction} className="w-full"><button type="submit" aria-label="Sign out" className="atlas-rail-item"><LogOut size={17} aria-hidden="true" /><span className="atlas-rail-label">Sign out</span></button></form>
       </>}
     />
   );

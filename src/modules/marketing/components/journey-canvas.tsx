@@ -332,9 +332,9 @@ export function JourneyCanvas({
                           type="button"
                           aria-pressed={selectedId === stage.id}
                           onClick={() => setSelectedId(stage.id)}
-                          className="block w-full bg-gradient-to-br from-blue-50 to-white p-4 text-left"
+                          className="block w-full bg-[var(--color-surface)] p-4 text-left"
                         >
-                          <span className="text-[10px] font-semibold uppercase tracking-wide text-blue-500">
+                          <span className="text-[10px] font-semibold text-blue-500">
                             Stage {index + 1}
                           </span>
                           <span className="mt-2 block text-lg font-semibold text-slate-900">
@@ -489,7 +489,7 @@ export function JourneyCanvas({
           {selected ? (
             <div className="space-y-5">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">
+                <p className="text-xs font-semibold text-blue-600">
                   Selected stage
                 </p>
                 <h3 className="mt-2 text-lg font-semibold">{selected.name}</h3>

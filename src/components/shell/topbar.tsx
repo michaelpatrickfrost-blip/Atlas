@@ -14,11 +14,14 @@ import { can } from "@/core/permissions/check";
 import { CORE_CAPABILITIES } from "@/core/permissions/capabilities";
 import type { Session } from "@/core/auth/session";
 import { CompanyMark } from "./company-mark";
+import { TopbarTitle } from "./topbar-title";
+import { getNavigableModules } from "@/core/modules/runtime";
 import { ContextGuideLink } from './context-guide-link';
 
 /** One slim header for every route. On desktop the icon rail carries Home, Apps,
  *  utilities and the account; phones keep those controls here. */
-export function Topbar({ session }: { session: Session }) {
+export async function Topbar({ session }: { session: Session }) {
+  const apps = (await getNavigableModules(session)).map((app): [string, string] => [app.rootPath, app.name]);
   return (
     // Keep fixed chat/search overlays relative to the viewport; backdrop-filter traps them in this header.
     <header className="atlas-workspace-topbar flex h-[var(--atlas-topbar)] shrink-0 flex-wrap items-center gap-1 px-2 py-2 min-[360px]:gap-2 min-[360px]:px-3 sm:flex-nowrap sm:gap-3 sm:px-5 sm:py-0">
@@ -27,12 +30,10 @@ export function Topbar({ session }: { session: Session }) {
       </Link>
       <div className="lg:hidden"><AppMenu><AppDirectory session={session} /></AppMenu></div>
       <div className="hidden min-[360px]:block"><WorkspaceBack /></div>
-      <span title={session.organisationName} className="atlas-org-chip hidden min-w-0 max-w-56 items-center gap-2 lg:flex">
-        <CompanyMark organisationId={session.organisationId} name={session.organisationName} size="sm" />
-        <span className="truncate">{session.organisationName}</span>
-      </span>
-      <div className="order-3 w-full min-w-0 sm:order-none sm:w-auto sm:flex-1 xl:max-w-[560px]"><CommandPalette variant="workspace" /></div>
-      <div className="atlas-header-utilities ml-auto flex shrink-0 items-center gap-1 sm:gap-1.5">
+      <span className="atlas-topbar-org hidden lg:block"><CompanyMark organisationId={session.organisationId} name={session.organisationName} size="sm" /></span>
+      <TopbarTitle organisation={session.organisationName} apps={apps} />
+      <div className="order-3 w-full min-w-0 sm:order-none sm:ml-auto sm:w-[240px] sm:flex-none lg:w-[280px]"><CommandPalette variant="workspace" /></div>
+      <div className="atlas-header-utilities ml-auto flex sm:ml-0 shrink-0 items-center gap-1 sm:gap-1.5">
         <NewWindow />
         {can(session, "core.profile.self") && <div className="lg:hidden"><TasksButton /></div>}
         <ContextGuideLink canPurchase={session.capabilities.has('finance.purchase.read')} />

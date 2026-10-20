@@ -26,7 +26,7 @@ export function DataTable<Row extends { id: string }>(props: {
   }
 
   return (
-    <div className="atlas-data-table overflow-x-auto rounded-[22px] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-atlas)]">
+    <div className="atlas-data-table overflow-x-auto rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-atlas)]">
       <table className="w-full min-w-[640px] border-collapse text-sm">
         <thead>
           <tr className="border-b border-[var(--color-border)] bg-[var(--color-surface-sunken)]">
@@ -34,7 +34,7 @@ export function DataTable<Row extends { id: string }>(props: {
               <th
                 key={column.header}
                 style={{ width: column.width }}
-                className={`whitespace-nowrap px-4 py-2.5 text-xs font-medium uppercase tracking-wide text-[var(--color-ink-faint)] ${column.align === "right" ? "text-right" : "text-left"}`}
+                className={`whitespace-nowrap px-4 py-2.5 text-xs font-medium text-[var(--color-ink-faint)] ${column.align === "right" ? "text-right" : "text-left"}`}
               >
                 {column.header}
               </th>

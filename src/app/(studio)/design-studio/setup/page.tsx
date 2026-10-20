@@ -25,7 +25,7 @@ export default async function BusinessSetup({ searchParams }: { searchParams: Pr
     { title: "Record types", text: "Special setups for different kinds of ticket, built on your base.", icon: Tags, items: types }];
   return <div className="mx-auto max-w-7xl space-y-8 px-5 py-8 md:px-10 md:py-12">
     <header><Link href={`/design-studio${suffix}`} className="inline-flex items-center gap-2 text-sm font-medium text-slate-500"><ArrowLeft className="h-4 w-4"/>Back to Studio</Link>
-      <p className="mt-7 text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">Business setup · {setup.name}</p>
+      <p className="mt-7 text-xs font-semibold tracking-[0.2em] text-blue-600">Business setup · {setup.name}</p>
       <h1 className="mt-2 text-4xl font-semibold tracking-tight">Make the details work for your team.</h1>
       <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">Add useful ticket details and choose the screens and rules your business needs. Save a draft, review it, then make it live.</p>
     </header>

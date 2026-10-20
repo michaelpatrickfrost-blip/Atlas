@@ -33,7 +33,7 @@ const panel =
 const input =
   "mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-100";
 const button =
-  "min-h-11 rounded-xl bg-blue-600 px-5 py-3 text-xs font-bold text-white";
+  "min-h-11 rounded-xl bg-blue-600 px-5 py-3 text-xs font-semibold text-white";
 export default async function UserAdministration({
   params,
   searchParams,
@@ -130,13 +130,13 @@ export default async function UserAdministration({
         <ArrowLeft size={15} />
         All users
       </Link>
-      <section className="relative overflow-hidden rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-white p-6 sm:p-8">
+      <section className="relative overflow-hidden rounded-3xl border border-blue-100 bg-[var(--color-surface)] p-6 sm:p-8">
         <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-4 sm:flex sm:flex-wrap sm:items-center sm:gap-5">
           <span className="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-white text-blue-600 shadow-sm">
             <UserRound size={28} />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-bold uppercase tracking-[.17em] text-blue-600">
+            <p className="text-[10px] font-semibold tracking-[.17em] text-blue-600">
               Company account
             </p>
             <h2 className="mt-2 break-words text-2xl font-semibold tracking-tight sm:text-3xl">

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { appAppearance } from "./app-appearance";
-import { BookOpen, Briefcase, ChartNoAxesColumnIncreasing, ChevronRight, LayoutGrid, Settings, ShieldCheck, Users } from "lucide-react";
+import { BookOpen, Briefcase, ChartNoAxesColumnIncreasing, ChevronRight, LayoutGrid, Settings, Users } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { Session } from "@/core/auth/session";
 import { getNavigableModules } from "@/core/modules/runtime";
@@ -10,7 +10,6 @@ import { CORE_CAPABILITIES, CUSTOMER_CAPABILITIES } from "@/core/permissions/cap
 import { canOpenCompanyAdmin } from "@/app/(app)/settings/settings-menu";
 
 type Entry = { id: string; name: string; href: string; icon: LucideIcon; description?: string };
-const AREA_ICONS: Record<string, LucideIcon> = { Customers: Users, Operations: Settings, People: Users, Business: ChartNoAxesColumnIncreasing, More: LayoutGrid, Company: ShieldCheck };
 const APP_SUMMARIES: Record<string, string> = {
   crm: "Sales pipeline and customer insights.", sales: "Quotes, orders and sales management.",
   service: "Customer support and service management.", marketing: "Campaigns and customer engagement.",
@@ -40,31 +39,23 @@ export async function AppDirectory({ session, variant = "menu" }: { session: Ses
   const columns = [...[...groups].filter(([, entries]) => entries.length > 0), ["Company", company] as const];
   if (variant === "launcher") return (
     <nav aria-label="Apps" className="atlas-app-directory">
-      {columns.map(([area, entries], index) => {
-        const AreaIcon = AREA_ICONS[area] ?? LayoutGrid;
-        return <section key={area} aria-label={area} className="atlas-app-group">
-          <div className="atlas-app-group-heading">
-            <span className="atlas-group-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-            <AreaIcon size={17} strokeWidth={1.65} aria-hidden="true" />
-            <h2>{area}</h2>
-            <span className="atlas-group-rule" aria-hidden="true" />
-            <span className="atlas-app-count">{entries.length} {entries.length === 1 ? "app" : "apps"}</span>
-          </div>
-          <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+      {columns.map(([area, entries]) => (
+        <section key={area} aria-label={area} className="atlas-app-group">
+          <h2 className="atlas-app-group-heading">{area}</h2>
+          <ul className="atlas-launcher-list">
             {entries.map((entry) => (
               <li key={entry.id} className="min-w-0">
                 <Link href={entry.href} prefetch={false} style={appAppearance(entry.id)} className="atlas-launcher-card group">
-                  <span className="atlas-app-icon atlas-launcher-icon">
-                    <entry.icon aria-hidden="true" size={27} strokeWidth={1.65} />
-                  </span>
-                  <span className="min-w-0 flex-1"><span className="atlas-launcher-title">{entry.name}</span><span className="atlas-launcher-description">{entry.description}</span></span>
-                  <ChevronRight aria-hidden="true" size={16} className="atlas-launcher-arrow" />
+                  <span className="atlas-app-icon atlas-launcher-icon"><entry.icon aria-hidden="true" size={17} /></span>
+                  <span className="atlas-launcher-title">{entry.name}</span>
+                  <span className="atlas-launcher-description">{entry.description}</span>
+                  <ChevronRight aria-hidden="true" size={15} className="atlas-launcher-arrow" />
                 </Link>
               </li>
             ))}
           </ul>
-        </section>;
-      })}
+        </section>
+      ))}
     </nav>
   );
   return (

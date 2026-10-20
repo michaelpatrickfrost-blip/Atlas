@@ -57,8 +57,8 @@ export function ScanStation({ taskId, line }: { taskId: string; line: Line | nul
   }
 
   return (
-    <section className={`rounded-[28px] border p-6 sm:p-10 ${tone === "bad" ? "border-rose-200 bg-rose-50" : tone === "ok" ? "border-emerald-200 bg-emerald-50" : "border-[var(--color-border)] bg-white"}`}>
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-faint)]">Scan</p>
+    <section className={`rounded-2xl border p-6 sm:p-10 ${tone === "bad" ? "border-rose-200 bg-rose-50" : tone === "ok" ? "border-emerald-200 bg-emerald-50" : "border-[var(--color-border)] bg-white"}`}>
+      <p className="text-xs font-semibold tracking-[0.18em] text-[var(--color-ink-faint)]">Scan</p>
       {line?.clusterSlot && <p className="mt-3 text-sm font-medium text-[var(--color-atlas-blue)]">{line.clusterSlot}</p>}
       <h2 className="mt-3 text-5xl font-semibold tracking-tight text-[var(--color-ink)]">{line?.locationCode ?? "Done"}</h2>
       <p className="mt-4 text-2xl text-[var(--color-ink)]">{line ? `${line.productCode} · ${line.description}` : "Task complete"}</p>

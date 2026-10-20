@@ -8,7 +8,7 @@ import { GoalMeter } from "@/modules/kpis/components/goal-meter";
 import { loadGoalWorkspace } from "@/modules/kpis/services/workspace";
 import { listCustomerScreens } from "@/core/studio/pages/customer-catalog";
 
-const PANEL = "rounded-2xl border border-black/[0.06] bg-white";
+const PANEL = "atlas-home-section";
 const DOT = { critical: "bg-[#d12b45]", warning: "bg-[#c9820a]", info: "bg-[#cacac9]" } as const;
 
 export default async function HomePage() {
@@ -31,34 +31,34 @@ export default async function HomePage() {
         <AppDirectory session={session} variant="launcher" />
       </section>
       {screens.length > 0 && <section aria-label="Your business screens" className={`${PANEL} px-5 py-5 sm:px-6`}>
-        <h2 className="text-sm font-semibold">Your business screens</h2><p className="mt-1 text-xs text-slate-500">Layouts published for {session.organisationName}.</p>
+        <h2 className="atlas-section-title">Your business screens</h2><p className="mt-2 text-xs text-slate-500">Layouts published for {session.organisationName}.</p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{screens.map(screen => <Link key={screen.id} href={`/screens/${screen.id}`} className="rounded-xl border border-blue-100 bg-blue-50/40 px-4 py-3 text-sm font-medium text-blue-700 hover:bg-blue-50">{screen.name}</Link>)}</div>
       </section>}
       <div className={`grid gap-5 ${highlights.length > 0 ? "lg:grid-cols-2" : ""}`}>
         <section aria-label="Needs attention" className={`${PANEL} px-5 py-4 sm:px-6`}>
-          <h2 className="text-[13px] font-semibold text-[#1d1d1f]">Needs attention{attention.items.length > 0 && <span className="ml-2 font-normal text-[#86868b]">{attention.items.length}</span>}</h2>
+          <h2 className="text-[13px] font-semibold text-[var(--color-ink)]">Needs attention{attention.items.length > 0 && <span className="ml-2 font-normal text-[var(--color-ink-faint)]">{attention.items.length}</span>}</h2>
           <div className="mt-2">
             {attention.items.map((item) => (
-              <Link key={`${item.source}:${item.id}:${item.href}`} href={item.href} className="-mx-2 flex items-center gap-3 rounded-lg px-2 py-2 text-[13px] text-[#1d1d1f] hover:bg-black/[0.04]">
+              <Link key={`${item.source}:${item.id}:${item.href}`} href={item.href} className="-mx-2 flex items-center gap-3 rounded-lg px-2 py-2 text-[13px] text-[var(--color-ink)] hover:bg-black/[0.04]">
                 <span aria-hidden className={`size-1.5 shrink-0 rounded-full ${DOT[item.severity]}`} />
-                <span className="min-w-0 flex-1"><span className="block text-[11px] text-[#86868b]">{item.source}</span><span className="mt-0.5 block">{item.label}</span></span>
-                {item.severity !== "info" && <span className="shrink-0 text-[11px] text-[#86868b]">{item.severity === "critical" ? "Urgent" : "Review"}</span>}
+                <span className="min-w-0 flex-1"><span className="block text-[11px] text-[var(--color-ink-faint)]">{item.source}</span><span className="mt-0.5 block">{item.label}</span></span>
+                {item.severity !== "info" && <span className="shrink-0 text-[11px] text-[var(--color-ink-faint)]">{item.severity === "critical" ? "Urgent" : "Review"}</span>}
               </Link>
             ))}
-            {!attention.items.length && !attention.unavailableSources && <p className="py-2 text-[13px] text-[#86868b]">No attention items reported by your connected apps.</p>}
+            {!attention.items.length && !attention.unavailableSources && <p className="py-2 text-[13px] text-[var(--color-ink-faint)]">No attention items reported by your connected apps.</p>}
             {attention.unavailableSources > 0 && <div role="status" className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-amber-50 p-3"><p className="text-xs text-amber-900">Some updates could not be loaded. This list may be incomplete.</p><RefreshButton /></div>}
           </div>
         </section>
         {highlights.length > 0 && (
           <section className={`${PANEL} px-5 py-4 sm:px-6`}>
             <div className="flex items-center justify-between gap-3">
-              <h2 className="text-[13px] font-semibold text-[#1d1d1f]">Goals</h2>
-              <Link href="/kpis" className="text-[12px] text-[#826038]">All goals</Link>
+              <h2 className="atlas-section-title">Goals</h2>
+              <Link href="/kpis" className="text-[12px] text-[var(--color-ink-muted)] underline underline-offset-4 decoration-[var(--color-border-strong)] hover:text-[var(--color-ink)]">All goals</Link>
             </div>
             <div className="mt-3 flex flex-col gap-4">
               {highlights.map((goal) => (
                 <Link key={goal.id} href={goal.planId ? `/kpis/plans/${goal.planId}` : `/kpis/${goal.id}`} className="block">
-                  <p className="text-[11px] text-[#86868b]">{goal.visibility === "COMPANY" ? goal.department || goal.teamName : goal.personName || "Personal"}{goal.metricName ? ` · ${goal.metricName}` : ""}</p>
+                  <p className="text-[11px] text-[var(--color-ink-faint)]">{goal.visibility === "COMPANY" ? goal.department || goal.teamName : goal.personName || "Personal"}{goal.metricName ? ` · ${goal.metricName}` : ""}</p>
                   <div className="mt-1"><GoalMeter name={goal.name} actual={goal.actual} target={goal.target} elapsed={goal.elapsed} verdict={goal.verdict} unit={goal.unit} currency={goal.currency} summary={goal.summary} status={goal.status} /></div>
                 </Link>
               ))}

@@ -135,7 +135,7 @@ export function AccountMap({
           <span className="min-w-0 flex-1">
             <span className="flex items-center gap-2">
               <span className="truncate text-sm font-medium text-slate-800">{person.name}</span>
-              {leads && <span className="rounded-full bg-slate-900 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-white">Manager</span>}
+              {leads && <span className="rounded-full bg-slate-900 px-1.5 py-0.5 text-[9px] font-semibold text-white">Manager</span>}
             </span>
             <span className="block truncate text-[11px] text-slate-500">
               {person.jobTitle || "No job title"}
@@ -196,7 +196,7 @@ export function AccountMap({
           </div>
           {team.length > 0 && (
             <div className="border-t border-slate-100 px-3 py-2">
-              <p className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400"><UserRound size={12} /> People</p>
+              <p className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold text-slate-400"><UserRound size={12} /> People</p>
               <ul className="space-y-0.5">{team.map((person) => <PersonRow key={person.id} person={person} accountId={account.id} depth={0} />)}</ul>
             </div>
           )}
@@ -245,7 +245,7 @@ export function AccountMap({
         {selectedAccount && (
           <div className="grid gap-3 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)]">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Placing</p>
+              <p className="text-[10px] font-semibold text-slate-400">Placing</p>
               <p className="mt-1 text-sm font-semibold text-slate-900">{selectedAccount.name}</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {canEdit && (
@@ -259,7 +259,7 @@ export function AccountMap({
                 ))}
               </div>
             </div>
-            <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Group
+            <label className="block text-[10px] font-semibold text-slate-400">Group
               {canEdit ? (
                 <select aria-label="Group" disabled={pending} className={`${selectClass} mt-2 normal-case`} value={selectedAccount.parentPartyId ?? ""} onChange={(event) => run(() => placeCustomer(selectedAccount.id, event.target.value || null, selectedAccount.hierarchyRole))}>
                   <option value="">Independent — no group</option>
@@ -267,7 +267,7 @@ export function AccountMap({
                 </select>
               ) : <span className="mt-2 block text-sm font-medium normal-case text-slate-800">{accounts.find((account) => account.id === selectedAccount.parentPartyId)?.name ?? "Independent"}</span>}
             </label>
-            <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Invoice customer
+            <label className="block text-[10px] font-semibold text-slate-400">Invoice customer
               {canInvoice ? (
                 <select aria-label="Invoice customer" disabled={pending} className={`${selectClass} mt-2 normal-case`} value={selectedAccount.invoiceAccountId ?? ""} onChange={(event) => run(() => setInvoiceAccount(selectedAccount.id, event.target.value || null))}>
                   <option value="">This account</option>
@@ -280,11 +280,11 @@ export function AccountMap({
         {selectedPerson && (
           <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Person</p>
+              <p className="text-[10px] font-semibold text-slate-400">Person</p>
               <p className="mt-1 text-sm font-semibold text-slate-900">{selectedPerson.name}</p>
               <p className="mt-1 text-xs text-slate-500">{selectedPerson.jobTitle || "No job title"}{selectedPersonAccount ? ` · ${selectedPersonAccount.name}` : ""}</p>
             </div>
-            <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Reports to
+            <label className="block text-[10px] font-semibold text-slate-400">Reports to
               {canPeople ? (
                 <select aria-label="Reports to" disabled={pending} className={`${selectClass} mt-2 normal-case`} value={selectedPerson.reportsToContactId ?? ""} onChange={(event) => run(() => setContactReportsTo(selectedPerson.id, event.target.value || null))}>
                   <option value="">No manager in this group</option>

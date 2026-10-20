@@ -141,7 +141,7 @@ export function CustomerOverview({
 function AddressCard({ label, address }: { label: string; address: { line1: string; city: string | null; postcode: string | null; country: string | null } | undefined }) {
   return (
     <Card className="p-4">
-      <p className="text-xs font-medium uppercase tracking-wide text-[var(--color-ink-faint)]">{label}</p>
+      <p className="text-xs font-medium text-[var(--color-ink-faint)]">{label}</p>
       {address ? (
         <p className="mt-1 text-sm text-[var(--color-ink)]">
           {address.line1}

@@ -52,7 +52,7 @@ export default async function ForecastPage() {
       <div className="grid grid-cols-2 overflow-hidden rounded-2xl border border-[var(--color-border)] bg-white sm:grid-cols-4">
         {byCategory.map((category) => (
           <div key={category.key} className="border-b border-r border-[var(--color-border)] p-5">
-            <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-ink-faint)]">{category.label}</p>
+            <p className="text-[11px] font-medium tracking-[0.14em] text-[var(--color-ink-faint)]">{category.label}</p>
             <p className="mt-2 text-2xl font-semibold tracking-tight text-[var(--color-ink)]">{formatMoney(category.total, "GBP")}</p>
             <p className="mt-1 text-xs text-[var(--color-ink-muted)]">{category.items.length} open</p>
           </div>
@@ -61,11 +61,11 @@ export default async function ForecastPage() {
 
       <div className="grid gap-px overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-border)] sm:grid-cols-2">
         <div className="bg-white p-5">
-          <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-ink-faint)]">Commit + closed</p>
+          <p className="text-[11px] font-medium tracking-[0.14em] text-[var(--color-ink-faint)]">Commit + closed</p>
           <p className="mt-2 text-2xl font-semibold tracking-tight text-[var(--color-ink)]">{formatMoney(commitPlusClosed, "GBP")}</p>
         </div>
         <div className="bg-white p-5">
-          <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-ink-faint)]">Stage-weighted pipeline</p>
+          <p className="text-[11px] font-medium tracking-[0.14em] text-[var(--color-ink-faint)]">Stage-weighted pipeline</p>
           <p className="mt-2 text-2xl font-semibold tracking-tight text-[var(--color-ink)]">{formatMoney(totalWeighted, "GBP")}</p>
         </div>
       </div>

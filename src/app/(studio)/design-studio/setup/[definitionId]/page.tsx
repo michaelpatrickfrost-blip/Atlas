@@ -38,7 +38,7 @@ export default async function SetupEditor({ params, searchParams }: {
   const title = draft.kind === "customField" ? "Additional field" : draft.kind === "entityProfile" ? "Base record setup" : "Record type";
   return <div className="mx-auto max-w-6xl space-y-7 px-5 py-8 md:px-10 md:py-12">
     <Link href={`/design-studio/setup${suffix}`} className="inline-flex items-center gap-2 text-sm font-medium text-slate-500"><ArrowLeft className="h-4 w-4"/>Back to business setup</Link>
-    <header><p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">{title} · {setup.name}</p>
+    <header><p className="text-xs font-semibold tracking-[0.2em] text-blue-600">{title} · {setup.name}</p>
       <h1 className="mt-2 text-3xl font-semibold tracking-tight">{draft.name}</h1><p className="mt-3 text-sm text-slate-500">{draft.activeVersionId ? "Your live setup is in use. Changes below stay in the draft until you make them live." : "This draft is saved for your business. Review it before making it live."}</p>
     </header>
     <SetupDraftGuard key={`${draft.id}:${draft.revision}`} editor={<section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8"><h2 className="mb-5 text-xl font-semibold">Design the details</h2>

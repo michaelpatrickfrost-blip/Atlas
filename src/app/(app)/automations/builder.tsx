@@ -61,7 +61,7 @@ export function Builder({ initial, options }: { initial: Initial; options: Optio
       </div>
 
       <div className={card}>
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">When</p>
+        <p className="mb-3 text-xs font-semibold text-slate-500">When</p>
         <div className="flex flex-wrap gap-2">
           {[["EVENT", "Something happens"], ["SCHEDULE", "On a schedule"], ["MANUAL", "Only when I run it"]].map(([v, l]) => (
             <button key={v} type="button" onClick={() => setTriggerType(v)} className={`rounded-lg px-3 py-1.5 text-sm ${triggerType === v ? "bg-blue-600 text-white" : "border border-slate-200"}`}>{l}</button>
@@ -80,7 +80,7 @@ export function Builder({ initial, options }: { initial: Initial; options: Optio
 
       {triggerType === "EVENT" && !!fields.length && (
         <div className={card}>
-          <div className="mb-3 flex items-center justify-between"><p className="text-xs font-semibold uppercase tracking-wide text-slate-500">If (optional)</p><button type="button" onClick={addCondition} className="text-xs text-blue-700">+ Add condition</button></div>
+          <div className="mb-3 flex items-center justify-between"><p className="text-xs font-semibold text-slate-500">If (optional)</p><button type="button" onClick={addCondition} className="text-xs text-blue-700">+ Add condition</button></div>
           <div className="space-y-2">
             {conditions.map((c, i) => {
               const field = fields.find((f) => f.path === c.field);
@@ -104,7 +104,7 @@ export function Builder({ initial, options }: { initial: Initial; options: Optio
       )}
 
       <div className={card}>
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Then</p>
+        <p className="mb-3 text-xs font-semibold text-slate-500">Then</p>
         <div className="space-y-3">
           {steps.map((s) => <StepCard key={s.id} step={s} onChange={(next) => setSteps((ss) => ss.map((x) => (x.id === s.id ? next : x)))} onRemove={() => setSteps((ss) => ss.filter((x) => x.id !== s.id))} options={options} />)}
         </div>

@@ -322,7 +322,7 @@ export function AppointmentDiary(props: DiaryProps) {
         >
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">
+              <p className="text-xs font-semibold text-blue-600">
                 Appointment details
               </p>
               <h3 className="mt-2 text-xl font-semibold">{selected.subject}</h3>

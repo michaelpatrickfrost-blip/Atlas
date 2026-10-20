@@ -33,7 +33,7 @@ export function WorkspaceNavigation({
   return (
     <nav
       aria-label="Workspace utilities"
-      className="atlas-utility-rail flex flex-wrap gap-1 rounded-[24px] border border-white/90 bg-white/75 p-2 shadow-[0_8px_40px_-28px_rgba(103,76,44,0.3)] sm:flex-nowrap lg:h-full lg:flex-col lg:gap-2 lg:p-2.5"
+      className="atlas-utility-rail flex flex-wrap gap-1 rounded-2xl border border-white/90 bg-white/75 p-2 shadow-[0_8px_40px_-28px_rgba(103,76,44,0.3)] sm:flex-nowrap lg:h-full lg:flex-col lg:gap-2 lg:p-2.5"
     >
       {links.map(({ name, href }) => {
         const Icon = icons[name],

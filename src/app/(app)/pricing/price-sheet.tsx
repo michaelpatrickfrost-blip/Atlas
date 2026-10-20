@@ -28,7 +28,7 @@ export function PriceCsv({ preview, apply, templateHref, sheetHref }: {
   const ready = !!result && problems === 0 && result.rows.length > 0;
 
   return (
-    <section className="rounded-[22px] border border-[var(--color-border)] bg-white p-5 shadow-[var(--shadow-atlas)]">
+    <section className="rounded-2xl border border-[var(--color-border)] bg-white p-5 shadow-[var(--shadow-atlas)]">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="max-w-xl">
           <h3 className="text-sm font-semibold">Spreadsheet</h3>
@@ -91,7 +91,7 @@ export function PriceCsv({ preview, apply, templateHref, sheetHref }: {
           <p className="mb-2 text-xs text-[var(--color-ink-muted)]">{result.rows.length} priced {result.rows.length === 1 ? "row" : "rows"}{result.skipped ? ` · ${result.skipped} blank ${result.skipped === 1 ? "row" : "rows"} skipped` : ""}{problems ? ` · ${problems} to fix` : ""}</p>
           <table className="w-full min-w-[640px] text-sm">
             <thead>
-              <tr className="border-b border-[var(--color-border)] text-left text-xs uppercase tracking-wide text-[var(--color-ink-faint)]">
+              <tr className="border-b border-[var(--color-border)] text-left text-xs text-[var(--color-ink-faint)]">
                 <th className="py-2 pr-3 font-medium">Product</th>
                 <th className="py-2 pr-3 font-medium">From qty</th>
                 <th className="py-2 pr-3 font-medium">Set price</th>
@@ -150,7 +150,7 @@ export function PriceFilter({ rows, currency, remove, products, listId }: { curr
       <div className="overflow-x-auto">
         <table className="w-full min-w-[680px] text-sm">
           <thead>
-            <tr className="border-b border-[var(--color-border)] text-left text-xs uppercase tracking-wide text-[var(--color-ink-faint)]">
+            <tr className="border-b border-[var(--color-border)] text-left text-xs text-[var(--color-ink-faint)]">
               <th className="px-5 py-3 font-medium">Product</th>
               <th className="px-3 py-3 font-medium">From qty</th>
               <th className="px-3 py-3 text-right font-medium">Set price</th>

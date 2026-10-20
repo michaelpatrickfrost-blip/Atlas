@@ -211,7 +211,7 @@ export default async function ProspectRecordPage({ params }: { params: Promise<{
                   <input name="newIndustry" placeholder="Or create one, such as drainage" className={inputClass} />
                   <div className="flex flex-wrap gap-2">
                     {prospect.tags.map((tag) => (
-                      <button key={tag} type="submit" name="removeTag" value={tag} className="rounded-full bg-[#eef1f6] px-2.5 py-1 text-xs text-[#1d1d1f]">{tag} ×</button>
+                      <button key={tag} type="submit" name="removeTag" value={tag} className="rounded-full bg-[#f4f2f0] px-2.5 py-1 text-xs text-[#1d1d1f]">{tag} ×</button>
                     ))}
                   </div>
                   <input name="tag" placeholder="Add a tag" className={inputClass} />

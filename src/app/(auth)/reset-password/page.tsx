@@ -8,7 +8,7 @@ export const metadata = { title: "Set your Atlas password", referrer: "no-referr
 export default async function PasswordRecovery({searchParams}:{searchParams:Promise<{portal?:string}>}) {
   if ((await searchParams).portal === "atlas") notFound();
   return (
-    <AuthFrame title="Set your password" subtitle="Enter the setup or recovery code you were given. A code works once and expires after 30 minutes." footer={<Link className="text-[#0071e3]" href="/login">Back to sign in</Link>}>
+    <AuthFrame title="Set your password" subtitle="Enter the setup or recovery code you were given. A code works once and expires after 30 minutes." footer={<Link className="text-[#826038]" href="/login">Back to sign in</Link>}>
       <ResetForm/>
     </AuthFrame>
   );

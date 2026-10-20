@@ -100,7 +100,7 @@ export default async function ProfilePage() {
     {employee && <section id="time-off" className={card}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div><h2 className="text-lg font-semibold tracking-tight">Time off</h2><p className="mt-1 text-sm text-[#6e6e73]">Request holiday here. It is saved on your HR record and waits for your manager. {employee.annualLeaveDaysEntitlement} days this year, {remaining} left after approved and pending requests.</p></div>
-        <Link href="/people/holidays" className="text-sm font-medium text-[#0071e3]">Open holidays</Link>
+        <Link href="/people/holidays" className="text-sm font-medium text-[#826038]">Open holidays</Link>
       </div>
       {canBook ? <ActionForm action={requestLeave} className="mt-5 grid gap-4 border-t border-black/[0.06] pt-5 sm:grid-cols-2">
         <HolidayRequestFields workingDays={employee.workingDays} remaining={remaining} managerName={employee.manager ? `${employee.manager.firstName} ${employee.manager.lastName}` : null} />
@@ -124,7 +124,7 @@ export default async function ProfilePage() {
     {canSeePayslips && payslips && <section id="payslips" className={card}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div><h2 className="text-lg font-semibold tracking-tight">Payslips</h2><p className="mt-1 text-sm text-[#6e6e73]">Your net pay for recent payroll runs, and any P45/P60 issued to you. These figures are calculated in Atlas and are not a submission to HMRC.</p></div>
-        <Link href="/payroll" className="text-sm font-medium text-[#0071e3]">Open payroll</Link>
+        <Link href="/payroll" className="text-sm font-medium text-[#826038]">Open payroll</Link>
       </div>
       <div className="mt-4 divide-y divide-black/[0.06]">
         {payslips.payslips.map((p) => <div key={p.id} className="flex flex-wrap items-center justify-between gap-3 py-3 text-sm">
@@ -141,7 +141,7 @@ export default async function ProfilePage() {
     <section id="assigned" className={card}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div><h2 className="text-lg font-semibold tracking-tight">Assigned to you</h2><p className="mt-1 text-sm text-[#6e6e73]">Tasks, meetings, customer work, reviews and checklist items that name you.</p></div>
-        {enabled.has("projects") && can(session, "projects.read") && <Link href="/projects/work/my-work" className="text-sm font-medium text-[#0071e3]">Open project work</Link>}
+        {enabled.has("projects") && can(session, "projects.read") && <Link href="/projects/work/my-work" className="text-sm font-medium text-[#826038]">Open project work</Link>}
       </div>
       <div className="mt-4 divide-y divide-black/[0.06]">
         {assignments.map((item) => <Link key={`${item.kind}:${item.id}`} href={item.href} className="flex flex-wrap items-baseline justify-between gap-3 py-3">
@@ -193,7 +193,7 @@ export default async function ProfilePage() {
         <h3 className="text-sm font-semibold">Your access</h3>
         <p className="mt-2 text-xs text-[#6e6e73]">Roles: {membership.roles?.map((role) => role.role.name).join(", ") || "No assigned roles"}. Company restrictions override role permissions.</p>
         <div className="mt-4 divide-y divide-black/[0.06]">{COMPANY_ACCESS_AREAS.map((area) => <div key={area.id} className="flex items-center justify-between gap-3 py-3 text-xs"><span>{area.label}</span><span className="text-[#6e6e73]">{company.restrictedAccessAreas.includes(area.id) ? "Off for this company" : hasCompanyAreaAccess(session.capabilities, area) ? "Allowed" : "Not granted"}</span></div>)}</div>
-        {(can(session, "core.roles.manage") || can(session, "core.users.manage")) && <Link href="/settings" className="mt-4 inline-block text-xs text-[#0071e3]">Manage company and user access</Link>}
+        {(can(session, "core.roles.manage") || can(session, "core.users.manage")) && <Link href="/settings" className="mt-4 inline-block text-xs text-[#826038]">Manage company and user access</Link>}
       </section>
       <section className={card}>
         <h3 className="text-sm font-semibold">Password and sessions</h3>

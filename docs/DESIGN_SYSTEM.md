@@ -1,5 +1,11 @@
 # Atlas Design System
 
+> **20 October 2026 — superseding direction:** Atlas uses the Macro-inspired
+> system in `src/app/macro.css` (warm paper, hairlines, ink controls, monochrome
+> line icons, Newsreader titles + Inter UI, desktop icon rail). Where this document
+> describes pearl/sapphire/Nunito styling, macro.css wins. See .ai/DECISIONS.md.
+
+
 ## Philosophy
 
 Precise, bold, quiet, premium, fast. Atlas should feel like a finished product:

@@ -598,16 +598,16 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
     historyOptions.current.before === historyBefore;
   if (duplicate) return null;
   const panel = (
-    <div ref={panelRoot} className={`flex h-full min-h-0 flex-col overflow-hidden bg-white ${page ? "rounded-[28px] border border-white shadow-[0_24px_90px_-25px_rgba(35,77,140,0.28)]" : ""}`}>
-      <header className="flex shrink-0 items-center gap-3 border-b border-blue-100/70 bg-gradient-to-r from-[#f1f7ff] via-white to-white px-5 py-4">
-        <span className="flex size-11 items-center justify-center rounded-2xl bg-[#075bff] text-white shadow-lg shadow-blue-500/15">
+    <div ref={panelRoot} className={`flex h-full min-h-0 flex-col overflow-hidden bg-white ${page ? "rounded-[28px] border border-white shadow-[0_24px_90px_-25px_rgba(100,74,43,0.28)]" : ""}`}>
+      <header className="flex shrink-0 items-center gap-3 border-b border-blue-100/70 bg-gradient-to-r from-[#faf8f6] via-white to-white px-5 py-4">
+        <span className="flex size-11 items-center justify-center rounded-2xl bg-[#966e40] text-white shadow-lg shadow-blue-500/15">
           <MessageCircle size={22} />
         </span>
         <div className="min-w-0 flex-1">
           <h2 className="text-lg font-semibold tracking-tight text-slate-950">
             Messages
           </h2>
-          <p className="text-xs text-[#71809a]">
+          <p className="text-xs text-[#8d867e]">
             Conversations, connected to your work
           </p>
         </div>
@@ -617,14 +617,14 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
             aria-label="Expand messages"
             title="Expand messages"
             onClick={() => setOpen(false)}
-            className="rounded-xl p-2.5 text-[#526587] hover:bg-blue-50"
+            className="rounded-xl p-2.5 text-[#766d63] hover:bg-blue-50"
           >
             <Maximize2 size={17} />
           </Link>
         )}
         <button
           type="button"
-          className="hidden rounded-xl p-2.5 text-[#526587] hover:bg-blue-50 sm:block"
+          className="hidden rounded-xl p-2.5 text-[#766d63] hover:bg-blue-50 sm:block"
           aria-label="Turn on notifications"
           onClick={() => {
             if (typeof Notification !== "undefined")
@@ -636,7 +636,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
         {page ? (
           <Link
             href="/home"
-            className="rounded-xl p-2.5 text-[#526587] hover:bg-blue-50"
+            className="rounded-xl p-2.5 text-[#766d63] hover:bg-blue-50"
             aria-label="Close messages"
           >
             <X size={18} />
@@ -644,7 +644,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
         ) : (
           <button
             type="button"
-            className="rounded-xl p-2.5 text-[#526587] hover:bg-blue-50"
+            className="rounded-xl p-2.5 text-[#766d63] hover:bg-blue-50"
             aria-label="Close messages"
             onClick={() => setOpen(false)}
           >
@@ -654,10 +654,10 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
       </header>
       <div className={`relative grid min-h-0 flex-1 grid-cols-1 ${page ? "md:grid-cols-[260px_minmax(0,1fr)]" : ""}`}>
         <aside
-          className={`${active ? (page ? "hidden md:flex" : "hidden") : "flex"} min-h-0 flex-col border-r border-blue-100/70 bg-[#f9fbff]`}
+          className={`${active ? (page ? "hidden md:flex" : "hidden") : "flex"} min-h-0 flex-col border-r border-blue-100/70 bg-[#fdfcfb]`}
         >
           <div className="flex items-center justify-between px-4 pb-2 pt-4">
-            <h3 className="text-xs font-semibold uppercase tracking-[.14em] text-[#71809a]">
+            <h3 className="text-xs font-semibold uppercase tracking-[.14em] text-[#8d867e]">
               Your conversations
             </h3>
             <button
@@ -665,12 +665,12 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
               aria-label="Start a new chat"
               title="New chat"
               onClick={() => setNewChatOpen(true)}
-              className="flex size-8 items-center justify-center rounded-xl bg-[#075bff] text-white hover:bg-blue-700"
+              className="flex size-8 items-center justify-center rounded-xl bg-[#966e40] text-white hover:bg-blue-700"
             >
               <Plus size={17} />
             </button>
           </div>
-          <label className="mx-3 mb-3 flex items-center gap-2 rounded-xl border border-blue-100 bg-white px-3 py-2.5 text-[#71809a]">
+          <label className="mx-3 mb-3 flex items-center gap-2 rounded-xl border border-blue-100 bg-white px-3 py-2.5 text-[#8d867e]">
             <Search size={16} />
             <input
               aria-label="Search conversations"
@@ -688,10 +688,10 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                 disabled={pending}
                 onClick={() => choose(conversation.id, conversation.peerId)}
                 aria-pressed={conversation.id === activeId}
-                className={`mb-1 flex w-full items-start gap-3 rounded-2xl border px-3 py-3.5 text-left transition ${conversation.id === activeId ? "border-blue-100 bg-[#eaf3ff]" : "border-transparent hover:bg-white"}`}
+                className={`mb-1 flex w-full items-start gap-3 rounded-2xl border px-3 py-3.5 text-left transition ${conversation.id === activeId ? "border-blue-100 bg-[#f7f5f2]" : "border-transparent hover:bg-white"}`}
               >
                 <span
-                  className={`flex size-10 shrink-0 items-center justify-center rounded-2xl text-xs font-semibold ${conversation.kind === "GROUP" ? "bg-indigo-100 text-indigo-600" : "bg-blue-100 text-[#075bff]"}`}
+                  className={`flex size-10 shrink-0 items-center justify-center rounded-2xl text-xs font-semibold ${conversation.kind === "GROUP" ? "bg-indigo-100 text-indigo-600" : "bg-blue-100 text-[#966e40]"}`}
                 >
                   {conversation.kind === "GROUP" ? (
                     <Users size={19} />
@@ -705,27 +705,27 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                       {conversation.title}
                     </span>
                     {conversation.unread > 0 && (
-                      <span className="rounded-full bg-[#075bff] px-1.5 py-0.5 text-[9px] font-semibold text-white">
+                      <span className="rounded-full bg-[#966e40] px-1.5 py-0.5 text-[9px] font-semibold text-white">
                         {conversation.unread > 99 ? "99+" : conversation.unread}
                       </span>
                     )}
                   </span>
-                  <span className="mt-1 block truncate text-xs text-[#71809a]">
+                  <span className="mt-1 block truncate text-xs text-[#8d867e]">
                     {conversation.preview}
                   </span>
-                  <time className="mt-1.5 block text-[10px] text-[#8b99af]">
+                  <time className="mt-1.5 block text-[10px] text-[#a39d97]">
                     {when(conversation.at, true)}
                   </time>
                 </span>
               </button>
             ))}
             {!snapshot && !loadError && (
-              <p className="px-3 py-8 text-center text-sm text-[#71809a]">
+              <p className="px-3 py-8 text-center text-sm text-[#8d867e]">
                 Opening messages…
               </p>
             )}
             {snapshot && !listed.length && (
-              <div className="px-3 py-8 text-center text-sm text-[#71809a]">
+              <div className="px-3 py-8 text-center text-sm text-[#8d867e]">
                 <p>
                   {query.trim()
                     ? "No matching conversations."
@@ -735,7 +735,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                   <button
                     type="button"
                     onClick={() => setNewChatOpen(true)}
-                    className="mt-3 font-medium text-[#075bff]"
+                    className="mt-3 font-medium text-[#966e40]"
                   >
                     Start a new chat
                   </button>
@@ -748,7 +748,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
           className={`${active ? "flex" : (page ? "hidden md:flex" : "hidden")} relative min-h-0 min-w-0 flex-col`}
         >
           {!active && (
-            <div className="flex flex-1 flex-col items-center justify-center bg-[radial-gradient(ellipse_at_top,#eef5ff,white_70%)] px-8 text-center">
+            <div className="flex flex-1 flex-col items-center justify-center bg-[radial-gradient(ellipse_at_top,#f8f7f5,white_70%)] px-8 text-center">
               <img
                 src="/brand/atlas-mark.png"
                 alt=""
@@ -757,14 +757,14 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
               <h3 className="text-2xl font-semibold tracking-tight text-slate-950">
                 Bring the conversation together
               </h3>
-              <p className="mt-3 max-w-sm text-sm leading-relaxed text-[#71809a]">
+              <p className="mt-3 max-w-sm text-sm leading-relaxed text-[#8d867e]">
                 Chat with your team, share an order or quotation, and turn a
                 conversation into work.
               </p>
               <button
                 type="button"
                 onClick={() => setNewChatOpen(true)}
-                className="mt-6 rounded-2xl bg-[#075bff] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/15"
+                className="mt-6 rounded-2xl bg-[#966e40] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/15"
               >
                 New conversation
               </button>
@@ -779,11 +779,11 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                   onClick={() => {
                     if (!pending) setActiveId(null);
                   }}
-                  className={`rounded-xl p-2 text-[#526587] hover:bg-blue-50 ${page ? "md:hidden" : ""}`}
+                  className={`rounded-xl p-2 text-[#766d63] hover:bg-blue-50 ${page ? "md:hidden" : ""}`}
                 >
                   <ArrowLeft size={18} />
                 </button>
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-[#eaf3ff] text-xs font-semibold text-[#075bff]">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-[#f7f5f2] text-xs font-semibold text-[#966e40]">
                   {active.kind === "GROUP" ? (
                     <Users size={19} />
                   ) : (
@@ -794,7 +794,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                   <h3 className="truncate text-sm font-semibold text-slate-950">
                     {active.title}
                   </h3>
-                  <p className="mt-0.5 text-xs text-[#71809a]">
+                  <p className="mt-0.5 text-xs text-[#8d867e]">
                     {active.kind === "GROUP"
                       ? `${active.peopleCount} participants`
                       : active.participants.some(
@@ -809,13 +809,13 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                   aria-label="Conversation details"
                   aria-expanded={details}
                   onClick={() => setDetails((value) => !value)}
-                  className={`rounded-xl p-2.5 ${details ? "bg-blue-50 text-[#075bff]" : "text-[#526587] hover:bg-blue-50"}`}
+                  className={`rounded-xl p-2.5 ${details ? "bg-blue-50 text-[#966e40]" : "text-[#766d63] hover:bg-blue-50"}`}
                 >
                   <Info size={19} />
                 </button>
               </div>
               <div className="flex shrink-0 items-center gap-2 border-b border-blue-100/50 px-4 py-2">
-                <Search size={14} className="text-[#8b99af]" />
+                <Search size={14} className="text-[#a39d97]" />
                 <input
                   aria-label="Search message history"
                   value={threadQuery}
@@ -837,7 +837,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                       setHistoryBefore("");
                       nearBottom.current = true;
                     }}
-                    className="p-1 text-[#71809a]"
+                    className="p-1 text-[#8d867e]"
                   >
                     <X size={14} />
                   </button>
@@ -860,7 +860,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                       element.clientHeight <
                     80;
                 }}
-                className="min-h-0 flex-1 space-y-4 overflow-y-auto bg-[#fcfdff] px-4 py-4 sm:px-6"
+                className="min-h-0 flex-1 space-y-4 overflow-y-auto bg-[#fefefd] px-4 py-4 sm:px-6"
               >
                 <div className="flex justify-center gap-3 text-xs">
                   {snapshot?.history.hasOlder && (
@@ -872,7 +872,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                         nearBottom.current = false;
                         scroller.current?.scrollTo({ top: 0 });
                       }}
-                      className="rounded-full border border-blue-100 bg-white px-4 py-2 font-medium text-[#075bff]"
+                      className="rounded-full border border-blue-100 bg-white px-4 py-2 font-medium text-[#966e40]"
                     >
                       Earlier {threadQuery ? "matches" : "messages"}
                     </button>
@@ -884,7 +884,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                         setHistoryBefore("");
                         nearBottom.current = true;
                       }}
-                      className="rounded-full bg-blue-50 px-4 py-2 font-medium text-[#075bff]"
+                      className="rounded-full bg-blue-50 px-4 py-2 font-medium text-[#966e40]"
                     >
                       Latest {threadQuery ? "matches" : "messages"}
                     </button>
@@ -896,7 +896,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                       {(index === 0 ||
                         new Date(entries[index - 1].at).toDateString() !==
                           new Date(entry.at).toDateString()) && (
-                        <p className="mb-5 text-center text-[10px] font-medium text-[#8b99af]">
+                        <p className="mb-5 text-center text-[10px] font-medium text-[#a39d97]">
                           {new Date(entry.at).toLocaleDateString("en-GB", {
                             day: "numeric",
                             month: "long",
@@ -910,23 +910,23 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                         {!entry.mine && (
                           <span
                             title={entry.authorName}
-                            className="mb-5 flex size-7 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-[9px] font-semibold text-[#075bff]"
+                            className="mb-5 flex size-7 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-[9px] font-semibold text-[#966e40]"
                           >
                             {initials(entry.authorName)}
                           </span>
                         )}
                         <div className="max-w-[88%] sm:max-w-[80%]">
                           {!entry.mine && (
-                            <p className="mb-1 pl-1 text-[10px] font-semibold text-[#71809a]">
+                            <p className="mb-1 pl-1 text-[10px] font-semibold text-[#8d867e]">
                               {entry.authorName}
                             </p>
                           )}
                           <div
-                            className={`rounded-[20px] px-4 py-3 text-sm leading-relaxed ${entry.mine ? "rounded-br-md bg-gradient-to-br from-[#1675ff] to-[#0753ef] text-white shadow-sm" : "rounded-bl-md border border-blue-100/80 bg-white text-slate-800 shadow-sm"}`}
+                            className={`rounded-[20px] px-4 py-3 text-sm leading-relaxed ${entry.mine ? "rounded-br-md bg-gradient-to-br from-[#9f7544] to-[#8d683d] text-white shadow-sm" : "rounded-bl-md border border-blue-100/80 bg-white text-slate-800 shadow-sm"}`}
                           >
                             {entry.kind !== "TEXT" && (
                               <p
-                                className={`mb-1.5 text-[10px] font-semibold uppercase tracking-[.14em] ${entry.mine ? "text-blue-100" : "text-[#075bff]"}`}
+                                className={`mb-1.5 text-[10px] font-semibold uppercase tracking-[.14em] ${entry.mine ? "text-blue-100" : "text-[#966e40]"}`}
                               >
                                 {entry.kind === "NOTE"
                                   ? "Note"
@@ -956,12 +956,12 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                                 <Link
                                   key={linkIndex}
                                   href={link.href}
-                                  className={`mt-3 flex items-center gap-3 rounded-2xl border p-3 text-xs ${entry.mine ? "border-white/20 bg-white/10 hover:bg-white/20" : "border-blue-100 bg-[#f5f9ff] hover:bg-blue-50"}`}
+                                  className={`mt-3 flex items-center gap-3 rounded-2xl border p-3 text-xs ${entry.mine ? "border-white/20 bg-white/10 hover:bg-white/20" : "border-blue-100 bg-[#fbfaf9] hover:bg-blue-50"}`}
                                 >
                                   <Paperclip size={17} className="shrink-0" />
                                   <span className="min-w-0 flex-1">
                                     <span
-                                      className={`block text-[9px] font-semibold uppercase tracking-wider ${entry.mine ? "text-blue-100" : "text-[#075bff]"}`}
+                                      className={`block text-[9px] font-semibold uppercase tracking-wider ${entry.mine ? "text-blue-100" : "text-[#966e40]"}`}
                                     >
                                       {LINK_LABELS[link.type]}
                                     </span>
@@ -969,7 +969,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                                       {link.title}
                                     </span>
                                     <span
-                                      className={`block break-words ${entry.mine ? "text-blue-100" : "text-[#71809a]"}`}
+                                      className={`block break-words ${entry.mine ? "text-blue-100" : "text-[#8d867e]"}`}
                                     >
                                       {link.subtitle}
                                     </span>
@@ -1027,7 +1027,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                             )}
                           </div>
                           <div
-                            className={`mt-1.5 flex items-center gap-1 text-[10px] text-[#8b99af] ${entry.mine ? "justify-end" : "justify-start"}`}
+                            className={`mt-1.5 flex items-center gap-1 text-[10px] text-[#a39d97] ${entry.mine ? "justify-end" : "justify-start"}`}
                           >
                             <time>{when(entry.at, true)}</time>
                             {entry.mine && (
@@ -1039,7 +1039,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                     </div>
                   ))}
                 {threadReady && !snapshot?.thread.length && (
-                  <p className="py-10 text-center text-sm text-[#8b99af]">
+                  <p className="py-10 text-center text-sm text-[#a39d97]">
                     {threadQuery
                       ? "No messages match this search."
                       : "Say hello to start the conversation."}
@@ -1057,21 +1057,21 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                 >
                   <fieldset disabled={pending} className="min-w-0">
                     {work && (
-                      <div className="mb-3 flex flex-wrap items-end gap-2 rounded-2xl bg-[#f5f9ff] p-3">
-                        <p className="w-full text-xs font-semibold text-[#075bff]">
+                      <div className="mb-3 flex flex-wrap items-end gap-2 rounded-2xl bg-[#fbfaf9] p-3">
+                        <p className="w-full text-xs font-semibold text-[#966e40]">
                           {MODES.find((item) => item.id === mode)?.label}
                           <button
                             type="button"
                             aria-label="Cancel work item"
                             onClick={() => setMode("message")}
-                            className="float-right text-[#71809a]"
+                            className="float-right text-[#8d867e]"
                           >
                             <X size={14} />
                           </button>
                         </p>
                         {mode !== "note" && (
                           <>
-                            <label className="min-w-0 flex-1 text-xs text-[#71809a]">
+                            <label className="min-w-0 flex-1 text-xs text-[#8d867e]">
                               Assign to
                               <select
                                 value={assignee}
@@ -1088,7 +1088,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                                 ))}
                               </select>
                             </label>
-                            <label className="text-xs text-[#71809a]">
+                            <label className="text-xs text-[#8d867e]">
                               {mode === "meeting" ? "When" : "Due"}
                               <input
                                 required={mode === "meeting"}
@@ -1105,7 +1105,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                               />
                             </label>
                             {mode !== "meeting" && (
-                              <label className="text-xs text-[#71809a]">
+                              <label className="text-xs text-[#8d867e]">
                                 Priority
                                 <select
                                   value={priority}
@@ -1142,7 +1142,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                                 ),
                               )
                             }
-                            className="inline-flex max-w-full items-center gap-2 rounded-xl border border-blue-100 bg-blue-50 px-3 py-2 text-xs font-medium text-[#075bff]"
+                            className="inline-flex max-w-full items-center gap-2 rounded-xl border border-blue-100 bg-blue-50 px-3 py-2 text-xs font-medium text-[#966e40]"
                           >
                             <Paperclip size={12} />
                             <span className="truncate">
@@ -1173,7 +1173,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                         ))}
                       </div>
                     )}
-                    <div className="rounded-2xl border border-blue-100 bg-[#fafcff] p-2 focus-within:border-blue-300 focus-within:ring-2 focus-within:ring-blue-50">
+                    <div className="rounded-2xl border border-blue-100 bg-[#fdfdfc] p-2 focus-within:border-blue-300 focus-within:ring-2 focus-within:ring-blue-50">
                       <textarea
                         aria-label="Message"
                         disabled={pending}
@@ -1215,7 +1215,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                             setHits([]);
                             setRecordSearching(true);
                           }}
-                          className="rounded-xl p-2.5 text-[#71809a] hover:bg-blue-50 hover:text-[#075bff] disabled:opacity-40"
+                          className="rounded-xl p-2.5 text-[#8d867e] hover:bg-blue-50 hover:text-[#966e40] disabled:opacity-40"
                         >
                           <Paperclip size={18} />
                         </button>
@@ -1227,7 +1227,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                             aria-expanded={menu}
                             title="Create work"
                             onClick={() => setMenu((value) => !value)}
-                            className="rounded-xl p-2.5 text-[#71809a] hover:bg-blue-50"
+                            className="rounded-xl p-2.5 text-[#8d867e] hover:bg-blue-50"
                           >
                             <Plus size={19} />
                           </button>
@@ -1249,7 +1249,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                                 >
                                   <item.icon
                                     size={15}
-                                    className="text-[#075bff]"
+                                    className="text-[#966e40]"
                                   />
                                   {item.label}
                                 </button>
@@ -1257,7 +1257,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                             </div>
                           )}
                         </div>
-                        <span className="hidden flex-1 pl-1 text-[10px] text-[#8b99af] sm:block">
+                        <span className="hidden flex-1 pl-1 text-[10px] text-[#a39d97] sm:block">
                           Enter to send · Shift + Enter for a new line
                         </span>
                         <button
@@ -1266,7 +1266,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                             pending || (!draft.trim() && !attached.length)
                           }
                           aria-label="Send message"
-                          className="ml-auto flex items-center gap-2 rounded-xl bg-[#075bff] px-4 py-2.5 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-40"
+                          className="ml-auto flex items-center gap-2 rounded-xl bg-[#966e40] px-4 py-2.5 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-40"
                         >
                           {pending ? (
                             <LoaderCircle size={15} className="animate-spin" />
@@ -1280,14 +1280,14 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                   </fieldset>
                 </form>
               ) : (
-                <p className="border-t border-blue-100 p-4 text-center text-xs text-[#71809a]">
+                <p className="border-t border-blue-100 p-4 text-center text-xs text-[#8d867e]">
                   You have read-only access to messages.
                 </p>
               )}
               {details && (
                 <aside
                   aria-label="Conversation information"
-                  className="absolute inset-y-0 right-0 z-10 flex w-full max-w-[300px] flex-col border-l border-blue-100 bg-white shadow-[-12px_0_40px_-24px_rgba(35,77,140,0.35)]"
+                  className="absolute inset-y-0 right-0 z-10 flex w-full max-w-[300px] flex-col border-l border-blue-100 bg-white shadow-[-12px_0_40px_-24px_rgba(100,74,43,0.35)]"
                 >
                   <div className="flex items-center justify-between border-b border-blue-100 p-4">
                     <h4 className="text-sm font-semibold">
@@ -1297,13 +1297,13 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                       type="button"
                       aria-label="Close conversation details"
                       onClick={() => setDetails(false)}
-                      className="rounded-xl p-2 text-[#71809a] hover:bg-blue-50"
+                      className="rounded-xl p-2 text-[#8d867e] hover:bg-blue-50"
                     >
                       <X size={16} />
                     </button>
                   </div>
                   <div className="min-h-0 flex-1 overflow-y-auto p-5">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-[#8b99af]">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-[#a39d97]">
                       Participants · {active.peopleCount}
                     </p>
                     <div className="mt-4 space-y-3">
@@ -1312,7 +1312,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                           key={`${person.type}:${person.id}`}
                           className="flex items-center gap-3"
                         >
-                          <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-[10px] font-semibold text-[#075bff]">
+                          <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-[10px] font-semibold text-[#966e40]">
                             {initials(person.name)}
                           </span>
                           <span className="min-w-0">
@@ -1320,7 +1320,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                               {person.name}
                               {person.mine ? " (you)" : ""}
                             </span>
-                            <span className="block text-[10px] text-[#71809a]">
+                            <span className="block text-[10px] text-[#8d867e]">
                               {person.type === "contact"
                                 ? "Customer contact · Stored in Atlas"
                                 : "Colleague"}
@@ -1329,7 +1329,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                         </div>
                       ))}
                     </div>
-                    <p className="mt-8 text-xs font-semibold uppercase tracking-wider text-[#8b99af]">
+                    <p className="mt-8 text-xs font-semibold uppercase tracking-wider text-[#a39d97]">
                       Shared in these messages
                     </p>
                     <div className="mt-3 space-y-2">
@@ -1340,27 +1340,27 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                             href={link.href}
                             className="block rounded-xl border border-blue-100 p-3 hover:bg-blue-50"
                           >
-                            <span className="block text-[9px] font-semibold uppercase text-[#075bff]">
+                            <span className="block text-[9px] font-semibold uppercase text-[#966e40]">
                               {LINK_LABELS[link.type]}
                             </span>
                             <span className="mt-1 block break-words text-xs font-semibold">
                               {link.title}
                             </span>
-                            <span className="block break-words text-[10px] text-[#71809a]">
+                            <span className="block break-words text-[10px] text-[#8d867e]">
                               {link.subtitle}
                             </span>
                           </Link>
                         ) : (
                           <p
                             key={index}
-                            className="rounded-xl bg-slate-50 p-3 text-xs text-[#71809a]"
+                            className="rounded-xl bg-slate-50 p-3 text-xs text-[#8d867e]"
                           >
                             Attached record · Not available to you
                           </p>
                         ),
                       )}
                       {!shared.length && (
-                        <p className="text-xs leading-relaxed text-[#71809a]">
+                        <p className="text-xs leading-relaxed text-[#8d867e]">
                           Orders, quotations and other records shared in the
                           displayed messages will appear here.
                         </p>
@@ -1379,10 +1379,10 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
             className="absolute inset-0 z-20 flex flex-col bg-white"
           >
             <div className="flex items-center gap-3 border-b border-blue-100 px-5 py-4">
-              <UserPlus size={20} className="text-[#075bff]" />
+              <UserPlus size={20} className="text-[#966e40]" />
               <div className="flex-1">
                 <h3 className="font-semibold">New conversation</h3>
-                <p className="mt-0.5 text-xs text-[#71809a]">
+                <p className="mt-0.5 text-xs text-[#8d867e]">
                   Choose colleagues or customer contacts
                 </p>
               </div>
@@ -1390,13 +1390,13 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                 type="button"
                 aria-label="Cancel new conversation"
                 onClick={closeNewChat}
-                className="p-2 text-[#71809a]"
+                className="p-2 text-[#8d867e]"
               >
                 <X size={18} />
               </button>
             </div>
-            <label className="mx-5 mt-5 flex items-center gap-3 rounded-2xl border border-blue-100 bg-[#f9fbff] p-3">
-              <Search size={17} className="text-[#71809a]" />
+            <label className="mx-5 mt-5 flex items-center gap-3 rounded-2xl border border-blue-100 bg-[#fdfcfb] p-3">
+              <Search size={17} className="text-[#8d867e]" />
               <input
                 autoFocus
                 aria-label="Search people"
@@ -1419,16 +1419,16 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                 return (
                   <label
                     key={`${hit.type}:${hit.id}`}
-                    className={`mb-2 flex cursor-pointer items-center gap-3 rounded-2xl border p-3 ${selected ? "border-blue-200 bg-blue-50" : "border-transparent hover:bg-[#f9fbff]"}`}
+                    className={`mb-2 flex cursor-pointer items-center gap-3 rounded-2xl border p-3 ${selected ? "border-blue-200 bg-blue-50" : "border-transparent hover:bg-[#fdfcfb]"}`}
                   >
-                    <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-blue-100 text-xs font-semibold text-[#075bff]">
+                    <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-blue-100 text-xs font-semibold text-[#966e40]">
                       {initials(hit.name)}
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-sm font-semibold">
                         {hit.name}
                       </span>
-                      <span className="block truncate text-xs text-[#71809a]">
+                      <span className="block truncate text-xs text-[#8d867e]">
                         {hit.subtitle}
                         {hit.type === "contact" ? " · Contact" : ""}
                       </span>
@@ -1449,12 +1449,12 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                 );
               })}
               {peopleSearching && (
-                <p className="py-6 text-center text-sm text-[#71809a]">
+                <p className="py-6 text-center text-sm text-[#8d867e]">
                   Searching…
                 </p>
               )}
               {!peopleSearching && !peopleHits.length && (
-                <p className="py-8 text-center text-sm text-[#71809a]">
+                <p className="py-8 text-center text-sm text-[#8d867e]">
                   {peopleQuery.trim()
                     ? "No matching people."
                     : "Search for someone to start a conversation."}
@@ -1462,7 +1462,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
               )}
             </div>
             <div className="flex items-center gap-3 border-t border-blue-100 p-5">
-              <p className="min-w-0 flex-1 truncate text-xs text-[#71809a]">
+              <p className="min-w-0 flex-1 truncate text-xs text-[#8d867e]">
                 {[...picked, ...pickedContacts]
                   .map((id) => pickedNames[id])
                   .join(", ") || "Up to 11 other participants"}
@@ -1471,7 +1471,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                 type="button"
                 disabled={pending || (!picked.length && !pickedContacts.length)}
                 onClick={() => void start(picked, pickedContacts)}
-                className="shrink-0 rounded-xl bg-[#075bff] px-4 py-3 text-xs font-semibold text-white disabled:opacity-40"
+                className="shrink-0 rounded-xl bg-[#966e40] px-4 py-3 text-xs font-semibold text-white disabled:opacity-40"
               >
                 {pending ? "Opening…" : "Start chat"}
               </button>
@@ -1485,10 +1485,10 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
             className="absolute inset-0 z-20 flex flex-col bg-white"
           >
             <div className="flex items-center gap-3 border-b border-blue-100 p-5">
-              <Paperclip size={20} className="text-[#075bff]" />
+              <Paperclip size={20} className="text-[#966e40]" />
               <div className="flex-1">
                 <h3 className="font-semibold">Attach Atlas records</h3>
-                <p className="mt-1 text-xs text-[#71809a]">
+                <p className="mt-1 text-xs text-[#8d867e]">
                   Share the real record · {attached.length} of 8 selected
                 </p>
               </div>
@@ -1496,13 +1496,13 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                 type="button"
                 aria-label="Done attaching records"
                 onClick={() => setAttachOpen(false)}
-                className="rounded-xl bg-blue-50 px-3 py-2 text-xs font-semibold text-[#075bff]"
+                className="rounded-xl bg-blue-50 px-3 py-2 text-xs font-semibold text-[#966e40]"
               >
                 Done
               </button>
             </div>
-            <label className="mx-5 mt-5 flex items-center gap-3 rounded-2xl border border-blue-100 bg-[#f9fbff] p-3">
-              <Search size={17} className="text-[#71809a]" />
+            <label className="mx-5 mt-5 flex items-center gap-3 rounded-2xl border border-blue-100 bg-[#fdfcfb] p-3">
+              <Search size={17} className="text-[#8d867e]" />
               <input
                 autoFocus
                 aria-label="Search records to attach"
@@ -1522,7 +1522,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                 const records = hits.filter((item) => item.type === type);
                 return records.length ? (
                   <div key={type} className="mb-5">
-                    <h4 className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[#8b99af]">
+                    <h4 className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[#a39d97]">
                       {label}
                     </h4>
                     {records.map((item) => {
@@ -1549,29 +1549,29 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                             )
                           }
                           aria-pressed={selected}
-                          className={`mb-2 flex w-full items-center gap-3 rounded-2xl border p-3 text-left disabled:opacity-40 ${selected ? "border-blue-200 bg-blue-50" : "border-blue-100 hover:bg-[#f9fbff]"}`}
+                          className={`mb-2 flex w-full items-center gap-3 rounded-2xl border p-3 text-left disabled:opacity-40 ${selected ? "border-blue-200 bg-blue-50" : "border-blue-100 hover:bg-[#fdfcfb]"}`}
                         >
                           <Paperclip
                             size={16}
-                            className="shrink-0 text-[#075bff]"
+                            className="shrink-0 text-[#966e40]"
                           />
                           <span className="min-w-0 flex-1">
                             <span className="block break-words text-sm font-semibold">
                               {item.title}
                             </span>
-                            <span className="block break-words text-xs text-[#71809a]">
+                            <span className="block break-words text-xs text-[#8d867e]">
                               {item.subtitle}
                             </span>
                           </span>
                           {selected ? (
                             <Check
                               size={17}
-                              className="shrink-0 text-[#075bff]"
+                              className="shrink-0 text-[#966e40]"
                             />
                           ) : (
                             <Plus
                               size={17}
-                              className="shrink-0 text-[#8b99af]"
+                              className="shrink-0 text-[#a39d97]"
                             />
                           )}
                         </button>
@@ -1581,12 +1581,12 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                 ) : null;
               })}
               {recordSearching && (
-                <p className="py-8 text-center text-sm text-[#71809a]">
+                <p className="py-8 text-center text-sm text-[#8d867e]">
                   Searching records…
                 </p>
               )}
               {!recordSearching && !hits.length && (
-                <p className="py-8 text-center text-sm text-[#71809a]">
+                <p className="py-8 text-center text-sm text-[#8d867e]">
                   No available records match this search.
                 </p>
               )}
@@ -1613,11 +1613,11 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
             title={snapshot?.unread ? `Messages · ${snapshot.unread} unread` : "Messages"}
           aria-expanded={open}
           onClick={() => setOpen((value) => !value)}
-          className="relative flex size-10 shrink-0 items-center justify-center rounded-full text-[#526587] hover:bg-blue-50"
+          className="relative flex size-10 shrink-0 items-center justify-center rounded-full text-[#766d63] hover:bg-blue-50"
         >
           <MessageCircle size={20} strokeWidth={1.7} />
           {(snapshot?.unread ?? 0) > 0 && (
-            <span className="absolute right-0 top-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#075bff] px-1 text-[9px] font-semibold text-white">
+            <span className="absolute right-0 top-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#966e40] px-1 text-[9px] font-semibold text-white">
               {snapshot!.unread > 9 ? "9+" : snapshot!.unread}
             </span>
           )}
@@ -1646,7 +1646,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
             <p className="text-xs font-semibold text-slate-900">
               {toast.title}
             </p>
-            <p className="mt-1 line-clamp-2 text-xs text-[#71809a]">
+            <p className="mt-1 line-clamp-2 text-xs text-[#8d867e]">
               {toast.body}
             </p>
           </button>

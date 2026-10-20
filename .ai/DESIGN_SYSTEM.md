@@ -1,5 +1,15 @@
 # Design memory map
 
+**Current direction (20 October 2026): Macro-inspired.** Warm paper background
+(#f3f0e9) with a left icon rail and one hairline-bordered workspace panel
+(#eeebe4); cards #faf9f6 with #dfdbd2 hairlines and almost no shadow; ink
+#1b1a17 primary buttons (9px radius), bronze #94693d for links/highlights;
+monochrome 1.5px line icons; Newsreader serif for page titles, Inter for UI;
+small grey sentence-case labels instead of uppercase eyebrows; underline record
+tabs. Tokens and overrides live in src/app/macro.css (loaded last). The older
+"no sidebar" and pearl/sapphire notes below are superseded.
+
+
 Current direction (14 October 2026): a consistent premium light interface across
 all apps. Pearl backgrounds, navy hierarchy, sapphire glass-like action buttons,
 muted coloured icon tiles and fine borders/shadows. Home has an editorial heading,

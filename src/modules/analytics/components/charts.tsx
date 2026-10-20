@@ -11,12 +11,12 @@ import styles from "./studio.module.css";
 type PickEvent = MouseEvent | KeyboardEvent;
 
 export const palettes = {
-  blue: ["#0071e3", "#3b93ef", "#8ec2f8", "#d7ebfd", "#f3f9ff", "#607089"],
+  blue: ["#826038", "#ab7d49", "#c6a27a", "#efeae5", "#faf9f8", "#7c756d"],
   teal: ["#0d7a72", "#2f9d94", "#79c4bc", "#c9ebe7", "#f1faf8", "#5d7c78"],
-  violet: ["#6d4ec2", "#9276db", "#c0aeec", "#e4dcf8", "#f7f4fd", "#746888"],
+  violet: ["#9c7243", "#b98d5b", "#d4cdc6", "#efeae5", "#faf9f7", "#7e7872"],
   amber: ["#c4841a", "#d7a44a", "#e8c98a", "#f6ead0", "#fbf6ea", "#8a7860"],
   rose: ["#c45378", "#d8839d", "#ebc0cf", "#f8e8ee", "#fdf6f8", "#8d6f7a"],
-  slate: ["#3d5270", "#6a7d98", "#a3b0c2", "#d5dce6", "#f4f7fb", "#5c6b7c"],
+  slate: ["#5f574e", "#898279", "#b8b3ad", "#e0dedb", "#f9f8f6", "#726c66"],
 };
 
 export const visualOptions: { id: StudioWidget["visual"]; label: string }[] = [
@@ -462,7 +462,7 @@ function Trend({
               y={height - 8}
               textAnchor="middle"
               fontSize="11"
-              fill="#8b97a8"
+              fill="#9f9a94"
             >
               {point.label}
             </text>
@@ -731,7 +731,7 @@ function Gauge({
         <path
           d="M 22 100 A 78 78 0 0 1 178 100"
           fill="none"
-          stroke="#e8eef5"
+          stroke="#f2efeb"
           strokeWidth="14"
           strokeLinecap="round"
         />
@@ -798,7 +798,7 @@ function Distribution({
         role="img"
         aria-label={metric.name}
       >
-        <circle cx="100" cy="100" r="78" fill="#f4f7fb" />
+        <circle cx="100" cy="100" r="78" fill="#f9f8f6" />
         {slices.map((slice) => {
           const large = slice.end - slice.start > Math.PI ? 1 : 0;
           const x1 = 100 + 78 * Math.cos(slice.start);

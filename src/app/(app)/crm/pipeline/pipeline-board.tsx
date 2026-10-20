@@ -129,7 +129,7 @@ export function PipelineBoard({
                             Move
                           </button>
                           {openMenu === item.id && (
-                            <div className="absolute right-0 z-20 mt-1 w-44 overflow-hidden rounded-xl border border-[var(--color-border)] bg-white py-1 shadow-[0_12px_32px_rgba(16,19,26,0.12)]">
+                            <div className="absolute right-0 z-20 mt-1 w-44 overflow-hidden rounded-xl border border-[var(--color-border)] bg-white py-1 shadow-[0_12px_32px_rgba(23,21,19,0.12)]">
                               {stages.map((option) => (
                                 <button
                                   key={option.id}

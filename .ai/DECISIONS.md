@@ -1,3 +1,19 @@
+## 20 October 2026 — Macro-inspired visual system supersedes premium pearl/sapphire
+
+Michael asked for a total redesign of every app, menu, button and icon using the
+Macro.com interface as the muse: warm paper surfaces, hairline borders, monochrome
+thin line icons, an editorial serif for titles and near-black primary controls,
+"clean and sophisticated, not a small tweak". src/app/macro.css loads last and
+unlayered so it restyles shared classes and Tailwind utilities everywhere; the
+Tailwind slate/gray/blue/indigo/sky scales are remapped in globals.css @theme to
+warm stone and bronze; cool blue hex literals in source were shifted to warm
+equivalents. Fonts: Inter (UI) + Newsreader (titles), bundled locally.
+The desktop shell now has a persistent left icon rail (black "+" opens Apps,
+Search, Home, Dashboards, Reports, My tasks, Messages, Guides, Settings, account)
+beside one bordered workspace panel; this supersedes the 8 October "no sidebar"
+direction. Phones keep the top-bar controls. Behaviour, routes, permissions and
+features are unchanged — presentation only.
+
 ## 14 October 2026 — One premium visual system across all apps
 
 Michael requests a substantial visual overhaul with smooth motion, glass-like

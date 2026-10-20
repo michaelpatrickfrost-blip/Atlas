@@ -41,7 +41,7 @@ export default async function CompanySetupPage({ params }: { params: Promise<{ o
 
       {/* Data import portal */}
       <section>
-        <div className="rounded-3xl bg-[#12213c] p-8 text-white">
+        <div className="rounded-3xl bg-[#402f1c] p-8 text-white">
           <p className="text-[10px] font-semibold uppercase tracking-[.2em] text-blue-300">Step 2 · Data setup</p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight">Import your business data</h1>
           <p className="mt-3 max-w-2xl text-sm text-slate-300">

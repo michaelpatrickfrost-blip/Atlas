@@ -1,3 +1,20 @@
+## 20 October 2026 — Macro-inspired total visual redesign (release branch)
+
+Branch codex/macro-ui-overhaul-20261020 (worktree /Users/michael/Desktop/atlas-macro-ui),
+cut from live-lineage 66a02a07 (live runtime ee18a268), not from the Desktop main
+checkout, which is ~560 commits behind and holds unrelated WIP (left untouched).
+Changes: new src/app/macro.css (all shared surfaces, rail, menus, app navigation,
+buttons, inputs, tables, cards, dialogs, tabs, launcher, sign-in); globals.css
+@theme remaps slate/gray/blue/indigo/sky to warm stone/bronze; 57 source files had
+cool blue hex/rgb literals shifted warm by script; layout.tsx uses Inter +
+Newsreader (Nunito removed); new shell/icon-rail.tsx + rail-nav.tsx; shell-chrome
+wraps content in one bordered panel; topbar.tsx is one slim header for all routes
+(TopbarVariant removed); CommandPalette also opens on "atlas:open-search".
+Checks: npx tsc --noEmit PASS; scoped eslint PASS (2 existing-style img warnings);
+npm run build PASS. No local DB run (no local business data allowed); visual
+acceptance via deploy ATLAS_RELEASE_ACCEPTANCE=polish. Deployment result: see below.
+Next: merge this branch lineage into main when the Desktop checkout is reconciled.
+
 ## 14 October 2026 — Premium overhaul live and publicly verified
 
 Supersedes the pending 14 October checkpoints below. Public HTTPS and the live

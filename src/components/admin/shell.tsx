@@ -29,19 +29,19 @@ export function AdminShell({ session, children }: { session: Session; children: 
     <header className="flex min-h-[88px] shrink-0 flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-7">
       <Link href="/atlas" aria-label="Atlas Admin" className="flex shrink-0 items-center gap-3 rounded-xl focus-visible:outline-2 focus-visible:outline-blue-600">
         <img src="/brand/atlas-mark.png" width={515} height={400} alt="" className="h-11 w-[56px] object-contain mix-blend-multiply" />
-        <span><AtlasLogo className="h-auto w-[136px] mix-blend-multiply" /><span className="mt-1 block text-[10px] font-semibold tracking-[0.14em] text-[#526587]">ADMINISTRATION</span></span>
+        <span><AtlasLogo className="h-auto w-[136px] mix-blend-multiply" /><span className="mt-1 block text-[10px] font-semibold tracking-[0.14em] text-[#766d63]">ADMINISTRATION</span></span>
       </Link>
       <div className="flex min-w-0 items-center gap-3 sm:gap-5">
         <span className="hidden items-center gap-2 rounded-full border border-blue-100 bg-white/70 px-3 py-2 text-xs text-blue-700 sm:inline-flex"><ShieldCheck size={14} aria-hidden="true" />Atlas staff</span>
-        <span className="min-w-0 max-w-[120px] text-right sm:max-w-[200px]"><span className="block truncate text-xs font-semibold text-slate-900 sm:text-sm">{session.userName}</span><span className="mt-1 block text-[10px] text-[#71809a] sm:text-xs">Admin console</span></span>
-        <form action={logoutAdminAction}><button type="submit" aria-label="Sign out of Atlas Admin" title="Sign out of Atlas Admin" className="inline-flex size-10 items-center justify-center rounded-xl bg-white/70 text-[#526587] hover:bg-white focus-visible:outline-2 focus-visible:outline-blue-600"><LogOut size={17} /></button></form>
+        <span className="min-w-0 max-w-[120px] text-right sm:max-w-[200px]"><span className="block truncate text-xs font-semibold text-slate-900 sm:text-sm">{session.userName}</span><span className="mt-1 block text-[10px] text-[#8d867e] sm:text-xs">Admin console</span></span>
+        <form action={logoutAdminAction}><button type="submit" aria-label="Sign out of Atlas Admin" title="Sign out of Atlas Admin" className="inline-flex size-10 items-center justify-center rounded-xl bg-white/70 text-[#766d63] hover:bg-white focus-visible:outline-2 focus-visible:outline-blue-600"><LogOut size={17} /></button></form>
       </div>
     </header>
     <div className="min-w-0 shrink-0 px-3 pb-3 lg:hidden"><AdminNavigation links={links} /></div>
     <div className="flex min-h-0 min-w-0 flex-1 gap-4 px-3 pb-4 sm:px-5 lg:gap-6 lg:px-7 lg:pb-6">
       <aside className="hidden w-[232px] shrink-0 lg:block"><AdminNavigation links={links} /></aside>
-      <main id="atlas-admin-content" className="min-w-0 flex-1 overflow-y-auto overflow-x-hidden rounded-[24px] border border-white/90 bg-white/65 p-4 shadow-[0_8px_40px_-28px_rgba(44,81,136,0.2)] sm:p-6 lg:p-7">
-        <PageMotion><div className="mx-auto max-w-7xl space-y-7 pb-8"><div className="mb-6 border-b border-[#e6edf7] pb-5"><h1 className="text-2xl font-semibold tracking-tight text-slate-950">Atlas Admin</h1><p className="mt-2 text-sm text-[#7b879e]">Manage business accounts, platform access and company setup.</p></div>{children}</div></PageMotion>
+      <main id="atlas-admin-content" className="min-w-0 flex-1 overflow-y-auto overflow-x-hidden rounded-[24px] border border-white/90 bg-white/65 p-4 shadow-[0_8px_40px_-28px_rgba(103,76,44,0.2)] sm:p-6 lg:p-7">
+        <PageMotion><div className="mx-auto max-w-7xl space-y-7 pb-8"><div className="mb-6 border-b border-[#f2efeb] pb-5"><h1 className="text-2xl font-semibold tracking-tight text-slate-950">Atlas Admin</h1><p className="mt-2 text-sm text-[#938d86]">Manage business accounts, platform access and company setup.</p></div>{children}</div></PageMotion>
       </main>
     </div>
   </div>;

@@ -32,7 +32,7 @@ export default async function BoardPage({
   const board = saved.find((item) => item.id === params.dashboard) ?? saved[0];
   if (!board)
     return (
-      <main className="grid min-h-screen place-items-center bg-[#070b14] text-white">
+      <main className="grid min-h-screen place-items-center bg-[#0f0e0c] text-white">
         <p>Save a dashboard first, then open it on a monitor.</p>
       </main>
     );

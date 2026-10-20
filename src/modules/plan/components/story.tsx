@@ -119,7 +119,7 @@ export async function PlanStory({
                   </div>
                   <div className="relative h-8 rounded-full bg-slate-50">
                     {timeline.marker != null ? <div className="absolute inset-y-0 w-px bg-slate-400" style={{ left: `${timeline.marker}%` }} /> : null}
-                    <div className="absolute top-1.5 h-5 rounded-full" style={{ left: `${bar.left}%`, width: `${bar.width}%`, background: bar.overdue ? "#c2410c" : bar.kind === "goal" ? "#0f172a" : bar.kind === "initiative" ? "var(--color-atlas-blue)" : "#bfdbfe" }} title={bar.detail} />
+                    <div className="absolute top-1.5 h-5 rounded-full" style={{ left: `${bar.left}%`, width: `${bar.width}%`, background: bar.overdue ? "#c2410c" : bar.kind === "goal" ? "#201d19" : bar.kind === "initiative" ? "var(--color-atlas-blue)" : "#e3dfda" }} title={bar.detail} />
                   </div>
                 </div>
               ))}

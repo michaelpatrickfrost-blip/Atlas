@@ -10,12 +10,12 @@ export type AdminLink = { id: keyof typeof ICONS; href: string; label: string; d
 export function AdminNavigation({ links }: { links: readonly AdminLink[] }) {
   const path = usePathname();
   const selected = links.find(link => link.href !== "/atlas" && (path === link.href || path.startsWith(`${link.href}/`)))?.id ?? "companies";
-  return <nav aria-label="Atlas administration" className="atlas-admin-navigation flex gap-1 overflow-x-auto rounded-[24px] border border-white/90 bg-white/80 p-2 shadow-[0_8px_40px_-28px_rgba(44,81,136,0.3)] lg:h-full lg:flex-col lg:gap-2 lg:p-3">
+  return <nav aria-label="Atlas administration" className="atlas-admin-navigation flex gap-1 overflow-x-auto rounded-[24px] border border-white/90 bg-white/80 p-2 shadow-[0_8px_40px_-28px_rgba(103,76,44,0.3)] lg:h-full lg:flex-col lg:gap-2 lg:p-3">
     {links.map(({ id, href, label, description }) => {
       const Icon = ICONS[id], active = selected === id;
-      return <Link key={id} href={href} prefetch={false} aria-current={active ? "page" : undefined} className={`atlas-admin-link group flex min-h-12 shrink-0 items-center gap-3 rounded-2xl px-3 py-3 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 lg:shrink ${active ? "bg-[#eaf3ff] text-[#075bff]" : "text-[#526587] hover:bg-blue-50 hover:text-blue-700"}`}>
+      return <Link key={id} href={href} prefetch={false} aria-current={active ? "page" : undefined} className={`atlas-admin-link group flex min-h-12 shrink-0 items-center gap-3 rounded-2xl px-3 py-3 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 lg:shrink ${active ? "bg-[#f7f5f2] text-[#966e40]" : "text-[#766d63] hover:bg-blue-50 hover:text-blue-700"}`}>
         <span className={`flex size-9 shrink-0 items-center justify-center rounded-xl ${active ? "bg-white" : "bg-blue-50/80"}`}><Icon size={19} strokeWidth={1.8} aria-hidden="true" /></span>
-        <span className="min-w-0"><span className="block whitespace-nowrap font-semibold">{label}</span><span className="mt-1 hidden text-[11px] font-normal leading-4 text-[#7b879e] lg:block">{description}</span></span>
+        <span className="min-w-0"><span className="block whitespace-nowrap font-semibold">{label}</span><span className="mt-1 hidden text-[11px] font-normal leading-4 text-[#938d86] lg:block">{description}</span></span>
       </Link>;
     })}
   </nav>;

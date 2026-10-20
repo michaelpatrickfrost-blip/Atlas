@@ -1,4 +1,4 @@
-export const PERSON_COLOURS = ["#2563eb", "#0f766e", "#b45309", "#6d28d9", "#be123c", "#0369a1", "#3f6212", "#9a3412"] as const;
+export const PERSON_COLOURS = ["#9c7243", "#0f766e", "#b45309", "#946c3f", "#be123c", "#5e4528", "#3f6212", "#9a3412"] as const;
 
 export const PLACE_LABELS = { OFFICE: "In the office", HOME: "At home", SITE: "On site", TRAVEL: "Travelling" } as const;
 export const MOMENT_LABELS = { MEETING: "Meeting", DEADLINE: "Deadline", AWAY_DAY: "Away day" } as const;

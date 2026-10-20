@@ -33,7 +33,7 @@ function WorkspaceAppMenu({ children }: { children: ReactNode }) {
   }, [open]);
   return (
     <div ref={ref} className="relative shrink-0">
-      <button ref={triggerRef} type="button" aria-label="Apps" data-guardian-safe="toggle" onClick={() => setOpen((current) => !current)} aria-expanded={open} aria-controls={open ? panelId : undefined} className={`atlas-apps-trigger inline-flex h-9 items-center gap-2 rounded-xl px-3 text-sm font-medium text-[#1d1d1f] transition-colors hover:bg-black/[0.075] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:px-3.5 ${open ? "bg-[#ebebed]" : "bg-[#f3f3f4]"}`}>
+      <button ref={triggerRef} type="button" aria-label="Apps" data-guardian-safe="toggle" onClick={() => setOpen((current) => !current)} aria-expanded={open} aria-controls={open ? panelId : undefined} className={`atlas-apps-trigger inline-flex h-9 items-center gap-2 rounded-xl px-3 text-sm font-medium text-[#1d1d1f] transition-colors hover:bg-black/[0.075] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:px-3.5 ${open ? "bg-[#edeceb]" : "bg-[#f4f4f3]"}`}>
         <LayoutGrid size={18} strokeWidth={1.75} aria-hidden="true" />
         <span className="hidden sm:inline">Apps</span>
       </button>

@@ -9,7 +9,7 @@ export default async function AutomationActivity() {
   const tone: Record<string, "success" | "danger" | "neutral" | "warning"> = { SUCCEEDED: "success", FAILED: "danger", RUNNING: "warning" };
   return (
     <div className="mx-auto max-w-4xl space-y-6">
-      <div><Link href="/automations" className="text-xs font-medium text-[#0071e3]">← Automations</Link><h1 className="mt-2 text-2xl font-semibold tracking-tight">Activity</h1></div>
+      <div><Link href="/automations" className="text-xs font-medium text-[#826038]">← Automations</Link><h1 className="mt-2 text-2xl font-semibold tracking-tight">Activity</h1></div>
       <div className="divide-y divide-slate-100 rounded-2xl border border-slate-200 bg-white">
         {runs.map((r) => (
           <div key={r.id} className="flex items-center justify-between gap-3 px-4 py-3 text-sm">

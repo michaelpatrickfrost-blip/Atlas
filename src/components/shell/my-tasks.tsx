@@ -105,7 +105,7 @@ export function MyTasksPanel() {
             <button type="button" aria-label="Close my tasks" disabled={saving} onClick={close} className="flex size-10 items-center justify-center rounded-full text-slate-500 hover:bg-blue-100 disabled:opacity-40"><X size={20} /></button></div>
         </header>
         <div className="flex min-h-0 flex-1 flex-col">
-          <section aria-label="Assigned task list" className={`${visibleList ? "flex" : "hidden"} min-h-0 flex-1 flex-col border-r border-slate-100 bg-[#f8faff]`}>
+          <section aria-label="Assigned task list" className={`${visibleList ? "flex" : "hidden"} min-h-0 flex-1 flex-col border-r border-slate-100 bg-[#fcfcfb]`}>
             <div className="space-y-4 border-b border-slate-100 p-4">
               <div className="flex gap-3 text-xs"><span className="rounded-xl border border-blue-100 bg-white px-3 py-2 text-blue-700"><strong className="mr-1 text-lg font-semibold">{data.openCount}</strong> open</span><span className="rounded-xl border border-slate-100 bg-white px-3 py-2 text-slate-500"><strong className="mr-1 text-lg font-semibold">{data.completedCount}</strong> completed</span></div>
               <label className="relative block"><Search size={17} className="pointer-events-none absolute left-3 top-3 text-slate-400" /><input autoFocus aria-label="Find my tasks" value={query} maxLength={120} onChange={(event) => setQuery(event.target.value)} placeholder="Find a task or note…" className={`${inputClass} !pl-9`} /></label>

@@ -24,7 +24,7 @@ export default async function AutomationDetail({ params }: { params: Promise<{ i
   return (
     <div className="mx-auto max-w-4xl space-y-8">
       <div className="flex items-center justify-between">
-        <Link href="/automations" className="text-xs font-medium text-[#0071e3]">← Automations</Link>
+        <Link href="/automations" className="text-xs font-medium text-[#826038]">← Automations</Link>
         <div className="flex gap-2">
           {automation.triggerType !== "EVENT" && <ActionForm action={runNow}><input type="hidden" name="id" value={automation.id} /><button className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs">Run now</button></ActionForm>}
           <ActionForm action={deleteAutomation}><input type="hidden" name="id" value={automation.id} /><button className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-red-700">Delete</button></ActionForm>

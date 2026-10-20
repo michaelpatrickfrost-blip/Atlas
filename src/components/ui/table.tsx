@@ -45,7 +45,7 @@ export function DataTable<Row extends { id: string }>(props: {
           {rows.map((row) => {
             const href = getHref?.(row);
             return (
-              <tr key={row.id} className="border-b border-[var(--color-border)] last:border-0 hover:bg-[#f4f7ff]">
+              <tr key={row.id} className="border-b border-[var(--color-border)] last:border-0 hover:bg-[#fbfaf8]">
                 {columns.map((column, index) => (
                   <td key={column.header} className={`max-w-xs truncate px-4 py-3 text-[var(--color-ink)] ${column.align === "right" ? "text-right" : "text-left"}`}>
                     {index === 0 && href ? (

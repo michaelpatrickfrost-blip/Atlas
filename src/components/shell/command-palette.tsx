@@ -30,8 +30,10 @@ export function CommandPalette({ variant = "default" }: { variant?: "default" | 
       }
       if (event.key === "Escape") closePalette();
     }
+    const openFromRail = () => setOpen(true);
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener("atlas:open-search", openFromRail);
+    return () => { window.removeEventListener("keydown", handleKeyDown); window.removeEventListener("atlas:open-search", openFromRail); };
   }, []);
 
   useEffect(() => {
@@ -67,7 +69,7 @@ export function CommandPalette({ variant = "default" }: { variant?: "default" | 
     <>
       <button
         onClick={() => setOpen(true)}
-        className={`atlas-search-trigger flex w-full min-w-0 items-center gap-3 rounded-full border text-[#6e6e73] shadow-sm transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${variant === "workspace" ? "h-9 border-black/[0.08] bg-[#fafbfc] px-3 text-sm sm:h-10 sm:gap-2.5 sm:px-3.5" : "h-10 border-white/80 bg-white/70 px-4 text-sm backdrop-blur-xl"}`}
+        className={`atlas-search-trigger flex w-full min-w-0 items-center gap-3 rounded-full border text-[#6e6e73] shadow-sm transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${variant === "workspace" ? "h-9 border-black/[0.08] bg-[#fcfbfa] px-3 text-sm sm:h-10 sm:gap-2.5 sm:px-3.5" : "h-10 border-white/80 bg-white/70 px-4 text-sm backdrop-blur-xl"}`}
       >
         <Search size={variant === "workspace" ? 18 : 15} aria-hidden="true" className="shrink-0" />
         <span className="min-w-0 flex-1 truncate text-left">Search apps, people, reports...</span>
@@ -79,7 +81,7 @@ export function CommandPalette({ variant = "default" }: { variant?: "default" | 
           role="dialog"
           aria-modal="true"
           aria-label="Search Atlas"
-          className="fixed inset-0 z-[90] flex items-start justify-center bg-[#0b1020]/45 px-4 pt-[12vh] backdrop-blur-md"
+          className="fixed inset-0 z-[90] flex items-start justify-center bg-[#191612]/45 px-4 pt-[12vh] backdrop-blur-md"
           onClick={closePalette}
         >
           <div

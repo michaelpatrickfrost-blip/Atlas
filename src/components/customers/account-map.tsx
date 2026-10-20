@@ -162,7 +162,7 @@ export function AccountMap({
     const canDown = nextHierarchyParent(allAccounts, account.id, "down") !== undefined;
     return (
       <li className="min-w-0">
-        <div className={`rounded-2xl border bg-white shadow-[0_10px_30px_-24px_rgba(15,23,42,0.45)] ${active ? "border-blue-300 ring-2 ring-blue-100" : "border-slate-200"}`}>
+        <div className={`rounded-2xl border bg-white shadow-[0_10px_30px_-24px_rgba(32,29,25,0.45)] ${active ? "border-blue-300 ring-2 ring-blue-100" : "border-slate-200"}`}>
           <div className="flex items-start gap-3 p-3">
             <button type="button" onClick={() => { setSelected(`account:${account.id}`); setMessage(""); }} className="flex min-w-0 flex-1 items-start gap-3 text-left">
               <span className={`flex size-10 shrink-0 items-center justify-center rounded-xl ${colors.icon}`}><Icon size={18} /></span>
@@ -300,7 +300,7 @@ export function AccountMap({
         <p role={error ? "alert" : "status"} className={`mt-3 text-sm ${message ? (error ? "text-rose-600" : "text-emerald-700") : "hidden"}`}>{message}</p>
       </div>
 
-      <div className="overflow-auto rounded-3xl border border-[#dce5f6] bg-[#f6f8fd] p-4 sm:p-6" style={{ backgroundImage: "radial-gradient(#d5deef 1px, transparent 1px)", backgroundSize: "18px 18px" }}>
+      <div className="overflow-auto rounded-3xl border border-[#eee9e4] bg-[#fbfaf8] p-4 sm:p-6" style={{ backgroundImage: "radial-gradient(#e8e2dc 1px, transparent 1px)", backgroundSize: "18px 18px" }}>
         <ul className="mx-auto max-w-3xl space-y-3">
           {roots.map((account) => <AccountRow key={account.id} account={account} />)}
         </ul>

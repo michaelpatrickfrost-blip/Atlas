@@ -9,7 +9,7 @@ import { loadGoalWorkspace } from "@/modules/kpis/services/workspace";
 import { listCustomerScreens } from "@/core/studio/pages/customer-catalog";
 
 const PANEL = "rounded-2xl border border-black/[0.06] bg-white";
-const DOT = { critical: "bg-[#d12b45]", warning: "bg-[#c9820a]", info: "bg-[#c7c7cc]" } as const;
+const DOT = { critical: "bg-[#d12b45]", warning: "bg-[#c9820a]", info: "bg-[#cacac9]" } as const;
 
 export default async function HomePage() {
   const session = await requireSession();
@@ -53,7 +53,7 @@ export default async function HomePage() {
           <section className={`${PANEL} px-5 py-4 sm:px-6`}>
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-[13px] font-semibold text-[#1d1d1f]">Goals</h2>
-              <Link href="/kpis" className="text-[12px] text-[#0071e3]">All goals</Link>
+              <Link href="/kpis" className="text-[12px] text-[#826038]">All goals</Link>
             </div>
             <div className="mt-3 flex flex-col gap-4">
               {highlights.map((goal) => (

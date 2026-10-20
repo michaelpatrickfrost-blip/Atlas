@@ -69,7 +69,7 @@ async function main() {
           };
         });
         assert(layout.rootFits && layout.mainFits, `${path} ${viewport}: page and main must fit`);
-        assert(layout.headings > 0 && layout.theme === "#1b1a17", `${path}: rendered Macro editorial foundation`);
+        assert(layout.headings > 0 && layout.theme === "#1a1917", `${path}: rendered Macro editorial foundation`);
         assert(layout.cardFilters, `${path}: cards must not trap overlays`);
         if (["/finance", "/service", "/manufacturing", "/guides"].includes(path)) {
           const banner = page.locator("main .atlas-workspace-heading").first();

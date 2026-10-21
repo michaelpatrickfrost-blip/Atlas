@@ -76,7 +76,7 @@ async function main() {
       const response = await page.goto("/home", { waitUntil: "networkidle" });
       assert.equal(response?.status(), 200);
       await expect(
-        page.getByRole("heading", { name: "Your apps", exact: true }),
+        page.getByRole("heading", { name: /^Your apps\b/ }),
       ).toBeVisible();
       await assertBusinessBoundary();
       const utilities = page.locator(

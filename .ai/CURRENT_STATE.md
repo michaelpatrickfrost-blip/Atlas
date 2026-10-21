@@ -1,3 +1,27 @@
+## 21 October 2026 — Guardian sweep regression from the hidden rail (fix on release branch)
+
+Since the push-reveal rail went live (e95cd164, ~06:18 UTC) every six-hourly
+Guardian sweep has failed after ~30 min and the timer (OnUnitInactiveSec=5min)
+restarts it, so the shared release lock is held ~85 % of the time and
+`npm run deploy:vps` exits 1 silently after its 600 s flock wait (two attempts
+today). Cause, from scripts/guardian/browser-sweep.ts: on every page it clicks each
+`button[data-guardian-safe="toggle"]` that Playwright deems visible and expects
+aria-expanded to flip. The rail's "+" Apps button sat in the hidden sheet at
+opacity 0 / pointer-events none (still "visible" to Playwright) so each click hit
+the 30 s action timeout, and the top-bar RailToggle carried data-guardian-safe
+without aria-expanded; 100 pages × 30 s outran the sweep's 30-minute QA token →
+"QA profile session changed during browser checks" → exit 1. No findings were
+recorded because the run threw before persisting them.
+Fix (presentation/accessibility only): the hidden sheet now also gets
+`visibility: hidden` (delayed until the slide-out finishes), so hidden controls
+are not probed, tabbed to or announced; RailNav dispatches `atlas:rail-state`
+and RailToggle mirrors it as aria-expanded, so Guardian's open/reset probe is
+true to the control. scripts/check-home-menu.ts already pins the rail before
+asserting the utilities nav, so the gate is unaffected.
+Checks: npx tsc --noEmit PASS (stray macOS "* 3.ts" duplicates in .next/types
+removed first); eslint rail-nav PASS; npm run build PASS. Deploy of this fix:
+next lock window after the Stack-brand release 196b4ceb; see next entry.
+
 ## 21 October 2026 — Brand: the Stack mark replaces the "A." draft (release branch, deploy pending)
 
 Michael asked for an icon and logo that match the ink-on-paper system, rejected

@@ -41,6 +41,7 @@ export function RailNav({ links, directory, footer }: { links: RailLink[]; direc
   }, []);
   useEffect(() => {
     document.documentElement.dataset.rail = pinned ? "pinned" : "hidden";
+    window.dispatchEvent(new CustomEvent("atlas:rail-state", { detail: pinned }));
     return () => { delete document.documentElement.dataset.rail; };
   }, [pinned]);
   useEffect(() => {
@@ -106,10 +107,16 @@ export function RailNav({ links, directory, footer }: { links: RailLink[]; direc
   );
 }
 
-/** Top-bar control that pins or hides the rail. */
+/** Top-bar control that pins or hides the rail; mirrors the rail's pinned state. */
 export function RailToggle() {
+  const [pinned, setPinned] = useState(false);
+  useEffect(() => {
+    const update = (event: Event) => setPinned(Boolean((event as CustomEvent<boolean>).detail));
+    window.addEventListener("atlas:rail-state", update);
+    return () => window.removeEventListener("atlas:rail-state", update);
+  }, []);
   return (
-    <button type="button" aria-label="Toggle navigation" title="Navigation (⌘.)" data-guardian-safe="toggle" className="atlas-top-icon atlas-rail-toggle hidden size-9 items-center justify-center rounded-lg lg:inline-flex" onClick={() => window.dispatchEvent(new CustomEvent("atlas:toggle-rail"))}>
+    <button type="button" aria-label="Toggle navigation" title="Navigation (⌘.)" aria-expanded={pinned} data-guardian-safe="toggle" className="atlas-top-icon atlas-rail-toggle hidden size-9 items-center justify-center rounded-lg lg:inline-flex" onClick={() => window.dispatchEvent(new CustomEvent("atlas:toggle-rail"))}>
       <span className="atlas-rail-toggle-glyph" aria-hidden="true"><i /><i /><i /></span>
     </button>
   );

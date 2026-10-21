@@ -16,6 +16,12 @@ import { checkFieldPrincipal } from "./check-field-principal";
 import { sessionForUser } from "../../src/core/auth/session";
 import { openFieldMigrationSupportContext } from "../../src/core/studio/fields/principal";
 import { checkFieldConcurrency } from "./check-field-concurrency";
+import { checkTicketForms } from "./check-ticket-forms";
+import { checkTicketDefaults } from "./check-ticket-defaults";
+import { checkFieldSearch } from "./check-field-search";
+import { checkRecordProfiles } from "./check-record-profiles";
+import { checkVisualPages } from "./check-visual-pages";
+import { readStudioRuntimeFeatureEvidence, STUDIO_PROFILE_FEATURE } from "../../src/core/studio/runtime-features";
 
 async function main() {
   assert(process.platform === "linux" && process.env.ATLAS_STUDIO_LIVE_TEST === "1", "Explicit server acceptance opt-in required");
@@ -41,7 +47,7 @@ async function main() {
     const actor=staff(a), other=staff(b);
     await checkTicketContract(actor, other);
     const registry=studioRegistry();
-    const descriptor=(await registry.discover(actor)).find(d=>d.ownerModuleId==="sales" && d.kind==="query"); assert(descriptor);
+    const descriptor=(await registry.discover(actor)).find(d=>d.id==="sales.template.order.list" && d.version===1 && d.kind==="query"); assert(descriptor);
     const reference={id:descriptor.id,version:descriptor.version,schemaHash:descriptor.schemaHash,contractHash:descriptor.contractHash};
     assert.deepEqual(await registry.invoke(actor,reference,{}),[],"Existing owner provider reads the isolated tenant through the adapter");
     const payload={schemaVersion:1 as const,description:"First accepted version",references:[reference]};
@@ -104,7 +110,7 @@ async function main() {
     for (const label of ["Apps","Search apps, people, reports... ⌘K","Open chat","Notifications"]) await expect(page.getByRole("button",{name:label,exact:true})).toHaveCount(0);
     await expect(page.getByRole("link",{name:"My work",exact:true})).toHaveCount(0);
     await expect(page.getByRole("heading",{name:"Business setup",exact:true})).toBeVisible();
-    await expect(page.getByText("Visual designer in development",{exact:true})).toBeVisible();
+    await expect(page.getByText("Visual business designer",{exact:true})).toBeVisible();
     await expect(page.getByLabel("Name",{exact:true})).not.toBeVisible();
     for (const width of [1440,820,390]) {
       await page.setViewportSize({width,height:1000});
@@ -191,7 +197,7 @@ async function main() {
     await customerPage.getByLabel("New password",{exact:true}).fill(password);await customerPage.getByLabel("Confirm password",{exact:true}).fill(password);
     await customerPage.getByRole("button",{name:"Save password",exact:true}).click();await expect(customerPage).toHaveURL(`${base}/home`);
     await customerPage.goto("/studio",{waitUntil:"networkidle"});await expect(customerPage.getByRole("heading",{name:"Business setup",exact:true})).toBeVisible();
-    await expect(customerPage.getByText("Visual designer in development",{exact:true})).toBeVisible();
+    await expect(customerPage.getByText("Visual business designer",{exact:true})).toBeVisible();
     await expect(customerPage.getByLabel("Name",{exact:true})).not.toBeVisible();
     await expect(customerPage.getByText("Browser accepted configuration",{exact:true})).not.toBeVisible();
     await customerPage.locator("#advanced-setup > summary").click();
@@ -220,6 +226,15 @@ async function main() {
     await expect(page).toHaveURL(`${base}/home`);
     await checkFieldPrincipal(storedUser.id, originalStaff, a.id, b.id);
     await checkFieldConcurrency(storedUser.id, ids);
+    await checkTicketForms(base, browser, storedUser.id, ids);
+    await checkTicketDefaults(base, browser, storedUser.id, ids);
+    await checkFieldSearch(base, browser, storedUser.id, ids);
+    const profileEvidence = readStudioRuntimeFeatureEvidence(process.cwd(), process.env.ATLAS_RELEASE_REVISION);
+    const profileCreator = profileEvidence?.features.includes(STUDIO_PROFILE_FEATURE)
+      ? await db.user.create({ data: { name: "Studio profile Create-only acceptance", email: `studio-check-profile-creator-${suffix}@example.test`,
+        passwordHash: "!studio-acceptance-login-disabled" }, select: { id: true } }) : { id: crypto.randomUUID() };
+    await checkRecordProfiles(base, storedUser.id, profileCreator.id, ids);
+    await checkVisualPages(base, browser, storedUser.id, ids);
     // The helper revokes only its new Test affiliation, not the original QA session.
     await context.addCookies([{name:"atlas_session",value:token,url:base,secure:base.startsWith("https"),httpOnly:true,sameSite:"Lax"}]);
     await page.goto(`/atlas/studio/${a.id}`,{waitUntil:"networkidle"});

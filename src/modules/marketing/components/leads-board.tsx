@@ -26,14 +26,14 @@ export async function MarketingLeads({ session }: { session: Session }) {
   const canHand = session.capabilities.has('marketing.lead.manage') && session.capabilities.has('sales.prospect.create');
   return (
     <div className="space-y-4">
-      <section className="rounded-[28px] border border-slate-200 p-6">
+      <section className="rounded-2xl border border-slate-200 p-6">
         <h2 className="text-lg font-semibold">People ready for Sales</h2>
         <p className="mt-2 max-w-2xl text-sm text-[var(--color-ink-muted)]">These contacts have shown enough interest to pass across. Sales keeps the same customer record.</p>
       </section>
       {rows.length ? rows.map((lead) => {
         const person = `${lead.profile.contact.firstName} ${lead.profile.contact.surname}`.trim();
         return (
-          <section key={lead.id} className="rounded-[28px] border border-slate-200 p-6">
+          <section key={lead.id} className="rounded-2xl border border-slate-200 p-6">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <h2 className="text-xl font-semibold">{person || lead.profile.party.name}</h2>
@@ -66,7 +66,7 @@ export async function MarketingLeads({ session }: { session: Session }) {
           </section>
         );
       }) : (
-        <section className="rounded-[28px] border border-slate-200 p-8 text-sm text-[var(--color-ink-muted)]">Nobody is waiting to be passed to Sales.</section>
+        <section className="rounded-2xl border border-slate-200 p-8 text-sm text-[var(--color-ink-muted)]">Nobody is waiting to be passed to Sales.</section>
       )}
     </div>
   );

@@ -1,5 +1,6 @@
 // Generated allowlist: public calls still enforce their own server capabilities.
 import {withAdminActionAliases} from "./action-aliases";
+import { searchTicketFieldReferences } from "@/core/service-work/field-form-actions";
 import {updateCompanyAccount as action0} from "@/app/(admin)/atlas/actions";
 import {saveCompanyEntitlements as action1} from "@/app/(admin)/atlas/actions";
 import {createCompanyAccount as action2} from "@/app/(admin)/atlas/actions";
@@ -930,6 +931,7 @@ import {savePlace as action926} from "@/modules/teams/services/commands";
 import {saveMoment as action927} from "@/modules/teams/services/commands";
 import {removeMoment as action928} from "@/modules/teams/services/commands";
 export const DATA_ACTIONS:Record<string,(...args:never[])=>Promise<unknown>>=withAdminActionAliases({
+"src/core/service-work/field-form-actions:searchTicketFieldReferences":searchTicketFieldReferences as (...args:never[])=>Promise<unknown>,
 "src/app/(admin)/atlas/actions:updateCompanyAccount":action0 as (...args:never[])=>Promise<unknown>,
 "src/app/(admin)/atlas/actions:saveCompanyEntitlements":action1 as (...args:never[])=>Promise<unknown>,
 "src/app/(admin)/atlas/actions:createCompanyAccount":action2 as (...args:never[])=>Promise<unknown>,

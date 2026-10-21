@@ -115,7 +115,7 @@ export function ConfirmationDialog({
           <dialog
             ref={ref}
             aria-labelledby={id}
-            className="atlas-dialog m-auto max-h-[88vh] w-[calc(100%-2rem)] max-w-md overflow-y-auto rounded-[28px] border border-white/80 bg-white p-0 text-slate-900 shadow-[0_30px_80px_-36px_rgba(15,23,42,0.55)]"
+            className="atlas-dialog m-auto max-h-[88vh] w-[calc(100%-2rem)] max-w-md overflow-y-auto rounded-2xl border border-white/80 bg-white p-0 text-slate-900 shadow-[0_30px_80px_-36px_rgba(32,29,25,0.55)]"
             onClick={(event) => {
               if (event.target === ref.current) {
                 const bounds = ref.current!.getBoundingClientRect();

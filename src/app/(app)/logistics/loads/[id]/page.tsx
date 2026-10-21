@@ -20,7 +20,7 @@ export default async function LoadPage({ params }: { params: Promise<{ id: strin
     <div className="mx-auto max-w-3xl space-y-6">
       <Link href="/logistics/dispatch" className="text-sm text-[var(--color-ink-muted)]">Dispatch</Link>
       <header>
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-atlas-blue)]">Run</p>
+        <p className="text-xs font-semibold tracking-[0.16em] text-[var(--color-atlas-blue)]">Run</p>
         <h1 className="text-4xl font-semibold">{load.reference}</h1>
         <p className="mt-2">{load.vehicleLabel} · {load.driverName || "Driver not named"}</p>
         <p className="mt-1 text-sm text-[var(--color-ink-muted)]">{pallets} pallet space{pallets === 1 ? "" : "s"}{load.maxPallets ? ` / ${load.maxPallets}` : ""} · {(weight / 1000).toFixed(1)} kg{load.maxWeightKg ? ` / ${load.maxWeightKg} kg` : ""}</p>

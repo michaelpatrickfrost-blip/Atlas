@@ -3,10 +3,18 @@ import {
   Clock, FileText, FolderKanban, Handshake, ImageIcon, Inbox, Landmark, LayoutDashboard,
   LifeBuoy, LockKeyhole, Map, Megaphone, Network, Package, Palmtree, Receipt, RotateCcw, ScrollText,
   Settings, ShieldCheck, ShoppingBag, Sun, Tags, Target, Truck, UserRound, Users, Wallet,
+  Factory, Layers3, Route, Gauge, Wrench, PackageCheck, CirclePoundSterling,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 const RULES: Array<[RegExp, LucideIcon]> = [
+  [/manufactur|production|shop.?floor/i, Factory],
+  [/material|component|recipe/i, Layers3],
+  [/demand|capacity/i, Gauge],
+  [/procure|purchas|supply/i, PackageCheck],
+  [/cost|spend/i, CirclePoundSterling],
+  [/routing|route|delivery/i, Route],
+  [/machine|equipment|mainten/i, Wrench],
   [/brand|logo/i, ImageIcon],
   [/sales/i, ShoppingBag],
   [/^hr/i, ClipboardCheck],

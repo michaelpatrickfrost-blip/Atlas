@@ -1,7 +1,7 @@
 import { beforeEach, expect, it, vi } from "vitest";
 import { z } from "zod";
 import type { Prisma, StudioDefinition, StudioDefinitionVersion, StudioFieldValue } from "@/generated/prisma/client";
-const m = vi.hoisted(() => ({ member: vi.fn(), refresh: vi.fn(), raw: vi.fn(), definition: vi.fn(), definitions: vi.fn(), version: vi.fn(), generation: vi.fn(), extension: vi.fn(), slot: vi.fn(), facts: vi.fn() }));
+const m = vi.hoisted(() => ({ member: vi.fn(), refresh: vi.fn(), raw: vi.fn(), definition: vi.fn(), definitions: vi.fn(), version: vi.fn(), generation: vi.fn(), extension: vi.fn(), slot: vi.fn(), facts: vi.fn(), bases: vi.fn(), profileBinding: vi.fn() }));
 vi.mock("@/core/db/client", () => ({ db: { membership: { findUnique: m.member } } }));
 vi.mock("@/core/studio/fields/runtime-authority", () => ({ fieldRuntimeAuthorityInTransaction: m.refresh }));
 import { sessionForUser, sessionAuthorityStamp, type Session } from "@/core/auth/session";
@@ -15,6 +15,8 @@ import { compileConditionalCustomField } from "@/core/studio/fields/conditional-
 import { registeredRequiredFactMetadata } from "@/core/studio/fields/required-owner";
 import { validateNativeResultingFieldRequirements, validateResultingFieldRequirements } from "@/core/studio/fields/required-runtime";
 import { encodeFieldValue } from "@/core/studio/fields/codec";
+import { entityProfilePayloadSchema } from "@/core/studio/record-types/schema";
+import { resolveEntityProfile } from "@/core/studio/record-types/resolver";
 import { cutoverUuid as uuid } from "./fixtures/studio-field-cutover";
 import type { FieldRuntimeAuthority } from "@/core/studio/fields/runtime-authority";
 import type { ContractReference, NativeValidationRequest, RecordContext } from "@/core/studio/registry/types";
@@ -33,7 +35,8 @@ type Value = StudioFieldValue & { schemaVersion: StudioDefinitionVersion };
 const values = new Map<string, Value>();
 const scopes = new WeakMap<object, { session: Session; transaction: Prisma.TransactionClient; recordId: string; revision: number }>();
 const tx = { $queryRaw: m.raw, studioDefinition: { findFirst: m.definition, findMany: m.definitions }, studioDefinitionVersion: { findFirst: m.version },
-  studioFieldGeneration: { findFirst: m.generation }, studioExtensionRecord: { findFirst: m.extension }, studioFieldSlot: { findFirst: m.slot } } as unknown as Prisma.TransactionClient;
+  studioFieldGeneration: { findFirst: m.generation }, studioExtensionRecord: { findFirst: m.extension }, studioFieldSlot: { findFirst: m.slot },
+  studioProfileBinding: { findMany: m.bases, findFirst: m.profileBinding } } as unknown as Prisma.TransactionClient;
 const membership = (grants: string[]) => ({ id: "member", userId: "actor", organisationId: "company", sessionVersion: 2, active: true, grantedCapabilities: grants, deniedCapabilities: [], roles: [],
   user: { name: "Actor", email: "actor@example.invalid", authVersion: 3, platformAdmin: null },
   organisation: { id: "company", name: "Company", kind: "CUSTOMER", status: "ACTIVE", archivedAt: null, auditAccess: null, restrictedAccessAreas: [] } });
@@ -89,8 +92,9 @@ beforeEach(async () => {
   author = await actor([operation, "tickets.ticket.read", "tickets.ticket.manage", "tickets.field.secret"]); session = await actor(); proof = liveToken(session);
   authority = { session, stamp: sessionAuthorityStamp(session)!, transaction: tx, registry };
   m.refresh.mockImplementation(async current => { const stamp = sessionAuthorityStamp(current); if (!stamp) throw new Error("FORBIDDEN"); return { session: current, stamp, transaction: tx, registry }; });
-  m.raw.mockResolvedValue([]); m.definition.mockImplementation(async args => definitions.get(args.where.id) ?? null); m.definitions.mockImplementation(async () => [...definitions.values()].sort((a, b) => a.id.localeCompare(b.id)));
+  m.raw.mockResolvedValue([]); m.definition.mockImplementation(async args => definitions.get(args.where.id) ?? null); m.definitions.mockImplementation(async () => [...definitions.values()].filter(d => d.kind === "customField").sort((a, b) => a.id.localeCompare(b.id)));
   m.version.mockImplementation(async args => versions.get(args.where.id) ?? null); m.generation.mockImplementation(async args => ({ id: args.where.id }));
+  m.bases.mockResolvedValue([]);
   m.extension.mockResolvedValue({ id: extensionId, organisationId: "company", entityId: entity.id, recordId: record.recordId, revision: 4 });
   m.slot.mockImplementation(async args => {
     events.push(`${args.select ? "metadata" : "value"}:${args.where.definitionId}`);
@@ -179,6 +183,49 @@ it.each(["scope", "revision", "missing_fact"])("propagates %s fact result errors
 it("propagates value corruption and required failure for caller-owned atomic rollback", async () => {
   values.get(sourceId)!.fingerprint = "f".repeat(64); await expect(validate()).rejects.toThrow("FIELD_STORAGE_INVALID");
   putValue(definitions.get(sourceId)!.activeVersion, 0); values.delete(rootId); await expect(validate()).rejects.toThrow("target is required");
+});
+
+function activeProfile(requiredId = sourceId) {
+  const required = versions.get(definitions.get(requiredId)!.activeVersionId!)!;
+  const pin = { kind: "customField" as const, definitionId: requiredId, versionId: required.id, schemaVersion: 1 as const, checksum: required.checksum };
+  const payload = entityProfilePayloadSchema.parse({ schemaVersion: 1, entity, profile: { requiredFields: [pin] } });
+  const resolved = resolveEntityProfile(payload)!;
+  const metadata = registry.describe(entity.id, entity.version);
+  const plan = { kind: "entityProfile", schemaVersion: 1, payload, resolvedProfile: resolved.profile,
+    dependencies: [{ ...entity, ownerModuleId: metadata.ownerModuleId, kind: metadata.kind, classification: metadata.classification }],
+    configurationDependencies: resolved.configurationDependencies };
+  const id = uuid(170), definitionId = uuid(70);
+  const profile = { id, definitionId, organisationId: "company", schemaVersion: 1, payload, compiledPlan: plan, checksum: checksum(plan),
+    definition: { kind: "entityProfile", retiredAt: null }, configurationDependencies: [{ organisationId: "company", definitionId, versionId: id,
+      targetDefinitionId: pin.definitionId, targetVersionId: pin.versionId, targetKind: pin.kind, targetSchemaVersion: pin.schemaVersion, targetChecksum: pin.checksum }] };
+  const originalVersion = m.version.getMockImplementation()!, originalDefinition = m.definition.getMockImplementation()!;
+  m.version.mockImplementation(async args => args.where.id === id ? profile : { ...await originalVersion(args),
+    definition: { kind: "customField", retiredAt: null }, configurationDependencies: [] });
+  m.definition.mockImplementation(async args => args.where.id === definitionId ? { id: definitionId, organisationId: "company", kind: "entityProfile",
+    activeVersionId: id, activeVersion: profile, retiredAt: null } : originalDefinition(args));
+  m.bases.mockResolvedValue([{ definitionId }]); m.profileBinding.mockResolvedValue({ originVersionId: id });
+}
+it("adds profile requirements to optional global fields and keeps actual zero/false present for a native-only actor", async () => {
+  definitions.delete(rootId); activeProfile();
+  const ordinary = vi.spyOn(registry, "authoriseRecord");
+  expect(await validate()).toMatchObject({ fieldsChecked: 1 }); expect(ordinary).not.toHaveBeenCalled();
+  const boolean = stored(uuid(103), sourceId, await compileCustomField(author, { ...base("source", 202), field: { ...base("source", 202).field, storage: { type: "boolean" } } }, registry));
+  putValue(boolean, false); activeProfile(); expect(await validate()).toMatchObject({ fieldsChecked: 1 });
+  expect(m.facts).not.toHaveBeenCalled();
+});
+it("never lets a false condition or optional global policy waive a profile-required field", async () => {
+  definitions.delete(rootId); activeProfile(); values.delete(sourceId);
+  await expect(validate()).rejects.toThrow("source is required");
+  putValue(definitions.get(sourceId)!.activeVersion, null);
+  await expect(validate()).rejects.toThrow("source is required"); expect(m.facts).not.toHaveBeenCalled();
+});
+it("preflights a profile-required field's old written policy before any typed projection without lending native Read", async () => {
+  definitions.delete(rootId); activeProfile();
+  const current = definitions.get(sourceId)!.activeVersion;
+  const privateVersion = stored(uuid(103), sourceId, await compileCustomField(author, { ...base("source", 202), field: { ...base("source", 202).field, readCapability: "tickets.field.secret" } }, registry));
+  putValue(privateVersion, 0); definitions.get(sourceId)!.activeVersion = current; definitions.get(sourceId)!.activeVersionId = current.id;
+  events = []; await expect(validate()).rejects.toThrow("FORBIDDEN");
+  expect(events.filter(event => event.startsWith("value:"))).toEqual([]); expect(m.facts).not.toHaveBeenCalled();
 });
 
 it("retains independent approved native field/fact grants before facts, without requiring owning native Read", async () => {

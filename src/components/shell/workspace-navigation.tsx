@@ -33,7 +33,7 @@ export function WorkspaceNavigation({
   return (
     <nav
       aria-label="Workspace utilities"
-      className="flex flex-wrap gap-1 rounded-[24px] border border-white/90 bg-white/75 p-2 shadow-[0_8px_40px_-28px_rgba(44,81,136,0.3)] sm:flex-nowrap lg:h-full lg:flex-col lg:gap-2 lg:p-2.5"
+      className="atlas-utility-rail flex flex-wrap gap-1 rounded-2xl border border-white/90 bg-white/75 p-2 shadow-[0_8px_40px_-28px_rgba(103,76,44,0.3)] sm:flex-nowrap lg:h-full lg:flex-col lg:gap-2 lg:p-2.5"
     >
       {links.map(({ name, href }) => {
         const Icon = icons[name],
@@ -59,7 +59,7 @@ export function WorkspaceNavigation({
                 : undefined
             }
             aria-current={active ? "page" : undefined}
-            className={`flex min-h-11 min-w-0 flex-1 basis-[22%] flex-col items-center justify-center gap-1 rounded-2xl px-1 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:basis-0 sm:flex-row sm:gap-3 sm:px-3 lg:min-h-12 lg:flex-none lg:px-2 lg:justify-start ${active ? "bg-[#eaf3ff] text-[#075bff]" : "text-[#526587] hover:bg-blue-50 hover:text-blue-700"}`}
+            className={`atlas-utility-link flex min-h-11 min-w-0 flex-1 basis-[22%] flex-col items-center justify-center gap-1 rounded-2xl px-1 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:basis-0 sm:flex-row sm:gap-3 sm:px-3 lg:min-h-12 lg:flex-none lg:px-2 lg:justify-start ${active ? "bg-[#f7f5f2] text-[#966e40]" : "text-[#766d63] hover:bg-blue-50 hover:text-blue-700"}`}
           >
             <Icon
               aria-hidden="true"

@@ -118,7 +118,7 @@ export default async function OpportunityRecordPage({ params }: { params: Promis
 
       <section>
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-xs font-medium uppercase tracking-[0.14em] text-[var(--color-ink-faint)]">Quotations</h2>
+          <h2 className="text-xs font-medium tracking-[0.14em] text-[var(--color-ink-faint)]">Quotations</h2>
           {can(session, SALES_CAPABILITIES.quoteCreate) && <Link href={`/sales/quotes/new?customer=${opportunity.partyId}&opportunity=${opportunity.id}`} className="text-sm text-[var(--color-atlas-blue)]">Create quotation</Link>}
         </div>
         {can(session, SALES_CAPABILITIES.quoteRead) ? (
@@ -130,7 +130,7 @@ export default async function OpportunityRecordPage({ params }: { params: Promis
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-xs font-medium uppercase tracking-[0.14em] text-[var(--color-ink-faint)]">Projects and call-offs</h2>
+        <h2 className="text-xs font-medium tracking-[0.14em] text-[var(--color-ink-faint)]">Projects and call-offs</h2>
         {dealProjects.map((project) => <Link key={project.id} href={`/projects/${project.id}`} className="block text-sm text-[var(--color-atlas-blue)]">{project.reference} · {project.name}</Link>)}
         <OpportunitySalesProjects partyId={opportunity.partyId} name={opportunity.name} valueAmount={opportunity.valueAmount} />
         <CommercialLinks target="opportunity" recordId={opportunity.id} partyId={opportunity.partyId} opportunityId={opportunity.id} projects={linkableProjects} canLink={can(session, "projects.read") || can(session, "projects.manage")} canCreateQuote={can(session, SALES_CAPABILITIES.quoteCreate)} canCreateOrder={can(session, SALES_CAPABILITIES.orderCreate)} />
@@ -350,7 +350,7 @@ export default async function OpportunityRecordPage({ params }: { params: Promis
 function HeaderStat({ label, value }: { label: string; value: string }) {
   return (
     <div className="border-b border-r border-[var(--color-border)] px-4 py-4">
-      <p className="truncate text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-ink-faint)]">{label}</p>
+      <p className="truncate text-[11px] font-medium tracking-[0.14em] text-[var(--color-ink-faint)]">{label}</p>
       <p className="mt-1 truncate text-lg font-semibold tracking-tight text-[var(--color-ink)]">{value}</p>
     </div>
   );

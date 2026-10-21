@@ -159,8 +159,8 @@ export function DashboardIllustration() {
           <svg viewBox="0 0 300 120">
             <defs>
               <linearGradient id="gallery-area" x1="0" y1="0" x2="0" y2="1">
-                <stop stopColor="#367df5" stopOpacity=".3" />
-                <stop offset="1" stopColor="#367df5" stopOpacity="0" />
+                <stop stopColor="#ac7e4a" stopOpacity=".3" />
+                <stop offset="1" stopColor="#ac7e4a" stopOpacity="0" />
               </linearGradient>
             </defs>
             <path
@@ -169,7 +169,7 @@ export function DashboardIllustration() {
             />
             <path
               d="M0 94 L28 82 L58 90 L90 52 L120 63 L150 33 L180 46 L210 20 L240 32 L270 9 L300 17"
-              stroke="#367df5"
+              stroke="#ac7e4a"
               fill="none"
               strokeWidth="3"
               strokeLinejoin="round"

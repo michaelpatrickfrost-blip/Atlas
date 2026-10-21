@@ -210,7 +210,7 @@ function ContactCard({
               </div>
               {contact.notes && (
                 <div>
-                  <p className="text-xs font-medium uppercase tracking-wide text-[var(--color-ink-muted)]">Notes</p>
+                  <p className="text-xs font-medium text-[var(--color-ink-muted)]">Notes</p>
                   <p className="mt-1 whitespace-pre-wrap text-sm text-[var(--color-ink)]">{contact.notes}</p>
                 </div>
               )}
@@ -225,7 +225,7 @@ function ContactCard({
 function DetailField({ label, value }: { label: string; value: string | null | undefined }) {
   return (
     <div>
-      <p className="text-xs font-medium uppercase tracking-wide text-[var(--color-ink-muted)]">{label}</p>
+      <p className="text-xs font-medium text-[var(--color-ink-muted)]">{label}</p>
       <p className="text-[var(--color-ink)]">{value ?? "—"}</p>
     </div>
   );

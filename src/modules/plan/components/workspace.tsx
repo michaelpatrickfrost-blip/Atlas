@@ -129,7 +129,7 @@ function Chart({ periods, values, unit, plan }: { periods: string[]; values: Arr
 }
 
 function Bar({ value, max, soft, faint }: { value: number | null; max: number; soft?: boolean; faint?: boolean }) {
-  return <div className="w-full rounded-t" style={{ height: `${Math.max(((value ?? 0) / max) * 100, value ? 4 : 0)}%`, background: faint ? "#d6d6db" : soft ? "var(--color-atlas-blue-soft)" : "var(--color-atlas-blue)" }} />;
+  return <div className="w-full rounded-t" style={{ height: `${Math.max(((value ?? 0) / max) * 100, value ? 4 : 0)}%`, background: faint ? "#d9d9d8" : soft ? "var(--color-atlas-blue-soft)" : "var(--color-atlas-blue)" }} />;
 }
 
 function CellForm({ planId, metric, period, kind, labelled }: { planId: string; metric: string; period: string; kind: string; labelled?: boolean }) {

@@ -229,8 +229,8 @@ function Bar({ label, count, of, extra }: { label: string; count: number; of: nu
         <span className="text-[#1d1d1f]">{label}</span>
         <span className="text-[#6e6e73]">{count}{extra ? ` · ${extra}` : ""}</span>
       </div>
-      <div className="h-2 overflow-hidden rounded-full bg-[#eef1f6]">
-        <div className="h-full rounded-full bg-[#0a3d8f]" style={{ width: `${width}%` }} />
+      <div className="h-2 overflow-hidden rounded-full bg-[#f4f2f0]">
+        <div className="h-full rounded-full bg-[#584026]" style={{ width: `${width}%` }} />
       </div>
     </div>
   );

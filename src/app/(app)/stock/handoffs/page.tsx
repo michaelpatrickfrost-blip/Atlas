@@ -32,11 +32,11 @@ export default async function Handoffs({
   };
   return (
     <div className="space-y-6">
-      <header className="rounded-[26px] border border-blue-100 bg-gradient-to-br from-white to-blue-50/70 p-6 sm:p-8">
-        <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-blue-600">
+      <header className="rounded-2xl border border-blue-100 bg-[var(--color-surface)] p-6 sm:p-8">
+        <p className="flex items-center gap-2 text-xs font-semibold text-blue-600">
           <Factory size={17} /> Production → Warehouse
         </p>
-        <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-950">
+        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950">
           Finished batches, ready to collect.
         </h1>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
@@ -96,7 +96,7 @@ export default async function Handoffs({
             <option value="all">All batches & history</option>
           </select>
         </label>
-        <button className="min-h-11 rounded-xl bg-blue-600 px-5 text-sm font-bold text-white">
+        <button className="min-h-11 rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white">
           Apply filters
         </button>
       </form>
@@ -106,14 +106,14 @@ export default async function Handoffs({
           return (
             <article
               key={batch.id}
-              className="rounded-[24px] border border-slate-200 bg-white p-6"
+              className="rounded-2xl border border-slate-200 bg-white p-6"
             >
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
                   <p className="text-xs font-semibold text-blue-600">
                     Batch {batch.lotCode} · {batch.product.code}
                   </p>
-                  <h2 className="mt-2 text-xl font-bold text-slate-900">
+                  <h2 className="mt-2 text-xl font-semibold text-slate-900">
                     {batch.product.name}
                   </h2>
                   <p className="mt-2 text-xs leading-6 text-slate-500">
@@ -145,7 +145,7 @@ export default async function Handoffs({
                 ].map(([label, quantity]) => (
                   <div key={String(label)}>
                     <dt className="text-xs text-slate-500">{String(label)}</dt>
-                    <dd className="mt-1 text-lg font-bold text-slate-900">
+                    <dd className="mt-1 text-lg font-semibold text-slate-900">
                       {Number(quantity).toLocaleString("en-GB",{maximumFractionDigits:6})}{" "}
                       <span className="text-xs font-normal text-slate-400">
                         {batch.product.unitOfMeasure}
@@ -228,7 +228,7 @@ export default async function Handoffs({
                             className={field}
                           />
                         </label>
-                        <button className="min-h-11 rounded-xl bg-blue-600 px-5 text-sm font-bold text-white">
+                        <button className="min-h-11 rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white">
                           Confirm collection & stock booking
                         </button>
                       </ActionForm>
@@ -284,7 +284,7 @@ export default async function Handoffs({
         {!data.rows.length && (
           <div className="rounded-2xl border border-dashed border-blue-200 bg-white p-10 text-center">
             <Boxes size={30} className="mx-auto text-blue-500" />
-            <h2 className="mt-4 text-lg font-bold">
+            <h2 className="mt-4 text-lg font-semibold">
               {data.search
                 ? "No batch matches this search"
                 : "The holding area is clear"}

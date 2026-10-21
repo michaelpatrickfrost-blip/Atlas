@@ -107,7 +107,7 @@ export function PipelineBoard({
                     }}
                     className={`rounded-xl border border-[var(--color-border)] bg-white px-3.5 py-3.5 ${editable ? "cursor-grab active:cursor-grabbing" : ""} ${dragged === item.id ? "opacity-40" : "hover:border-[var(--color-border-strong)]"}`}
                   >
-                    <p className="truncate text-[11px] font-medium uppercase tracking-[0.08em] text-[var(--color-ink-faint)]">{item.party.name}</p>
+                    <p className="truncate text-[11px] font-medium tracking-[0.08em] text-[var(--color-ink-faint)]">{item.party.name}</p>
                     <Link href={`/crm/opportunities/${item.id}`} className="mt-1 block truncate text-sm font-semibold tracking-tight text-[var(--color-ink)] hover:text-[var(--color-atlas-blue)]">
                       {item.name}
                     </Link>
@@ -129,7 +129,7 @@ export function PipelineBoard({
                             Move
                           </button>
                           {openMenu === item.id && (
-                            <div className="absolute right-0 z-20 mt-1 w-44 overflow-hidden rounded-xl border border-[var(--color-border)] bg-white py-1 shadow-[0_12px_32px_rgba(16,19,26,0.12)]">
+                            <div className="absolute right-0 z-20 mt-1 w-44 overflow-hidden rounded-xl border border-[var(--color-border)] bg-white py-1 shadow-[0_12px_32px_rgba(23,21,19,0.12)]">
                               {stages.map((option) => (
                                 <button
                                   key={option.id}

@@ -76,7 +76,7 @@ export default async function ProspectPage({ searchParams }: { searchParams: Pro
               href={href}
               className={`shrink-0 rounded-full px-3 py-1.5 text-sm ${
                 (filter ?? "all") === item.key
-                  ? "bg-[#0071e3] text-white"
+                  ? "bg-[#826038] text-white"
                   : "bg-white text-[#1d1d1f]"
               }`}
             >

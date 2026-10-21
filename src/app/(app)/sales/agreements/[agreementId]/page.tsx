@@ -45,7 +45,7 @@ export default async function AgreementPage({ params, searchParams }: { params: 
   return <div className="space-y-5">
     <div className="rounded-2xl border border-slate-200 bg-white p-6">
       <Link href="/sales/agreements" className="text-sm text-slate-500">← Call-offs</Link>
-      <p className="mt-4 text-[10px] font-semibold uppercase tracking-[.16em] text-blue-600">Call-off order · {agreement.status} · until {agreement.endsAt.toLocaleDateString("en-GB")}</p>
+      <p className="mt-4 text-[10px] font-semibold tracking-[.16em] text-blue-600">Call-off order · {agreement.status} · until {agreement.endsAt.toLocaleDateString("en-GB")}</p>
       <div className="mt-2 flex flex-wrap items-center justify-between gap-3"><h2 className="text-3xl font-semibold tracking-tight">{agreement.reference}</h2>{can(session, "echo.read") && <EchoRail entityType="SalesAgreement" entityId={agreement.id} title={agreement.reference} canWrite={can(session, "echo.write")} startOpen={echo} />}</div>
       <Link href={`/customers/${agreement.partyId}`} className="mt-3 inline-block text-sm text-blue-600">{agreement.party.name} →</Link>
       <p className="mt-3 max-w-2xl text-sm text-slate-500">This is the full order. Each delivery takes some of the items and raises an invoice for that quantity. {remaining} still open.</p>

@@ -35,7 +35,7 @@ export default async function PlanPage({ params }: { params: Promise<{ planId: s
   return <div className="mx-auto max-w-3xl space-y-6">
     <div>
       <Link href="/kpis?view=people" className="text-sm text-[var(--color-atlas-blue)]">People</Link>
-      <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-slate-500">{planLabel[plan.kind] ?? "Plan"} · {plan.status.replaceAll("_", " ")}</p>
+      <p className="mt-3 text-xs font-semibold text-slate-500">{planLabel[plan.kind] ?? "Plan"} · {plan.status.replaceAll("_", " ")}</p>
       <h2 className="mt-1 text-3xl font-semibold tracking-tight">{plan.title}</h2>
       <p className="mt-2 text-sm text-[var(--color-ink-muted)]">{plan.personName || "Person"} · Set by {plan.ownerName}</p>
     </div>

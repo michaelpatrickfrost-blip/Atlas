@@ -4,14 +4,19 @@ import { retainedCutoverFixture, cutoverUuid as uuid } from "./fixtures/studio-f
 import { compileCustomField } from "@/core/studio/compiler/fields";
 import { compileConditionalCustomField } from "@/core/studio/fields/conditional-compiler";
 import { registeredRequiredFactMetadata } from "@/core/studio/fields/required-owner";
-import { evaluateExistingFieldRequirement, validateResultingFieldRequirements, validateCandidateFieldRequirement } from "@/core/studio/fields/required-runtime";
+import { evaluateExistingFieldRequirement, validateResultingFieldRequirements, validateCandidateFieldRequirement, validateCandidateRecordProfileRequirements } from "@/core/studio/fields/required-runtime";
 import { evaluateConditionalInputsInTransaction } from "@/core/studio/fields/required-inputs";
 import { conditionalFieldPlanSchema } from "@/core/studio/fields/conditional-compiler";
 import type { FieldRuntimeAuthority } from "@/core/studio/fields/runtime-authority";
 import { encodeFieldValue } from "@/core/studio/fields/codec";
 import { validateCandidateFieldCoverage } from "@/core/studio/fields/required-coverage";
-const m = vi.hoisted(() => ({ refresh: vi.fn(), raw: vi.fn(), definition: vi.fn(), definitions: vi.fn(), version: vi.fn(), generation: vi.fn(), extension: vi.fn(), slot: vi.fn(), enabled: vi.fn() }));
+const m = vi.hoisted(() => ({ refresh: vi.fn(), raw: vi.fn(), definition: vi.fn(), definitions: vi.fn(), version: vi.fn(), generation: vi.fn(), extension: vi.fn(), slot: vi.fn(), enabled: vi.fn(), profileInspect: vi.fn(), profilePreflight: vi.fn() }));
 vi.mock("@/core/studio/fields/runtime-authority", () => ({ fieldRuntimeAuthorityInTransaction: m.refresh }));
+// This existing rule suite isolates the ordinary authority collaborator and has
+// no profile fixture. Actual profile resolution has its own strict-mode suite.
+vi.mock("@/core/studio/record-types/runtime-profile", () => ({ inspectRecordProfileInTransaction: m.profileInspect, preflightRecordProfileFields: m.profilePreflight,
+  resolveRecordProfileInTransaction: async () =>
+  ({ baseProfile: null, recordType: null, profile: null, assignmentId: null, fingerprint: "unused-absent-profile" }) }));
 let f: Awaited<ReturnType<typeof retainedCutoverFixture>>;
 let entity: typeof f.source.payload.entity;
 let row: StudioFieldValue & { schemaVersion: StudioDefinitionVersion };
@@ -54,6 +59,7 @@ beforeEach(async () => {
   m.version.mockImplementation(async args => versions.get(args.where.id) ?? null);
   m.generation.mockImplementation(async args => ({ id: args.where.id }));
   m.enabled.mockResolvedValue({ id: "studio" });
+  m.profilePreflight.mockResolvedValue(undefined);
   m.extension.mockResolvedValue({ id: extensionId, revision: 4 });
   m.slot.mockImplementation(async () => ({ id: slotId, revision: 1, activeValueId: row.id, activeValue: row }));
   vi.spyOn(f.registry, "authoriseRecord").mockImplementation(async (context, reference, input) => {
@@ -62,6 +68,30 @@ beforeEach(async () => {
   });
   vi.spyOn(f.registry, "invokeQueryInTransaction").mockResolvedValue({ recordId: "native", organisationId: "company", revision: 7, fields: { status: "RESOLVED", priority: "NORMAL" } });
   await root();
+});
+it("validates an inactive exact profile candidate with actual global rules and optional false values, without changing active pointers", async () => {
+  row = { ...row, ...encodeFieldValue(source.payload.field, false) };
+  m.slot.mockImplementation(async args => args.where.definitionId === sourceId ? { id: slotId, organisationId: "company", extensionId,
+    definitionId: sourceId, generationId: source.payload.storageGeneration, revision: 1, activeValueId: row.id, activeValue: row } : null);
+  const pin = { kind: "entityProfile", definitionId: uuid(999), versionId: uuid(998), schemaVersion: 1, checksum: "a".repeat(64) };
+  m.profileInspect.mockResolvedValue({ reference: pin, baseProfile: pin, entity,
+    profile: { page: null, requiredFields: [{ kind: "customField", definitionId: sourceId, versionId: source.version.id, schemaVersion: 1, checksum: source.version.checksum }], allowedProcesses: [], defaultDecisions: [] } });
+  const input = { entity, recordId: "native", expectedRevision: 7 }, before = [...definitions.values()].map(d => d.activeVersionId);
+  expect(await validateCandidateRecordProfileRequirements(f.session, tx, input, pin)).toMatchObject({ recordRevision: 7, fieldsChecked: 2, extensionRevision: 4 });
+  expect(m.profileInspect).toHaveBeenCalledWith(expect.objectContaining({ transaction: tx }), pin);
+  expect([...definitions.values()].map(d => d.activeVersionId)).toEqual(before);
+  await root(true);
+  await expect(validateCandidateRecordProfileRequirements(f.session, tx, input, pin)).rejects.toThrow("Extra is required");
+});
+it("checks candidate profile field grants before value access and preserves optional/global null enforcement", async () => {
+  const pin = { kind: "entityProfile", definitionId: uuid(999), versionId: uuid(998), schemaVersion: 1, checksum: "a".repeat(64) };
+  m.profileInspect.mockResolvedValue({ reference: pin, baseProfile: pin, entity,
+    profile: { page: null, requiredFields: [{ kind: "customField", definitionId: sourceId, versionId: source.version.id, schemaVersion: 1, checksum: source.version.checksum }], allowedProcesses: [], defaultDecisions: [] } });
+  m.profilePreflight.mockRejectedValueOnce(new Error("FORBIDDEN: current/pinned field grant")); m.slot.mockClear();
+  await expect(validateCandidateRecordProfileRequirements(f.session, tx, { entity, recordId: "native", expectedRevision: 7 }, pin)).rejects.toThrow("FORBIDDEN");
+  expect(m.slot).not.toHaveBeenCalled();
+  m.slot.mockResolvedValue(null);
+  await expect(validateCandidateRecordProfileRequirements(f.session, tx, { entity, recordId: "native", expectedRevision: 7 }, pin)).rejects.toThrow(`${source.payload.field.label} is required`);
 });
 it("validates all resulting requirements after staged native/typed changes, accepting zero as a present required value", async () => {
   let target: typeof row | null = null;

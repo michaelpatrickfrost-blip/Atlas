@@ -7,7 +7,7 @@ import { writeAudit } from "@/core/audit/log";
 import type { Prisma } from "@/generated/prisma/client";
 import { STUDIO_CAPABILITIES as CAP } from "../permissions";
 import { kernelPayloadSchema } from "../compiler/kernel";
-import { compileDefinition, parseDefinitionPayload } from "../compiler";
+import { compileDefinition, compileDefinitionInTransaction, parseDefinitionPayload } from "../compiler";
 import { customFieldPayloadSchema } from "../fields/schema";
 import { assertFieldBinding, fieldDefinitionKey } from "../fields/binding";
 import { publishCompiledDefinitionInTransaction } from "./publication";
@@ -16,18 +16,35 @@ import { studioRegistry } from "../registry/runtime";
 import { checksum } from "../registry/contracts";
 import { lockBoundFieldEntityInTransaction } from "../fields/entity-lock";
 import { prepareRequiredFieldActivationInTransaction } from "../fields/activation-coverage";
+import { withFieldRuntimeAuthority, type FieldRuntimeAuthority } from "../fields/runtime-authority";
+import { pagePayloadSchema } from "../pages/schema";
+import { entityProfilePayloadSchema, recordTypePayloadSchema } from "../record-types/schema";
+import { entityProfileDefinitionKey } from "../record-types/binding";
+import { readActiveTransactionalDefinition } from "./transactional-runtime";
 const uuid = z.uuid();
 const revision = z.number().int().nonnegative();
 const identity = { key: z.string().regex(/^[a-z][a-z0-9_.-]{0,99}$/), name: z.string().min(1).max(150) };
 const createSchema = z.discriminatedUnion("kind", [
   z.strictObject({ ...identity, kind: z.literal("capabilitySet"), payload: kernelPayloadSchema }),
   z.strictObject({ ...identity, kind: z.literal("customField"), payload: customFieldPayloadSchema }),
+  z.strictObject({ ...identity, kind: z.literal("page"), payload: pagePayloadSchema }),
+  z.strictObject({ ...identity, kind: z.literal("entityProfile"), payload: entityProfilePayloadSchema }),
+  z.strictObject({ ...identity, kind: z.literal("recordType"), payload: recordTypePayloadSchema }),
 ]);
-const updateSchema = z.strictObject({ definitionId: uuid, revision, payload: z.union([kernelPayloadSchema, customFieldPayloadSchema]) });
+const updateSchema = z.strictObject({ definitionId: uuid, revision, payload: z.union([kernelPayloadSchema, customFieldPayloadSchema, pagePayloadSchema, entityProfilePayloadSchema, recordTypePayloadSchema]) });
 const publishSchema = z.strictObject({ definitionId: uuid, revision, acknowledgeWarnings: z.boolean() });
 const activateSchema = z.strictObject({ definitionId: uuid, versionId: uuid, revision });
 function conflict(): never { throw new Error("CONFLICT: another editor changed this definition. Reload and compare your draft before saving."); }
 const audit = (session: Session, action: string, id: string, after: unknown, tx: Prisma.TransactionClient) => writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action, entityType: "StudioDefinition", entityId: id, after }, tx);
+const transactionalKind = (kind: string) => kind === "page" || kind === "entityProfile" || kind === "recordType";
+async function authoring<T>(authenticated: Session, capability: typeof CAP.edit | typeof CAP.publish, operation: (authority: FieldRuntimeAuthority) => Promise<T>) {
+  return withFieldRuntimeAuthority(authenticated, async authority => {
+    assertCapability(authority.session, capability);
+    if (!await authority.transaction.moduleState.findFirst({ where: { organisationId: authority.session.organisationId, moduleId: "studio", enabled: true, entitled: true }, select: { id: true } }))
+      throw new Error("DEPENDENCY_BROKEN: Studio is unavailable.");
+    return operation(authority);
+  });
+}
 
 export async function listDefinitions(session: Session) {
   assertCapability(session, CAP.read);
@@ -46,6 +63,18 @@ export async function createDraft(session: Session, input: unknown) {
   await assertModuleEnabled(session, "studio");
   const value = createSchema.parse(input);
   if (value.kind === "customField" && value.key !== fieldDefinitionKey(value.payload)) throw new Error("Field definition key must match its permanent entity and field key.");
+  if (value.kind === "entityProfile" && value.key !== entityProfileDefinitionKey(value.payload.entity.id))
+    throw new Error("The base record design must use its permanent owning entity identity.");
+  if (transactionalKind(value.kind)) return authoring(session, CAP.edit, async authority => {
+    const id = crypto.randomUUID();
+    const compiled = await compileDefinitionInTransaction(authority, id, value.kind, value.payload);
+    if (compiled.plan.kind !== "page" && compiled.plan.kind !== "entityProfile" && compiled.plan.kind !== "recordType") conflict();
+    const definition = await authority.transaction.studioDefinition.create({ data: { id, organisationId: authority.session.organisationId,
+      key: value.key, kind: value.kind, name: value.name, createdBy: authority.session.userId,
+      draft: { create: { editorUserId: authority.session.userId, payload: compiled.payload } } }, select: { id: true } });
+    await audit(authority.session, "studio.draft.created", id, { key: value.key, kind: value.kind }, authority.transaction);
+    return definition;
+  });
   return db.$transaction(async tx => {
     const definition = await tx.studioDefinition.create({ data: { organisationId: session.organisationId, key: value.key, kind: value.kind, name: value.name, createdBy: session.userId,
       draft: { create: { editorUserId: session.userId, payload: value.payload } } }, select: { id: true } });
@@ -57,6 +86,26 @@ export async function updateDraft(session: Session, input: unknown) {
   assertCapability(session, CAP.edit);
   await assertModuleEnabled(session, "studio");
   const value = updateSchema.parse(input);
+  const observed = await db.studioDefinition.findFirst({ where: { id: value.definitionId, organisationId: session.organisationId, retiredAt: null }, select: { kind: true } });
+  if (observed && transactionalKind(observed.kind)) return authoring(session, CAP.edit, async authority => {
+    const definition = await authority.transaction.studioDefinition.findFirst({ where: { id: value.definitionId,
+      organisationId: authority.session.organisationId, retiredAt: null }, select: { kind: true } });
+    if (!definition || definition.kind !== observed.kind) conflict();
+    const compiled = await compileDefinitionInTransaction(authority, value.definitionId, definition.kind, value.payload);
+    if (definition.kind === "page") {
+      const current = await authority.transaction.studioDraft.findFirst({ where: { definitionId: value.definitionId,
+        organisationId: authority.session.organisationId, revision: value.revision }, select: { payload: true } });
+      if (!current) conflict();
+      if (pagePayloadSchema.parse(current.payload).entity.id !== pagePayloadSchema.parse(compiled.payload).entity.id)
+        throw new Error("Choose a new screen to design a different business area.");
+    }
+    const changed = await authority.transaction.studioDraft.updateMany({ where: { definitionId: value.definitionId,
+      organisationId: authority.session.organisationId, revision: value.revision, definition: { retiredAt: null } },
+      data: { payload: compiled.payload, revision: { increment: 1 }, editorUserId: authority.session.userId, validation: PrismaJsonNull } });
+    if (changed.count !== 1) conflict();
+    await audit(authority.session, "studio.draft.updated", value.definitionId, { revision: value.revision + 1 }, authority.transaction);
+    return { revision: value.revision + 1 };
+  });
   return db.$transaction(async tx => {
     await lockBoundFieldEntityInTransaction(tx, session.organisationId, value.definitionId);
     const definition = await tx.studioDefinition.findFirst({ where: { id: value.definitionId, organisationId: session.organisationId, retiredAt: null }, select: { kind: true, key: true } });
@@ -81,6 +130,16 @@ export async function validateDraft(session: Session, definitionId: string, expe
   const id = uuid.parse(definitionId), expected = revision.parse(expectedRevision);
   const draft = await db.studioDraft.findFirst({ where: { definitionId: id, organisationId: session.organisationId, revision: expected, definition: { retiredAt: null } }, include: { definition: { select: { kind: true } } } });
   if (!draft) conflict();
+  if (transactionalKind(draft.definition.kind)) return authoring(session, CAP.edit, async authority => {
+    const current = await authority.transaction.studioDraft.findFirst({ where: { definitionId: id, organisationId: authority.session.organisationId,
+      revision: expected, definition: { retiredAt: null } }, include: { definition: { select: { kind: true } } } });
+    if (!current) conflict();
+    const compiled = await compileDefinitionInTransaction(authority, id, current.definition.kind, current.payload);
+    const changed = await authority.transaction.studioDraft.updateMany({ where: { id: current.id, organisationId: authority.session.organisationId, revision: expected },
+      data: { validation: { checksum: compiled.checksum, warnings: compiled.warnings, validatedRevision: expected } } });
+    if (changed.count !== 1) conflict();
+    return { checksum: compiled.checksum, warnings: compiled.warnings };
+  });
   const compiled = await compileDefinition(session, draft.definition.kind, draft.payload, studioRegistry());
   const result = await db.studioDraft.updateMany({ where: { id: draft.id, organisationId: session.organisationId, revision: expected }, data: { validation: { checksum: compiled.checksum, warnings: compiled.warnings, validatedRevision: expected } } });
   if (result.count !== 1) conflict();
@@ -92,6 +151,16 @@ export async function publishDraft(session: Session, input: unknown) {
   const value = publishSchema.parse(input);
   const draft = await db.studioDraft.findFirst({ where: { definitionId: value.definitionId, organisationId: session.organisationId, revision: value.revision, definition: { retiredAt: null } }, include: { definition: true, baseVersion: { select: { version: true } } } });
   if (!draft) conflict();
+  if (transactionalKind(draft.definition.kind)) return authoring(session, CAP.publish, async authority => {
+    const current = await authority.transaction.studioDraft.findFirst({ where: { definitionId: value.definitionId,
+      organisationId: authority.session.organisationId, revision: value.revision, definition: { retiredAt: null } },
+      include: { definition: true, baseVersion: { select: { version: true } } } });
+    if (!current) conflict();
+    const compiled = await compileDefinitionInTransaction(authority, value.definitionId, current.definition.kind, current.payload);
+    if (compiled.warnings.length && !value.acknowledgeWarnings) throw new Error("Acknowledge publication warnings first.");
+    const published = await publishCompiledDefinitionInTransaction(authority.transaction, authority.session, current, value.revision, compiled);
+    return { versionId: published.version.id, version: published.versionNumber, revision: published.draftRevision };
+  });
   // Always compile on the server; previous validation and client plans are untrusted.
   const compiled = await compileDefinition(session, draft.definition.kind, draft.payload, studioRegistry());
   if (compiled.warnings.length && !value.acknowledgeWarnings) throw new Error("Acknowledge publication warnings first.");
@@ -105,6 +174,13 @@ export async function activateVersion(session: Session, input: unknown) {
   const value = activateSchema.parse(input);
   const version = await db.studioDefinitionVersion.findFirst({ where: { id: value.versionId, definitionId: value.definitionId, organisationId: session.organisationId }, include: { definition: { select: { kind: true } } } });
   if (!version) throw new Error("This Studio version is unavailable.");
+  if (transactionalKind(version.definition.kind)) return authoring(session, CAP.publish, async authority => {
+    const current = await authority.transaction.studioDefinitionVersion.findFirst({ where: { id: value.versionId, definitionId: value.definitionId,
+      organisationId: authority.session.organisationId, definition: { retiredAt: null } }, include: { definition: { select: { kind: true } } } });
+    if (!current) throw new Error("This Studio version is unavailable.");
+    const compiled = await compileDefinitionInTransaction(authority, value.definitionId, current.definition.kind, current.payload);
+    return activateCompiledVersionInTransaction(authority.transaction, authority.session, value.definitionId, value.revision, current, compiled);
+  });
   const compiled = await compileDefinition(session, version.definition.kind, version.payload, studioRegistry());
   return db.$transaction(async tx => {
     const current = compiled.plan.kind === "customField" && compiled.plan.payload.field.required
@@ -119,6 +195,7 @@ export async function activeDefinition(session: Session, definitionId: string) {
   assertCapability(session, CAP.read);
   await assertModuleEnabled(session, "studio");
   const definition = await db.studioDefinition.findFirst({ where: { id: uuid.parse(definitionId), organisationId: session.organisationId, retiredAt: null }, include: { activeVersion: true } });
+  if (definition && transactionalKind(definition.kind)) return readActiveTransactionalDefinition(session, definition.id);
   if (!definition?.activeVersion) return null;
   const version = definition.activeVersion;
   const compiled = await compileDefinition(session, definition.kind, version.payload, studioRegistry());

@@ -1,3 +1,4 @@
+import { productsAnalyticsStudioContract } from "./services/studio-analytics";
 import { reports } from './services/reports';
 import { productRecordRelationships } from "./services/relationships";
 import { productBusinessPlanning } from "./services/business-planning";
@@ -5,6 +6,7 @@ import { productsAnalytics } from "./services/analytics";
 import { Package } from "lucide-react";
 import type { ModuleManifest } from "@/core/modules/types";
 export const productsManifest:ModuleManifest={
+ studio: productsAnalyticsStudioContract,
  launcherConsolidatedInto:'manufacturing',
  reportProvider: reports,
  recordRelationshipProvider: productRecordRelationships,

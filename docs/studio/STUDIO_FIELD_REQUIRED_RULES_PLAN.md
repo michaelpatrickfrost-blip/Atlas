@@ -1,9 +1,12 @@
 ## 11 October — d4e scoped correction and actual acceptance plan agreed
 
-Next dependent d4f runtime/discovery/forms remain NOT STARTED until d4e actual gates.
+D4e actual candidate AND public gates passed livead9. D4f typed forms are now
+IN PROGRESS; no complete customer typed form or visual-builder claim.
 Michael authorises parallel work within the active phase: isolated pure closed
 transport-contract preparation is now IN PROGRESS while the original central gate
-runs. It adds no caller, business read/write or customer enablement; root integration
+runs. After actual candidate ALL COMBINED PASS, an isolated shared-writer source
+preparation also begins; root integration/customer enablement await public PASS.
+These preparations add no caller or enabled customer feature; root integration
 and final manifest/idempotency design wait for the actual gate. Expected files are
 fields/form-packet.ts and its meaningful malformed/bounds/zero/false/null tests.
 Reuse native RequestForm/
@@ -13,6 +16,15 @@ not live initial-field callback; updateWork currently stages native final state 
 Typed edit values must stage only after owning transition/private/approval/evidence
 guards and before final transition (ordinary Extend correctly rejects final rows).
 All values/native/events precede the one final native resulting validator.
+
+| Workstream | Purpose/dependencies | Expected files | Database implications | Verification | State |
+| --- | --- | --- | --- | --- | --- |
+| d4f1 Closed transport | Strict typed/bounded form input; existing FieldValue shapes; no authority | fields/form-packet.ts, focused packet suite | None | Unknown/duplicates/byte+owner bounds/revisions/zero/false/null | IMPLEMENTED root-integrated native caller; root combined182 PASS, actual form gate pending |
+| d4f2 Shared writer stored1/2 | Reuse actual sealed/versioned readers and existing staging/final boundary; d4e candidate+public integration gate | fields/runtime-write.ts, focused runtime writer cases | None; retain typed storage/Audit | Current+written/reference rights; pure staged versus complete save; replay/CAS/window rollback | IMPLEMENTED root-integrated native caller; root combined182 PASS, actual form gate pending |
+| d4f3 Narrow server manifest | Current genuine tenant/owner-approved field metadata and observations for create/edit; f1/f2 | service-work/field-forms.ts, narrow discovery action, desktop action allowlist | None; no generic data model access | Private/tenant/module/field/schema/revision/manifest denial, no private condition graph/facts | IMPLEMENTED root; current+written batch tests PASS |
+| d4f4 Atomic whole-form receipt | Native plus complete packet retry in original transaction; f1–3/native owner constraints | service-work/form-receipt.ts, actual actions, receipt-specific migration | Additive reserved Audit action/entity guard; no new table/backfill, no blanket Audit freeze | Exact readonly retry, changed/foreign/subset/collision, all-effects rollback; existing scrub unaffected | IMPLEMENTED root receipt+native integration; focused tests PASS; DDL not applied |
+| d4f5 Shared typed controls | Existing ActionForm/service-fields; f1–4; later visual preview uses same renderer | service-work/typed-fields.tsx, request-form/work-detail/Tickets create route | None | All approved scalar/structured controls, explicit null, unsaved/error state, 320/390px | IMPLEMENTED native/linked forms; UI tests/build PASS; actual responsive pending |
+| d4f6 Actual form acceptance | Full native form result, live reload/security/regression; f1–5 | Existing central driver plus bounded actual form probes | Exact retained central Test fixtures and mandatory recovery only | Multi-required/mixed1+2/false/null/refs/permissions, native transitions/reopen/hidden rules, receipt/Audit/event/window atomicity, candidate+public | IN PROGRESS existing isolated checker |
 
 Proposed closed transport1 independent of stored field schema1/2: operation UUID,
 server manifest checksum, extension revision, bounded unique per-field UUID/config/
@@ -31,9 +43,9 @@ duplicate native INSERT/events. Candidate minimum is one immutable exact whole-f
 receipt in existing Audit unique operation UUID, actor/tenant/operation/native and
 typed-request fingerprints/original result, current legitimate policies rechecked
 before read-only exact replay; conflicting/partial/foreign replay rejected. Never
-remint creation proof for committed record. This is a PROPOSED next design, not an
-implemented new engine/API or accepted database/runtime claim. Resolve against source
-and actual owning form contracts before coding; record any lasting choice in DECISIONS.
+remint creation proof for committed record. This is now IMPLEMENTED in the root helper/native actions with an additive reserved-Audit guard;
+local receipt tests pass. No applied SQL or actual runtime acceptance claim yet.
+The agreed rationale is recorded in DECISIONS; no separate execution engine.
 
 Ordinary activateVersion will refresh genuine current field authority for a required
 schema1 target in its owning Serializable transaction before entity/definition/

@@ -52,7 +52,7 @@ export async function CampaignDesk({ session, focus, search, status }: { session
       ...(session.capabilities.has("marketing.audience.read") ? [{ title: "Audiences", description: `${audiences.length} saved audiences · preview eligible contacts`, href: "/marketing/audiences", icon: Users }] : []),
       { title: "Campaign budgets", description: "Plan spend and send it for Finance review", href: "/marketing/budgets", icon: CheckCircle2 },
     ]} /><form className="flex flex-wrap gap-3 rounded-2xl border border-slate-200 bg-white p-4"><input aria-label="Search campaigns" name="q" type="search" defaultValue={search} placeholder="Search campaign name, code or brief" className="min-w-0 flex-1 rounded-xl border border-slate-200 px-4 py-3 text-sm" /><select name="status" aria-label="Campaign status" defaultValue={status ?? ""} className="rounded-xl border border-slate-200 px-3 py-3 text-sm"><option value="">All campaign stages</option>{Object.entries(STAGE).map(([value,label]) => <option key={value} value={value}>{label}</option>)}</select><button className="rounded-xl bg-blue-600 px-4 py-3 text-sm font-medium text-white">Search</button></form><div className="grid min-w-0 gap-5 xl:grid-cols-[320px_minmax(0,1fr)]">
-      <section className="rounded-[28px] border border-slate-200 p-4">
+      <section className="rounded-2xl border border-slate-200 p-4">
         <div className="mb-3 flex items-baseline justify-between">
           <h2 className="font-semibold">Campaigns <span className="ml-1 text-sm font-normal text-[var(--color-ink-faint)]">{campaigns.length}</span></h2>
 
@@ -72,7 +72,7 @@ export async function CampaignDesk({ session, focus, search, status }: { session
       </section>
       <div className="space-y-6">
         {selected ? (
-          <section className="rounded-[28px] border border-slate-200 p-6">
+          <section className="rounded-2xl border border-slate-200 p-6">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-medium text-[var(--color-ink-faint)]">{selected.code} · {words(selected.type)}</p>
@@ -123,7 +123,7 @@ export async function CampaignDesk({ session, focus, search, status }: { session
             )}
           </section>
         ) : null}
-        {!selected && <section className="rounded-[28px] border border-slate-200 p-8 text-center"><h2 className="text-lg font-semibold">No campaigns yet</h2><p className="mt-1 text-sm text-[var(--color-ink-muted)]">Build the first one: brief, audience, channels, budget and launch plan.</p></section>}
+        {!selected && <section className="rounded-2xl border border-slate-200 p-8 text-center"><h2 className="text-lg font-semibold">No campaigns yet</h2><p className="mt-1 text-sm text-[var(--color-ink-muted)]">Build the first one: brief, audience, channels, budget and launch plan.</p></section>}
       </div></div>
     </div>
   );

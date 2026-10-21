@@ -1,5 +1,7 @@
 "use server";
 import { z } from "zod";
+import { randomUUID } from "node:crypto";
+import type { FieldFormPacket } from "@/core/studio/fields/form-packet";
 import { db } from "@/core/db/client";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
@@ -15,98 +17,182 @@ import { lockFieldEntitiesInTransaction } from "@/core/studio/fields/entity-lock
 import { nativeFieldMutationSessionInTransaction } from "@/core/studio/fields/runtime-authority";
 import { withValidatedTicketMutation } from "./studio-enforcement";
 import { insertWorkWithFieldReceipt } from "./studio-native";
+import { createTicketWithFieldInitialisation } from "./studio-create";
+import { fieldRuntimeAuthorityInTransaction } from "@/core/studio/fields/runtime-authority";
+import { ticketFieldFormManifestInTransaction, parseTicketFieldFormPacket, stageTicketFieldFormPacket, ticketNativeFormChecksum } from "./field-forms";
+import { replayTicketFormInTransaction, completeTicketFormInTransaction, throwTicketFormReceiptError } from "./form-receipt";
+import type { TicketFormRequest } from "./form-receipt-contract";
+import { withFormFeedback } from "@/core/shared/form-feedback";
+import { parseTicketCreationTypeSelection } from "./record-type-creation-contract";
+import { stageTicketCreationType } from "./record-type-creation";
+import { assertStudioRuntimeFeatureEnabled, STUDIO_RECORD_TYPE_FORM_FEATURE } from "@/core/studio/runtime-features";
 
 const text = (form: FormData, key: string, max = 4000) => z.string().max(max).parse(String(form.get(key) ?? "").trim());
 const need = (form: FormData, key: string, max = 4000) => z.string().min(1, `${key} is required.`).max(max).parse(text(form, key, max));
 const ref = (form: FormData) => Number(form.get("version"));
 const refresh = () => { revalidatePath("/tickets", "layout"); revalidatePath("/service", "layout"); };
+async function ticketFormFeedback<T>(save: () => Promise<T>) {
+  return withFormFeedback(async () => {
+    try { return await save(); }
+    catch (error) {
+      try { throwTicketFormReceiptError(error); }
+      catch (failure) {
+        if (failure instanceof Error && failure.message.startsWith("FORBIDDEN"))
+          throw new Error("You do not have access to all the details needed for this change. Ask your business administrator.");
+        throw failure;
+      }
+    }
+  });
+}
 
 export async function createWork(form: FormData) {
   const session = await requireSession();
   assertCapability(session, text(form, "kind") === "QUERY" ? "service.ticket.create" : "tickets.ticket.create");
-  const kind = z.enum(["TICKET", "QUERY"]).parse(text(form, "kind"));
-  await requireWork(session, kind, true);
-  const id = await db.$transaction(async tx => withValidatedTicketMutation({ session, transaction: tx }, kind === "QUERY" ? "service.ticket.create" : "tickets.ticket.create", async session => {
-    const queue = await tx.serviceQueue.findFirst({ where: { id: need(form, "queueId", 100), organisationId: session.organisationId, active: true } });
-    if (!queue) throw new Error("Choose an available queue.");
-    const configuration = queueConfig(queue.configuration);
-    const serviceId = text(form, "serviceId", 60);
-    const service = configuration.services.find(value => value.id === serviceId);
-    if (serviceId && !service) throw new Error("This request type changed. Refresh and choose again.");
-    const answers = validateAnswers(service?.fields ?? [], JSON.parse(text(form, "answers", 100000) || "{}"));
-    const parentCaseId = text(form, "parentCaseId", 100) || null;
-    const parentId = text(form, "parentId", 100) || null;
-    if (parentCaseId && parentId) throw new Error("Choose one originating case or work item.");
-    const originCase = parentCaseId ? await tx.serviceCase.findFirst({ where: { AND: [serviceCaseScope(session), { id: parentCaseId, status: { notIn: ["RESOLVED", "CLOSED", "CANCELLED"] } }] } }) : null;
-    const originWork = parentId ? await tx.serviceWorkItem.findFirst({ where: { AND: [workScope(session), { id: parentId, status: { notIn: FINAL_WORK }, mergedIntoId: null }] } }) : null;
-    if (parentCaseId && !originCase) throw new Error("Reopen an accessible case before adding work.");
-    if (parentId && !originWork) throw new Error("Reopen an accessible parent before adding work.");
-    if (kind === "QUERY" && !parentCaseId && !parentId) throw new Error("Create the query from its case or ticket so its context stays linked.");
-    // Share only purchase identifiers and affected quantity with the receiving team.
-    // Customer messages, investigation notes and contact details stay on the case.
-    const sourceContext = (originCase?.context ?? {}) as Record<string, unknown>;
-    const origin = originCase ? { caseNumber: originCase.number, ...Object.fromEntries(["salesOrderId", "salesOrderLineId", "productId", "shipmentId", "affectedQuantity", "lotCode"].filter(key => sourceContext[key] != null).map(key => [key, sourceContext[key]])) } : ((originWork?.context as Record<string, unknown> | undefined)?.origin ?? {});
-    const requestedForUserId = text(form, "requestedForUserId", 100) || null;
-    if (requestedForUserId && !await tx.membership.findFirst({ where: { organisationId: session.organisationId, userId: requestedForUserId, active: true } })) throw new Error("Choose an active colleague.");
-    const priority = z.enum(["LOW", "NORMAL", "HIGH", "URGENT"]).parse(text(form, "priority") || "NORMAL");
-    const impact=text(form,"impact")||"INDIVIDUAL",urgency=text(form,"urgency")||"NORMAL";
-    if(priority!==suggestedPriority(impact,urgency)){assertCapability(session,kind==="TICKET"?"tickets.ticket.manage":"service.ticket.update");if(!text(form,"priorityReason"))throw new Error("Record the reason for overriding the suggested priority.");}
-    const now = new Date(), sla = configuration.sla;
-    const work = await insertWorkWithFieldReceipt(tx, session, {
-      organisationId: session.organisationId, kind, number: await workNumber(tx, session.organisationId, kind === "QUERY" ? "QRY" : "TKT"), queueId: queue.id,
-      subject: need(form, "subject", 250), description: need(form, "description", 20000), requesterUserId: session.userId, requestedForUserId,
-      parentCaseId, parentId, type: service?.type ?? (text(form, "type", 60) || "SERVICE_REQUEST"), priority,
-      impact: z.enum(["INDIVIDUAL", "TEAM", "DEPARTMENT", "BUSINESS"]).parse(text(form, "impact") || "INDIVIDUAL"),
-      urgency: z.enum(["LOW", "NORMAL", "HIGH", "IMMEDIATE"]).parse(text(form, "urgency") || "NORMAL"),
-      context: { answers, serviceId, origin: origin as import("@/generated/prisma/client").Prisma.InputJsonValue, priorityReason: text(form, "priorityReason"), ...Object.fromEntries(["asset", "service", "workaround", "problem", "rootCause", "risk", "implementationPlan", "rollbackPlan", "testingPlan", "schedule"].map(key => [key, text(form, key)])) },
-      definition: service ?? {}, sla, firstResponseDueAt: addBusinessMinutes(now, sla.responseMinutes, sla.calendar), resolutionDueAt: addBusinessMinutes(now, sla.resolutionMinutes, sla.calendar),
-    });
-    await workEvent(tx, session, work, "CREATED", `${kind === "QUERY" ? "Cross-team query" : "Internal ticket"} received by ${queue.name}.`, "REQUESTER");
-    if (parentCaseId) await tx.serviceCase.updateMany({ where: { id: parentCaseId, organisationId: session.organisationId }, data: { status: "WAITING_INTERNAL" } });
-    return work.id;
-  }), { isolationLevel: "Serializable" });
-  refresh(); redirect(`/${kind === "QUERY" ? "service/queries" : "tickets"}/${id}`);
+  const save = async () => {
+    const kind = z.enum(["TICKET", "QUERY"]).parse(text(form, "kind"));
+    await requireWork(session, kind, true);
+    const id = await db.$transaction(async tx => {
+      if ((form.has("studioFields") || form.has("studioRecordType")) && kind !== "TICKET") throw new Error("Additional Ticket details cannot be attached to a query.");
+      if (form.has("studioRecordType") && (!form.has("studioFields") || form.getAll("studioRecordType").length !== 1))
+        throw new Error("The business type needs its complete owning form. Refresh before saving.");
+      // Legacy native clients retain non-idempotent create semantics. A customer
+      // Ticket with authorised visible defaults still gets the SAME actual INSERT
+      // callback; no client operation means a new internal operation per call.
+      const company = kind === "TICKET" && !form.has("studioFields") ? await tx.organisation.findFirst({
+        where: { id: session.organisationId }, select: { kind: true } }) : null;
+      const authority = form.has("studioFields") || company?.kind === "CUSTOMER" ? await fieldRuntimeAuthorityInTransaction(session, tx) : null;
+      let request: TicketFormRequest | null = authority && form.has("studioFields") ? { operation: "create", nativeRequestChecksum: ticketNativeFormChecksum(form, "create"),
+        packet: parseTicketFieldFormPacket(authority, form.get("studioFields")),
+        ...(form.has("studioRecordType") ? { typeSelection: parseTicketCreationTypeSelection(form.get("studioRecordType")) } : {}) } : null;
+      if (authority && request) {
+        // Priority override is an independent native operation permission today,
+        // including a read-only retry after the response was lost.
+        const priority = z.enum(["LOW", "NORMAL", "HIGH", "URGENT"]).parse(text(form, "priority") || "NORMAL");
+        if (priority !== suggestedPriority(text(form, "impact") || "INDIVIDUAL", text(form, "urgency") || "NORMAL")) assertCapability(authority.session, "tickets.ticket.manage");
+        const replay = await replayTicketFormInTransaction(authority.session, tx, request);
+        if (replay) return replay.recordId;
+      }
+      if (request?.operation === "create" && request.typeSelection) assertStudioRuntimeFeatureEnabled(STUDIO_RECORD_TYPE_FORM_FEATURE);
+      const manifest = authority ? await ticketFieldFormManifestInTransaction(authority, { operation: "create" }) : null;
+      if (!request && manifest?.fields.some(field => field.defaultValue !== undefined)) request = { operation: "create",
+        nativeRequestChecksum: ticketNativeFormChecksum(form, "create"), packet: { schemaVersion: 1, operationId: randomUUID(),
+          manifestChecksum: manifest.manifestChecksum, extensionRevision: null, fields: [] } };
+      const creationRequest = request;
+      let defaultFields: FieldFormPacket["fields"] = [];
+      const result = await withValidatedTicketMutation({ session, transaction: tx }, kind === "QUERY" ? "service.ticket.create" : "tickets.ticket.create", async session => {
+      const queue = await tx.serviceQueue.findFirst({ where: { id: need(form, "queueId", 100), organisationId: session.organisationId, active: true } });
+      if (!queue) throw new Error("Choose an available queue.");
+      const configuration = queueConfig(queue.configuration);
+      const serviceId = text(form, "serviceId", 60);
+      const service = configuration.services.find(value => value.id === serviceId);
+      if (serviceId && !service) throw new Error("This request type changed. Refresh and choose again.");
+      const answers = validateAnswers(service?.fields ?? [], JSON.parse(text(form, "answers", 100000) || "{}"));
+      const parentCaseId = text(form, "parentCaseId", 100) || null;
+      const parentId = text(form, "parentId", 100) || null;
+      if (parentCaseId && parentId) throw new Error("Choose one originating case or work item.");
+      const originCase = parentCaseId ? await tx.serviceCase.findFirst({ where: { AND: [serviceCaseScope(session), { id: parentCaseId, status: { notIn: ["RESOLVED", "CLOSED", "CANCELLED"] } }] } }) : null;
+      const originWork = parentId ? await tx.serviceWorkItem.findFirst({ where: { AND: [workScope(session), { id: parentId, status: { notIn: FINAL_WORK }, mergedIntoId: null }] } }) : null;
+      if (parentCaseId && !originCase) throw new Error("Reopen an accessible case before adding work.");
+      if (parentId && !originWork) throw new Error("Reopen an accessible parent before adding work.");
+      if (kind === "QUERY" && !parentCaseId && !parentId) throw new Error("Create the query from its case or ticket so its context stays linked.");
+      // Share only purchase identifiers and affected quantity with the receiving team.
+      // Customer messages, investigation notes and contact details stay on the case.
+      const sourceContext = (originCase?.context ?? {}) as Record<string, unknown>;
+      const origin = originCase ? { caseNumber: originCase.number, ...Object.fromEntries(["salesOrderId", "salesOrderLineId", "productId", "shipmentId", "affectedQuantity", "lotCode"].filter(key => sourceContext[key] != null).map(key => [key, sourceContext[key]])) } : ((originWork?.context as Record<string, unknown> | undefined)?.origin ?? {});
+      const requestedForUserId = text(form, "requestedForUserId", 100) || null;
+      if (requestedForUserId && !await tx.membership.findFirst({ where: { organisationId: session.organisationId, userId: requestedForUserId, active: true } })) throw new Error("Choose an active colleague.");
+      const priority = z.enum(["LOW", "NORMAL", "HIGH", "URGENT"]).parse(text(form, "priority") || "NORMAL");
+      const impact=text(form,"impact")||"INDIVIDUAL",urgency=text(form,"urgency")||"NORMAL";
+      if(priority!==suggestedPriority(impact,urgency)){assertCapability(session,kind==="TICKET"?"tickets.ticket.manage":"service.ticket.update");if(!text(form,"priorityReason"))throw new Error("Record the reason for overriding the suggested priority.");}
+      const now = new Date(), sla = configuration.sla;
+      const data = {
+        organisationId: session.organisationId, kind, number: await workNumber(tx, session.organisationId, kind === "QUERY" ? "QRY" : "TKT"), queueId: queue.id,
+        subject: need(form, "subject", 250), description: need(form, "description", 20000), requesterUserId: session.userId, requestedForUserId,
+        parentCaseId, parentId, type: service?.type ?? (text(form, "type", 60) || "SERVICE_REQUEST"), priority,
+        impact: z.enum(["INDIVIDUAL", "TEAM", "DEPARTMENT", "BUSINESS"]).parse(text(form, "impact") || "INDIVIDUAL"),
+        urgency: z.enum(["LOW", "NORMAL", "HIGH", "IMMEDIATE"]).parse(text(form, "urgency") || "NORMAL"),
+        context: { answers, serviceId, origin: origin as import("@/generated/prisma/client").Prisma.InputJsonValue, priorityReason: text(form, "priorityReason"), ...Object.fromEntries(["asset", "service", "workaround", "problem", "rootCause", "risk", "implementationPlan", "rollbackPlan", "testingPlan", "schedule"].map(key => [key, text(form, key)])) },
+        definition: service ?? {}, sla, firstResponseDueAt: addBusinessMinutes(now, sla.responseMinutes, sla.calendar), resolutionDueAt: addBusinessMinutes(now, sla.resolutionMinutes, sla.calendar),
+      } satisfies import("@/generated/prisma/client").Prisma.ServiceWorkItemUncheckedCreateInput;
+      const work = creationRequest ? (await createTicketWithFieldInitialisation({ session, transaction: tx }, data,
+        async (current, work, proof) => {
+          defaultFields = await stageTicketFieldFormPacket(current, manifest, creationRequest.packet, work.id, work.version, proof);
+          if (creationRequest.operation === "create" && creationRequest.typeSelection)
+            await stageTicketCreationType(current, creationRequest.typeSelection, creationRequest.packet, work.id, work.version, proof);
+        })).work
+        : await insertWorkWithFieldReceipt(tx, session, data);
+      await workEvent(tx, session, work, "CREATED", `${kind === "QUERY" ? "Cross-team query" : "Internal ticket"} received by ${queue.name}.`, "REQUESTER");
+      if (parentCaseId) await tx.serviceCase.updateMany({ where: { id: parentCaseId, organisationId: session.organisationId }, data: { status: "WAITING_INTERNAL" } });
+      return work;
+      });
+      // This occurs only after the owning complete native validator returned.
+      if (request) await completeTicketFormInTransaction(session, tx, request,
+        { recordId: result.id, recordRevision: result.version, fieldRecordRevision: result.version }, defaultFields);
+      return result.id;
+    }, { isolationLevel: "Serializable" });
+    refresh(); redirect(`/${kind === "QUERY" ? "service/queries" : "tickets"}/${id}`);
+  };
+  if (!form.has("studioFields")) return save();
+  return ticketFormFeedback(save);
 }
 
 export async function updateWork(form: FormData) {
   const session = await requireSession();
   assertCapability(session, "core.profile.self");
-  const id = need(form, "workId", 100);
-  await db.$transaction(async tx => {
-    const current = await nativeFieldMutationSessionInTransaction(session, tx);
-    const discovered = await tx.serviceWorkItem.findFirst({ where: { AND: [workScope(current.session), { id, mergedIntoId: null }] } });
-    if (!discovered) throw new Error("Work item unavailable.");
-    return withValidatedTicketMutation({ session: current.session, transaction: tx }, discovered.kind === "TICKET" ? "tickets.ticket.manage" : "service.ticket.update", async session => {
-      const work = await tx.serviceWorkItem.findFirst({ where: { AND: [workScope(session), { id, mergedIntoId: null }] } });
-      if (!work || work.kind !== discovered.kind) throw new Error("Work item unavailable.");
-      const member = await tx.serviceQueueMember.findFirst({ where: { organisationId: session.organisationId, queueId: work.queueId, userId: session.userId } });
-      const queue=await tx.serviceQueue.findFirstOrThrow({where:{id:work.queueId,organisationId:session.organisationId}});
-      if (queue.restricted && !member) throw new Error("Only this restricted queue’s members can progress work.");
-      if (!member && !session.capabilities.has("tickets.ticket.manage")) throw new Error("Only the receiving team can progress this query.");
-      const status = z.enum(WORK_STATUSES).parse(need(form, "status"));
-      const reason = text(form, "reason", 10000);
-      const reopening = FINAL_WORK.includes(work.status) && status === "IN_PROGRESS";
-      if (FINAL_WORK.includes(work.status) && !reopening && !(work.status === "RESOLVED" && status === "CLOSED")) throw new Error("Reopen resolved work before making changes.");
-      if ((reopening || ["RESOLVED", "CLOSED", "CANCELLED", "ANSWERED"].includes(status)) && !reason) throw new Error("Record the resolution or reason.");
-      if (status === "CLOSED" && work.status !== "RESOLVED") throw new Error("Resolve this work before closing it.");
-      if (FINAL_WORK.includes(status) && await tx.serviceWorkItem.count({ where: { organisationId: session.organisationId, parentId: id, status: { notIn: FINAL_WORK }, mergedIntoId: null } })) throw new Error("Complete or explicitly cancel child work first.");
-      const definition = work.definition as { approval?: boolean; requiredEvidence?: boolean };
-      if (status === "RESOLVED" && definition.requiredEvidence && !await tx.serviceFile.count({ where: { organisationId: session.organisationId, workId: id } })) throw new Error("Attach the required evidence before resolving.");
-      if (status === "RESOLVED" && definition.approval && (!work.approvalId || !await tx.approvalInstance.findFirst({ where: { id: work.approvalId, organisationId: session.organisationId, subjectId: id, status: "APPROVED" } }))) throw new Error("Final approval is required before resolution.");
-      const ownerUserId = form.has("ownerUserId") ? text(form, "ownerUserId", 100) || null : work.ownerUserId;
-      if (ownerUserId && !await tx.serviceQueueMember.findFirst({ where: { organisationId: session.organisationId, queueId: work.queueId, userId: ownerUserId } })) throw new Error("Assign to a member of this queue.");
-      const sla = slaSchema.parse(work.sla), now = new Date(), pause = sla.pauseStates.includes(status);
-      let due = work.resolutionDueAt;
-      if (work.pausedAt && !pause && due) due = addBusinessMinutes(due, businessMinutesBetween(work.pausedAt, now, sla.calendar), sla.calendar);
-      await lockWork(tx, session, id, ref(form), { status, ownerUserId,
-        pausedAt: pause ? (work.pausedAt ?? now) : null, resolutionDueAt: due,
-        ...(status === "RESOLVED" ? { resolution: reason, resolvedAt: now } : {}),
-        ...(reopening ? { resolvedAt: null, reopenCount: { increment: 1 } } : {}),
+  const save = async () => {
+    const id = need(form, "workId", 100);
+    await db.$transaction(async tx => {
+      const current = await nativeFieldMutationSessionInTransaction(session, tx);
+      const authority = form.has("studioFields") ? await fieldRuntimeAuthorityInTransaction(current.session, tx) : null;
+      const request: TicketFormRequest | null = authority ? { operation: "update", recordId: id,
+        recordRevision: z.number().int().min(1).max(2147483646).parse(ref(form)), nativeRequestChecksum: ticketNativeFormChecksum(form, "update"),
+        packet: parseTicketFieldFormPacket(authority, form.get("studioFields")) } : null;
+      if (request) { const replay = await replayTicketFormInTransaction(current.session, tx, request); if (replay) return; }
+      const discovered = await tx.serviceWorkItem.findFirst({ where: { AND: [workScope(current.session), { id, mergedIntoId: null }] } });
+      if (!discovered) throw new Error("Work item unavailable.");
+      if (request && discovered.kind !== "TICKET") throw new Error("Additional Ticket details cannot be attached to a query.");
+      const result = await withValidatedTicketMutation({ session: current.session, transaction: tx }, discovered.kind === "TICKET" ? "tickets.ticket.manage" : "service.ticket.update", async session => {
+        const work = await tx.serviceWorkItem.findFirst({ where: { AND: [workScope(session), { id, mergedIntoId: null }] } });
+        if (!work || work.kind !== discovered.kind) throw new Error("Work item unavailable.");
+        const member = await tx.serviceQueueMember.findFirst({ where: { organisationId: session.organisationId, queueId: work.queueId, userId: session.userId } });
+        const queue=await tx.serviceQueue.findFirstOrThrow({where:{id:work.queueId,organisationId:session.organisationId}});
+        if (queue.restricted && !member) throw new Error("Only this restricted queue’s members can progress work.");
+        if (!member && !session.capabilities.has("tickets.ticket.manage")) throw new Error("Only the receiving team can progress this query.");
+        const status = z.enum(WORK_STATUSES).parse(need(form, "status"));
+        const reason = text(form, "reason", 10000);
+        const reopening = FINAL_WORK.includes(work.status) && status === "IN_PROGRESS";
+        if (FINAL_WORK.includes(work.status) && !reopening && !(work.status === "RESOLVED" && status === "CLOSED")) throw new Error("Reopen resolved work before making changes.");
+        if ((reopening || ["RESOLVED", "CLOSED", "CANCELLED", "ANSWERED"].includes(status)) && !reason) throw new Error("Record the resolution or reason.");
+        if (status === "CLOSED" && work.status !== "RESOLVED") throw new Error("Resolve this work before closing it.");
+        if (FINAL_WORK.includes(status) && await tx.serviceWorkItem.count({ where: { organisationId: session.organisationId, parentId: id, status: { notIn: FINAL_WORK }, mergedIntoId: null } })) throw new Error("Complete or explicitly cancel child work first.");
+        const definition = work.definition as { approval?: boolean; requiredEvidence?: boolean };
+        if (status === "RESOLVED" && definition.requiredEvidence && !await tx.serviceFile.count({ where: { organisationId: session.organisationId, workId: id } })) throw new Error("Attach the required evidence before resolving.");
+        if (status === "RESOLVED" && definition.approval && (!work.approvalId || !await tx.approvalInstance.findFirst({ where: { id: work.approvalId, organisationId: session.organisationId, subjectId: id, status: "APPROVED" } }))) throw new Error("Final approval is required before resolution.");
+        const ownerUserId = form.has("ownerUserId") ? text(form, "ownerUserId", 100) || null : work.ownerUserId;
+        if (ownerUserId && !await tx.serviceQueueMember.findFirst({ where: { organisationId: session.organisationId, queueId: work.queueId, userId: ownerUserId } })) throw new Error("Assign to a member of this queue.");
+        if (request && work.version !== request.recordRevision) throw new Error("CONFLICT: this ticket changed. Refresh before saving.");
+        const manifest = authority ? await ticketFieldFormManifestInTransaction(authority, { operation: "update", recordId: id }) : null;
+        // A final-state transition validates after staging; a reopen must first
+        // establish the actual editable row through the owning CAS/domain guards.
+        if (authority && request && !reopening) await stageTicketFieldFormPacket(authority, manifest, request.packet, id, work.version);
+        const sla = slaSchema.parse(work.sla), now = new Date(), pause = sla.pauseStates.includes(status);
+        let due = work.resolutionDueAt;
+        if (work.pausedAt && !pause && due) due = addBusinessMinutes(due, businessMinutesBetween(work.pausedAt, now, sla.calendar), sla.calendar);
+        await lockWork(tx, session, id, ref(form), { status, ownerUserId,
+          pausedAt: pause ? (work.pausedAt ?? now) : null, resolutionDueAt: due,
+          ...(status === "RESOLVED" ? { resolution: reason, resolvedAt: now } : {}),
+          ...(reopening ? { resolvedAt: null, reopenCount: { increment: 1 } } : {}),
+        });
+        if (authority && request && reopening) await stageTicketFieldFormPacket(authority, manifest, request.packet, id, work.version + 1);
+        await workEvent(tx, session, work, reopening ? "REOPENED" : status === "RESOLVED" ? "RESOLVED" : "STATUS_CHANGED", `${work.status} → ${status}. ${reason}${ownerUserId !== work.ownerUserId ? ` Owner: ${work.ownerUserId ?? "unassigned"} → ${ownerUserId ?? "unassigned"}.` : ""}`, "REQUESTER");
+        if (pause !== !!work.pausedAt) await workEvent(tx, session, work, pause ? "SLA_PAUSED" : "SLA_RESUMED", `Resolution deadline: ${work.resolutionDueAt?.toISOString() ?? "none"} → ${due?.toISOString() ?? "none"}. ${reason}`);
+        return { recordId: id, recordRevision: work.version + 1, fieldRecordRevision: reopening ? work.version + 1 : work.version };
       });
-      await workEvent(tx, session, work, reopening ? "REOPENED" : status === "RESOLVED" ? "RESOLVED" : "STATUS_CHANGED", `${work.status} → ${status}. ${reason}${ownerUserId !== work.ownerUserId ? ` Owner: ${work.ownerUserId ?? "unassigned"} → ${ownerUserId ?? "unassigned"}.` : ""}`, "REQUESTER");
-      if (pause !== !!work.pausedAt) await workEvent(tx, session, work, pause ? "SLA_PAUSED" : "SLA_RESUMED", `Resolution deadline: ${work.resolutionDueAt?.toISOString() ?? "none"} → ${due?.toISOString() ?? "none"}. ${reason}`);
-    });
-  }, { isolationLevel: "Serializable" }); refresh();
+      if (request) await completeTicketFormInTransaction(current.session, tx, request, result);
+    }, { isolationLevel: "Serializable" }); refresh();
+  };
+  if (!form.has("studioFields")) return save();
+  return ticketFormFeedback(save);
 }
 
 export async function commentWork(form: FormData) {

@@ -11,7 +11,7 @@ function Section({ title, items, pending, onOpen, onClear }: { title: string; it
   if (!items.length) return null;
   return (
     <section>
-      <p className="px-4 pb-1 pt-3 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">{title}</p>
+      <p className="px-4 pb-1 pt-3 text-[11px] font-medium tracking-[0.14em] text-slate-400">{title}</p>
       {items.map((item) => {
         const openChat = item.conversationId ? () => { onOpen(); window.dispatchEvent(new CustomEvent("atlas:open-chat", { detail: { conversationId: item.conversationId } })); } : null;
         const body = (

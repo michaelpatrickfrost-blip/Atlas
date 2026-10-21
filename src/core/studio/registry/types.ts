@@ -1,6 +1,8 @@
 import type { z } from "zod";
 import type { Session } from "@/core/auth/session";
 import type { Prisma } from "@/generated/prisma/client";
+import type { PageSourceCallbacks } from "../pages/owner-contract";
+import type { ViewSourceCallbacks } from "../views/owner-contract";
 
 export type Classification = "public_internal" | "confidential" | "restricted";
 export type ContractKind = "entity" | "query" | "command" | "event" | "surface" | "decisionFact" | "template" | "metric" | "integration";
@@ -93,6 +95,9 @@ export type QueryDescriptor<I, O> = ContractIdentity & {
   transaction?: "required";
   /** Explicit owner callback protocol. Entity metadata alone cannot widen an old
    * query to conditional intents; omission preserves legacy format1 only. */
+  /** Read-only canonical window for configured field search. Native access is
+   * enforced by the owner before extension predicates run. */
+  fieldSearch?: { entityId: string; fieldVersions: readonly number[] };
   fieldMigration?: { entityId: string; purpose: "snapshot" | "representation"; intentVersions: readonly FieldMigrationIntentVersion[] };
   /** Current owning-domain coverage for retained field migration settlement.
    * Separate from sealed preparation contracts; grants no native/value writes. */
@@ -134,6 +139,10 @@ export type Contribution = {
   authoriseRecord?: (ctx: RecordContext, request: unknown) => Promise<RecordAnchor>;
   authoriseInitialRecord?: (ctx: RecordContext, proof: object) => Promise<RecordAnchor>;
   authoriseNativeValidationProof?: (ctx: RecordContext, request: NativeValidationRequest, proof: object) => Promise<RecordAnchor>;
+  /** Separate owner page policy. No existing entity or query is broadened. */
+  pageSource?: PageSourceCallbacks;
+  /** Closed descriptive owner compiler, distinct from invocation or publication. */
+  viewSource?: ViewSourceCallbacks;
 };
 export type StudioModuleContract = { contributions: readonly Contribution[] };
 export type ContractReference = { id: string; version: number; schemaHash: string; contractHash: string };

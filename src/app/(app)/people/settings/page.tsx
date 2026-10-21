@@ -27,7 +27,7 @@ export default async function HrSettingsPage() {
 
   return (
     <div className="max-w-4xl space-y-6">
-      {companyAdmin && <Link href="/settings?tab=workspace" className="text-xs font-medium text-[#0071e3]">Company administration</Link>}
+      {companyAdmin && <Link href="/settings?tab=workspace" className="text-xs font-medium text-[#826038]">Company administration</Link>}
       <section className="rounded-2xl border border-[var(--color-border)] bg-white p-6">
         <h2 className="text-lg font-semibold">Company defaults</h2>
         <p className="mt-1 text-sm text-[var(--color-ink-muted)]">Appraisal timing, weekly hours and overtime pay for the whole company. A company administrator changes these. An employee record can still set its own contracted hours.</p>

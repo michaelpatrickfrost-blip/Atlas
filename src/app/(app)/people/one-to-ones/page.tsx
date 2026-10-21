@@ -66,7 +66,7 @@ export default async function OneToOnesPage({ searchParams }: { searchParams: Pr
       {oneToOnes.length === 0 ? <EmptyState title="No one-to-ones scheduled" /> : (
         <>
           <section className="space-y-3">
-            <h3 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--color-ink-faint)]"><Clock size={14} /> Upcoming ({upcoming.length})</h3>
+            <h3 className="flex items-center gap-2 text-xs font-semibold text-[var(--color-ink-faint)]"><Clock size={14} /> Upcoming ({upcoming.length})</h3>
             {upcoming.length === 0 ? <p className="text-sm text-[var(--color-ink-muted)]">Nothing scheduled.</p> : (
               <div className="grid gap-4 lg:grid-cols-2">
                 {upcoming.map((o) => {
@@ -105,7 +105,7 @@ export default async function OneToOnesPage({ searchParams }: { searchParams: Pr
 
           {completed.length > 0 && (
             <section className="space-y-3">
-              <h3 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--color-ink-faint)]"><CheckCircle2 size={14} /> Completed ({completed.length})</h3>
+              <h3 className="flex items-center gap-2 text-xs font-semibold text-[var(--color-ink-faint)]"><CheckCircle2 size={14} /> Completed ({completed.length})</h3>
               <div className="grid gap-4 lg:grid-cols-2">
                 {completed.map((o) => (
                   <article key={o.id} className="space-y-2 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-sunken)] p-6">

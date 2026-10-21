@@ -28,7 +28,7 @@ export function ResetForm({companySlug,portal,loginHref="/login"}:{companySlug?:
       <label className="block text-[13px] text-[#6e6e73]">New password<input name="password" type="password" required minLength={12} maxLength={128} autoComplete="new-password" className={input} /></label>
       <label className="block text-[13px] text-[#6e6e73]">Confirm password<input name="confirmPassword" type="password" required minLength={12} maxLength={128} autoComplete="new-password" className={input} /></label>
       <p className="text-xs text-[#86868b]">At least 12 characters.</p>
-      <button className="w-full rounded-full bg-[#0071e3] px-4 py-2.5 text-sm font-medium text-white">Save password</button>
+      <button className="w-full rounded-full bg-[#826038] px-4 py-2.5 text-sm font-medium text-white">Save password</button>
       </div>
     </ActionForm>
   );

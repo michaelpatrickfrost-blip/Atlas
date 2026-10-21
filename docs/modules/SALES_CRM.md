@@ -195,3 +195,13 @@ Booked appointments cannot be completed through the older generic activity actio
 That action atomically checks tenant/owner, absence of appointment duration,
 uncancelled/uncompleted state and advances the legacy record version on success.
 Use the diary to record a booked appointment outcome.
+Studio Phase2 adds narrowly selected canonical Sales-order entity/list/header/lines
+contracts (`sales.order`, `.list`, `.get`, `.lines` @1), each independently enforcing
+Sales Read, module availability and server tenant. Lists/cursors are bounded and
+validate native tenant/filter/parent anchors; Finance/internal/customer-contact data
+is excluded at SELECT. Timestamp and commercial revision remain distinct; no generic
+extension or native mutation authority is inferred. Existing template provider IDs
+and renderer remain. `sales.order.preview_acknowledgement@1` returns the existing
+native PDF preview route after Read/tenant checks; navigation does not transfer an
+Admin selected-company support Session to that independently protected endpoint.
+Actual Page source/form/write bridges remain separate pending Phase2 work.

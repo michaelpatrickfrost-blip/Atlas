@@ -30,7 +30,7 @@ export function CustomerHeader({
   const actions = contributions.flatMap((contribution) => contribution.actions);
 
   return (
-    <div className="flex flex-col gap-5 rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-white p-5 sm:flex-row sm:items-start sm:justify-between sm:p-7">
+    <div className="flex flex-col gap-5 rounded-3xl border border-blue-100 bg-[var(--color-surface)] p-5 sm:flex-row sm:items-start sm:justify-between sm:p-7">
       <div className="flex min-w-0 items-start gap-4"><span className="hidden rounded-2xl bg-white p-4 text-blue-600 shadow-sm sm:block"><Building2 size={25} /></span><div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="truncate text-2xl font-semibold tracking-tight text-[var(--color-ink)]">{customer.name}</h1>

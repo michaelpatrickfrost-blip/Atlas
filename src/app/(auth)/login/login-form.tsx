@@ -52,7 +52,7 @@ export function LoginForm({portal,companySlug,recoveryHref="/reset-password"}:{p
       <Button type="submit" variant="primary" className="mt-1 min-h-12 w-full justify-center gap-2 rounded-xl" disabled={pending}>
         {pending ? "Signing in…" : "Sign in"}{!pending && portal === "atlas" && <ArrowRight size={17} aria-hidden="true" />}
       </Button>
-      <Link href={companySlug ? `/business/${companySlug}/reset-password` : recoveryHref} className="text-center text-[13px] font-medium text-[#0071e3]">Use a setup or recovery code</Link>
+      <Link href={companySlug ? `/business/${companySlug}/reset-password` : recoveryHref} className="text-center text-[13px] font-medium text-[#826038]">Use a setup or recovery code</Link>
     </form>
   );
 }

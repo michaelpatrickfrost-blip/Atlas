@@ -19,7 +19,7 @@ export default async function CsatPage({ params, searchParams }: { params: Promi
 
 function Shell({ brand, children }: { brand: { name: string; accent: string } | null; children: React.ReactNode }) {
   return (
-    <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f4f4f5", padding: 24 }}>
+    <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f5f5f4", padding: 24 }}>
       <div style={{ maxWidth: 480, width: "100%", background: "#fff", borderRadius: 16, padding: 32, borderTop: `3px solid ${brand?.accent ?? "#1d1d1f"}` }}>
         <p style={{ fontWeight: 700, marginBottom: 16 }}>{brand?.name ?? "Atlas"}</p>
         {children}

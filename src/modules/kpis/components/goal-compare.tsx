@@ -18,7 +18,7 @@ export function GoalCompare({ goals, metric, period }: { goals: GoalMarker[]; me
     const judged = goal.score;
     const focus = goal.sliceLabel ? ` This target is only the “${goal.sliceLabel}” part of the measure.` : "";
     return <article key={goal.id} className="mt-3 first:mt-0">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">Goal · {goal.department || goal.teamName}</p>
+      <p className="text-[10px] font-semibold tracking-[0.14em] text-slate-400">Goal · {goal.department || goal.teamName}</p>
       <GoalMeter name={goal.name} actual={judged.actual} target={goal.target} elapsed={judged.elapsed} verdict={judged.verdict} showPace={!metric.snapshot} unit={metric.unit ?? goal.unit} currency={judged.currency || goal.sliceLabel} summary={`${judged.summary}${focus} The chart is ${metric.snapshot ? "the current position" : periodLabel(period)}; its filter does not change this goal’s score. The goal uses its own period: ${new Date(goal.startsAt).toLocaleDateString("en-GB", { timeZone: "UTC", day: "numeric", month: "short" })} – ${new Date(goal.endsAt).toLocaleDateString("en-GB", { timeZone: "UTC", day: "numeric", month: "short", year: "numeric" })}. ${goal.ownerName} owns it.`} />
       <Link href={`/kpis/${goal.id}`} className="mt-2 inline-block text-xs font-semibold text-[var(--color-atlas-blue)]">Open the full goal</Link>
     </article>;

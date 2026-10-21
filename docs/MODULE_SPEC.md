@@ -569,3 +569,50 @@ SQL/private unit fixtures do not prove actual conditional execution. No DDL/engi
 Original0d315f7/46009 candidateMTZpXy/publicVvzibi BOTH ALL COMBINED PASS, exact
 public health. Existing conditional review/publication and module regressions verified
 live; normal execution2 remains unavailable until actual row/outcome inspection.
+
+## Phase 2 Page-source opt-in — 11 October 2026
+
+A Page owner declares its canonical entity generation, explicit supported extension
+generations, closed query projections (including each column's grants/format), scope,
+cardinality/cost/pagination, approved facts/actions/surfaces and device support.
+Registered callbacks authorise the actual canonical record/list anchor, bind typed
+query inputs and project exact outputs in the same genuine refreshed transaction.
+Current native/private/tenant checks remain independent from Studio visibility.
+
+Retained Page metadata reconstructs its exact stored source contract and field pins;
+Create-only validation may inspect metadata without executing Read queries or borrowing
+Read grants. Ordinary runtime must authorise all used current/written field and owning
+reference grants before values. Module-contributed forms reuse existing complete
+native forms/actions and CAS. Design preview shares the runtime display contract but
+cannot invoke commands, navigate, paginate or submit forms. Unsupported owners and
+protected domain edits are unavailable; no generic database or business table API.
+
+## Phase 2 visual setup and native adapters — 11 October 2026
+
+Friendly field setup uses a closed all15-type input contract and server-generated
+stable keys/enum identities/approved reference pins. Published structural changes
+still require the original reviewed migration; cosmetic save cannot alter saved
+security/defaults/required/storage. Record setup resolves canonical active pins on
+the server. Existing-record type selection reuses the original assignment service,
+owner CAS/extension revision/private/current+retained policies and atomic Audit.
+Native progress/reopen remains intact; a sibling selector never nests native forms.
+
+The standalone document editor adapts the existing Templates editor/service and
+DocumentTemplate records. Original version CAS and native contract access remain;
+selected-business Studio authorisation adds no business privilege. The published
+Page runtime caches only bounded sealed compiled metadata, with fresh owner/grants
+and actual queries each request. Source implementation is not live gate evidence.
+
+## Phase2 registered business view compiler — 12 October 2026
+
+A module may register a closed `viewSource` owner facet with a strict JSON content
+schema, exact approved metric/query dependencies, authoring capability, required
+modules and explicit cost/query bounds. Core dispatches through the registry in a
+genuine current Serializable authoring transaction and never imports the module.
+Prepared source approvals are deeply immutable before the pure owner compiler;
+returned content/requests/dependencies are revalidated and bounded. Native source
+rights remain independent of Studio permission. No source data is read or cached
+by compilation. Analytics `analytics.dashboard.view@1` is the first finite complete
+count-measure family. Original personal Analytics boards/providers remain intact.
+Compiler availability alone grants no publication/readiness: original immutable
+publisher plus compatible customer readers and actual gates are separate work.

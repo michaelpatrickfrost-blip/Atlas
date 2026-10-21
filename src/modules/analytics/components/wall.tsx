@@ -85,7 +85,7 @@ export function Wall({
     <main className={styles.wall}>
       <header className={styles.wallHeader}>
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-200/70">
+          <p className="text-xs font-semibold tracking-[0.16em] text-blue-200/70">
             {company}
           </p>
           <h1 className="mt-1 text-4xl font-semibold tracking-tight">{name}</h1>
@@ -160,7 +160,7 @@ export function Wall({
                 ["--accent" as string]: palettes[widget.color ?? "blue"][0],
               }}
             >
-              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-blue-100/50">
+              <p className="text-[10px] font-semibold tracking-[0.14em] text-blue-100/50">
                 {metric?.subject ?? "Atlas"}
               </p>
               <h2 className="mt-1 text-sm font-semibold">

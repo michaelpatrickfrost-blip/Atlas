@@ -1,13 +1,24 @@
 import {beforeEach,describe,expect,it,vi} from "vitest";
 const state=vi.hoisted(()=>({session:{organisationId:"org",organisationName:"Company",membershipId:"member",userId:"agent",userName:"Agent",userEmail:"agent@example.test",capabilities:new Set<string>()},tx:{$queryRaw:vi.fn(),serviceWorkItem:{findFirst:vi.fn(),count:vi.fn(),updateMany:vi.fn()},serviceQueue:{findFirstOrThrow:vi.fn()},serviceQueueMember:{findFirst:vi.fn()},serviceFile:{count:vi.fn()},approvalInstance:{findFirst:vi.fn()},serviceWorkEntry:{create:vi.fn()},auditEntry:{create:vi.fn()},domainOutbox:{create:vi.fn()}},enabled:vi.fn()}));
 vi.mock("@/core/auth/session",()=>({requireSession:async()=>state.session}));
-vi.mock("@/core/db/client",()=>({db:{$transaction:async(fn:(tx:typeof state.tx)=>unknown)=>fn(state.tx),moduleState:{findMany:async()=>await state.enabled()?[{'moduleId': 'service', 'enabled': true, 'entitled': true}, {'moduleId': 'tickets', 'enabled': true, 'entitled': true}]:[]}}}));
+vi.mock("@/core/db/client",()=>({db:{$transaction:async(fn:(tx:typeof state.tx)=>unknown)=>fn(state.tx),moduleState:{findFirst:state.enabled,findMany:async()=>await state.enabled()?[{moduleId:"service",enabled:true,entitled:true},{moduleId:"tickets",enabled:true,entitled:true}]:[]}}}));
+// Domain-only collaborators: genuine refreshed identities and the complete
+// resulting-field proof are exercised in studio-ticket-native-proof.test.ts.
+// This suite keeps the owning capability check and tests the original native
+// transition/private-queue/event boundaries without inventing a session stamp.
+vi.mock("@/core/studio/fields/runtime-authority", async importOriginal => ({
+  ...await importOriginal<typeof import("@/core/studio/fields/runtime-authority")>(),
+  nativeFieldMutationSessionInTransaction: async () => ({session: state.session}),
+}));
+vi.mock("@/core/service-work/studio-enforcement", () => ({
+  withValidatedTicketMutation: async (context: {session: typeof state.session}, operation: string,
+    callback: (session: typeof state.session) => Promise<unknown>) => {
+    const {assertCapability} = await import("@/core/permissions/check");
+    assertCapability(context.session, operation);
+    return callback(context.session);
+  },
+}));
 vi.mock("next/cache",()=>({revalidatePath:vi.fn()}));vi.mock("next/navigation",()=>({redirect:vi.fn()}));
-// These domain tests keep the native security boundary explicit. Durable Studio
-// authority and receipt enforcement have their own genuine native proof suites.
-vi.mock("@/core/studio/fields/runtime-authority",()=>({nativeFieldMutationSessionInTransaction:async(session:typeof state.session)=>({session})}));
-vi.mock("@/core/service-work/studio-enforcement",()=>({withValidatedTicketMutation:async(context:{session:typeof state.session},capability:string,callback:(session:typeof state.session)=>Promise<unknown>)=>{const {assertCapability}=await import("@/core/permissions/check");assertCapability(context.session,capability);return callback(context.session);}}));
-vi.mock("@/core/service-work/studio-native",()=>({updateWorkWithFieldReceipt:async(tx:typeof state.tx,session:typeof state.session,id:string,version:number,data:Record<string,unknown>)=>{const result=await tx.serviceWorkItem.updateMany({where:{id,organisationId:session.organisationId,version},data:{...data,version:{increment:1}}});if(result.count!==1)throw new Error("This record changed. Refresh before saving.");}}));
 import {updateWork,commentWork} from "@/core/service-work/actions";
 const work={id:"work",organisationId:"org",kind:"TICKET",number:"TKT-1",queueId:"queue",requesterUserId:"requester",status:"IN_PROGRESS",version:1,sla:{},definition:{},pausedAt:null,resolutionDueAt:new Date("2026-10-20"),ownerUserId:"agent",parentCaseId:null,parentId:null};
 const form=(values:Record<string,string>)=>{const f=new FormData();Object.entries({workId:"work",version:"1",...values}).forEach(([k,v])=>f.set(k,v));return f;};

@@ -13,13 +13,13 @@ export default async function SettingsLayout({
   if (!canOpenCompanyAdmin(session)) redirect("/profile/settings");
   return (
     <div className="mx-auto max-w-[1500px] space-y-5">
-      <header className="flex flex-wrap items-center justify-between gap-4 rounded-[28px] border border-white bg-white/80 px-6 py-6 shadow-sm">
+      <header className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white bg-white/80 px-6 py-6 shadow-sm">
         <div className="flex items-center gap-4">
           <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
             <Settings2 size={24} />
           </span>
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[.17em] text-blue-600">
+            <p className="text-[10px] font-semibold tracking-[.17em] text-blue-600">
               {session.organisationName}
             </p>
             <h1 className="mt-1 text-2xl font-semibold tracking-tight">

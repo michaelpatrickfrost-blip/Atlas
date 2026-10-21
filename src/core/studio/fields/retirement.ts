@@ -7,6 +7,7 @@ import { writeAudit } from "@/core/audit/log";
 import { STUDIO_CAPABILITIES } from "../permissions";
 import { Prisma } from "@/generated/prisma/client";
 import { lockBoundFieldEntityInTransaction } from "./entity-lock";
+import { assertNoActiveConfigurationDependantsInTransaction } from "../configuration/usage";
 
 const retirementSchema = z.strictObject({ definitionId: z.uuid(), revision: z.number().int().nonnegative() });
 function conflict(): never { throw new Error("CONFLICT: this field is unavailable, retired or changed. Reload before retiring it."); }
@@ -22,6 +23,11 @@ export async function retireFieldDefinition(session: Session, input: unknown) {
     if (!await tx.moduleState.findFirst({ where: { organisationId: session.organisationId, moduleId: "studio", enabled: true, entitled: true }, select: { id: true } }))
       throw new Error("DEPENDENCY_BROKEN: Studio is unavailable.");
     await lockBoundFieldEntityInTransaction(tx, session.organisationId, value.definitionId);
+    // Preserve the existing opaque stale/foreign retirement conflict before
+    // examining the sealed dependency graph of an authorised current field.
+    if (!await tx.studioDefinition.findFirst({ where: { id: value.definitionId, organisationId: session.organisationId,
+      kind: "customField", revision: value.revision, retiredAt: null }, select: { id: true } })) conflict();
+    await assertNoActiveConfigurationDependantsInTransaction(session, tx, { definitionId: value.definitionId });
     const retiredAt = new Date();
     const changed = await tx.studioDefinition.updateMany({
       where: { id: value.definitionId, organisationId: session.organisationId, kind: "customField", revision: value.revision, retiredAt: null },

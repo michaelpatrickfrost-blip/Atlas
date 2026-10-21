@@ -20,7 +20,7 @@ function unavailable(): never { throw new Error("FIELD_STORAGE_INVALID: the fiel
 function frozen(): never { throw new Error("FIELD_MIGRATION_IN_PROGRESS: this field is temporarily frozen while an approved change completes."); }
 const supportedTicketVersions = new Set([2, 3, 4, 5, 6, 7, 8, 9]);
 const causeSchema = z.strictObject({ entity: referenceSchema, operationId: z.uuid(),
-  trigger: z.enum(["ordinary_field_save", "native_record_write", "native_record_creation"]) });
+  trigger: z.enum(["ordinary_field_save", "native_record_write", "native_record_creation", "record_type_assignment"]) });
 export type FieldWindowMutationCause = z.infer<typeof causeSchema>;
 const generationSchema = z.object({ id: z.uuid(), organisationId: z.string().min(1), definitionId: z.uuid(), entityId: z.string().min(1), valueType: z.string().min(1) });
 const selectedWindowSchema = z.object({ ...fieldMigrationExecutionPinSchema.shape.publication.shape,

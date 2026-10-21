@@ -6,7 +6,7 @@ export function proxy(request: NextRequest) {
   headers.set("x-atlas-request-path",request.nextUrl.pathname);
   const response = NextResponse.next({request:{headers}});
   const path = request.nextUrl.pathname;
-  if (path === ADMIN_LOGIN_PATH || path.startsWith(`${ADMIN_LOGIN_PATH}/`) || path === "/atlas" || path.startsWith("/atlas/") || path.startsWith("/api/atlas/")) {
+  if (path === ADMIN_LOGIN_PATH || path.startsWith(`${ADMIN_LOGIN_PATH}/`) || path === "/design-studio" || path.startsWith("/design-studio/") || path === "/atlas" || path.startsWith("/atlas/") || path.startsWith("/api/atlas/")) {
     response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive, nosnippet");
     response.headers.set("Referrer-Policy", "no-referrer");
     response.headers.set("Cache-Control", "private, no-store");

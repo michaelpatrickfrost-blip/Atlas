@@ -15,11 +15,11 @@ export default async function ManufacturingReports() {
         <h1 className="text-3xl font-semibold tracking-tight">Reports</h1>
       </header>
       <section>
-        <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Customer orders at risk</h2>
+        <h2 className="text-xs font-semibold tracking-[0.16em] text-[var(--color-ink-faint)]">Customer orders at risk</h2>
         <p className="mt-1 text-sm text-[var(--color-ink-muted)]">Production required within 2 days or already overdue, still open.</p>
         <div className="mt-3 overflow-hidden rounded-3xl border border-[var(--color-border)] bg-white">
           <table className="w-full text-sm">
-            <thead className="bg-[var(--color-surface-sunken)] text-left text-xs uppercase tracking-wide text-[var(--color-ink-faint)]">
+            <thead className="bg-[var(--color-surface-sunken)] text-left text-xs text-[var(--color-ink-faint)]">
               <tr>
                 <th className="px-5 py-3">Customer</th>
                 <th className="px-5 py-3">Sales order</th>

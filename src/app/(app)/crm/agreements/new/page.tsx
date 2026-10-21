@@ -22,7 +22,7 @@ export default async function NewAgreementPage({ searchParams }: { searchParams:
         <h2 className="text-2xl font-semibold tracking-tight">New agreement</h2>
         <p className="mt-2 text-sm leading-relaxed text-[var(--color-ink-muted)]">Keep it as a draft until the customer has agreed. Active agreements set the price on new quotes and orders.</p>
       </div>
-      <div className="rounded-[22px] border border-[var(--color-border)] bg-white p-6 shadow-[var(--shadow-atlas)]">
+      <div className="rounded-2xl border border-[var(--color-border)] bg-white p-6 shadow-[var(--shadow-atlas)]">
         <AgreementForm customers={customers} lists={lists} agreement={selected ? { id: "new", partyId: selected, name: "", status: "DRAFT", startsOn: new Date(), endsOn: null, priceListId: null, paymentTerms: "", notes: "", slaName: "", coverage: "", responseMinutes: null, resolutionMinutes: null, slaNotes: "" } : undefined} />
       </div>
     </div>

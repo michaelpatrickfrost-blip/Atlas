@@ -1,3 +1,860 @@
+## 21 October 2026 — Stack brand + Guardian rail fix LIVE (b431bddc)
+
+Deployed b431bddc4c9a995e777732f60e159a54149170a9 (codex/macro-ui-overhaul-20261020)
+to https://atlassystem.online at 19:14–19:22 UTC: candidate and public polish
+acceptance both PASS (36 routes × 3 widths, phone Apps/focus, client crossfade,
+reduced motion, Home/Apps/header/search business-boundary checks); no restore;
+/api/health/release reports b431bddc. Pre-deploy backup
+/home/administrator/backups/atlas-pre-deploy-20261021-191442; rollback runtime
+/opt/atlas-releases/e95cd16433c72db6904c3313c78bacc6ba646578 retained.
+This release carries the Stack brand (icon, favicon, Apple icon, mark, wordmark,
+logo; top-bar Home tile at every width) and the rail fix for the Guardian sweep.
+Three earlier attempts today exited 1 silently on the release lock (the failing
+sweep cycle; see the entry below); the deploy was started within seconds of the
+sweep reporting `failed`. Confirmed 19:25 UTC: the first automatic Guardian sweep
+against this runtime completed in ~2.5 min — 300 page requests, Chromium checked
+100 rendered pages and 117 explicit safe toggles, 0 browser failures, 0 findings
+(the previous runs had failed after ~30 min since 06:18). The main-sync PR branch
+(michaelpatrickfrost-blip/Atlas#1) is refreshed from this head.
+
+## 21 October 2026 — Guardian sweep regression from the hidden rail (fix on release branch)
+
+Since the push-reveal rail went live (e95cd164, ~06:18 UTC) every six-hourly
+Guardian sweep has failed after ~30 min and the timer (OnUnitInactiveSec=5min)
+restarts it, so the shared release lock is held ~85 % of the time and
+`npm run deploy:vps` exits 1 silently after its 600 s flock wait (two attempts
+today). Cause, from scripts/guardian/browser-sweep.ts: on every page it clicks each
+`button[data-guardian-safe="toggle"]` that Playwright deems visible and expects
+aria-expanded to flip. The rail's "+" Apps button sat in the hidden sheet at
+opacity 0 / pointer-events none (still "visible" to Playwright) so each click hit
+the 30 s action timeout, and the top-bar RailToggle carried data-guardian-safe
+without aria-expanded; 100 pages × 30 s outran the sweep's 30-minute QA token →
+"QA profile session changed during browser checks" → exit 1. No findings were
+recorded because the run threw before persisting them.
+Fix (presentation/accessibility only): the hidden sheet now also gets
+`visibility: hidden` (delayed until the slide-out finishes), so hidden controls
+are not probed, tabbed to or announced; RailNav dispatches `atlas:rail-state`
+and RailToggle mirrors it as aria-expanded, so Guardian's open/reset probe is
+true to the control. scripts/check-home-menu.ts already pins the rail before
+asserting the utilities nav, so the gate is unaffected.
+Checks: npx tsc --noEmit PASS (stray macOS "* 3.ts" duplicates in .next/types
+removed first); eslint rail-nav PASS; npm run build PASS. Deploy of this fix:
+next lock window after the Stack-brand release 196b4ceb; see next entry.
+
+## 21 October 2026 — Brand: the Stack mark replaces the "A." draft (release branch, deploy pending)
+
+Michael asked for an icon and logo that match the ink-on-paper system, rejected
+the serif "A." draft (935750f6, never deployed: its release collided with the
+six-hourly Guardian sweep, which holds the release lock ~20 min from :33 at
+05/11/17/23 UTC — a deploy started then waits 600 s and exits 1 silently) and
+three further sheets, and chose the "Stack": three rounded horizontal layers
+rising to a red point — the system's layers — with "Atlas" in Outfit 700.
+Rendered by scripts/brand/render-brand.mjs (Playwright, bundled Outfit;
+`node scripts/brand/render-brand.mjs <repo> <outdir>`), then copied in:
+- public/brand/atlas-icon.png 1024² — ink (#1a1917) squircle tile, paper
+  layers at 100/72/48 %, red (#c9574b) point.
+- public/brand/atlas-mark.png 515×400 — the mark in ink on transparent (admin
+  shell, chat dock use it with multiply); public/brand/atlas-mark.svg added as
+  the vector source.
+- public/brand/atlas-wordmark.png 426×145 — mark + "Atlas" (was a 900-wide
+  "ATLAS"); AtlasLogo width/height attrs and the marketing website header/footer
+  <img> sizes updated; .website-brand img gets object-fit: contain so the fixed
+  154×54 box no longer distorts it.
+- public/brand/atlas-logo.png 905×715 — tile, "Atlas", "Plan. Make. Deliver."
+  with red stops (sign-in and admin sign-in).
+- src/app/icon.png 512, apple-icon.png 180 (ink background, no transparent
+  corners), favicon.ico 16/32/48 generated with Pillow from the tile.
+- src/components/shell/topbar.tsx: the Home link with the brand tile is now shown
+  at every width (it was phone-only), so the mark is visible in the app on desktop.
+No old blue-gradient assets remain in use. Checks: npx tsc --noEmit PASS,
+eslint on changed tsx PASS, npm run build PASS. Deploy: run from this session
+after the 17:33 UTC Guardian sweep clears; see next entry.
+
+## 21 October 2026 — Push-reveal rail, Outfit and dynamic Home LIVE at https://atlassystem.online
+
+Supersedes "deploy pending" in the entry below. Deployed commit
+e95cd16433c72db6904c3313c78bacc6ba646578 (branch codex/macro-ui-overhaul-20261020,
+worktree /Users/michael/Desktop/atlas-macro-ui, pushed). App source is e3ad90b4; e95cd164
+adds only a gate change. Backup of the activated release:
+/home/administrator/backups/atlas-pre-deploy-20261021-061839. Rollback runtime retained:
+/opt/atlas-releases/dda7609b7680bb79cf2cabd6a392d84805ad021d (previous Macro release;
+database not changed by the release).
+Deploy attempts before it, none of which switched the live pointer:
+- b7d52f20: premium gate PASS; home-menu failed on the "Your apps" heading (it now
+  carries a live count). Fixed by 45fc82c6 (heading matched with /^Your apps\b/).
+- 45fc82c6 replayed read-only on the sealed b7d52f20 candidate: failed at
+  check-home-menu.ts:240, the Apps popup covered the header Search button and the page's
+  module tab strip (z-62) drew through the popup. Fixed in src by e3ad90b4 (.atlas-rail
+  z-index 76; .atlas-rail-popup top 50px, below the header). Popups already used the
+  opaque --m-surface (#fbfaf7); the bleed-through was layering, not transparency.
+- e3ad90b4: premium gate PASS; home-menu failed "desktop utility icons and labels must
+  fit the rail" because the hidden-at-rest rail slides items 14px aside and fades them.
+  Backups of these attempts: atlas-pre-deploy-20261021-055934 and -061003.
+Gate change in e95cd164 (scripts/check-home-menu.ts only): on viewports >= 1024px the
+rail is pinned ("Toggle navigation") and transitions are awaited before the fit check;
+the popup anchoring assertion now requires the popup beside the rail and below the
+header (was: top level with the Apps button). The Search-click-while-Apps-open assertion
+is unchanged and passes. Before redeploying this was run read-only on the sealed
+e3ad90b4 candidate (loopback :3011, scratch overlay since removed): PASS.
+Checks that ran and PASSED on e95cd164: tsc and eslint on b7d52f20 (0 errors); candidate
+polish acceptance (36 routes x 3 widths, phone Apps/focus, crossfade, reduced motion;
+home-menu desktop/tablet/phone/small-phone, business boundary, Search with Apps open);
+runtime switched; public-HTTPS polish acceptance PASS (evidence /tmp/atlas-polish-public-kHXAjs
+and /tmp/atlas-home-menu-check-L6gWog on the server); no restore. Live:
+/login 200, /api/health/release = e95cd164..., /opt/atlas-current resolves to it, atlas active.
+Public screenshots reviewed: Apps menu solid, header/Search unobstructed.
+Not run: a fresh local build of e95cd164 (the server built the candidate; tsc/eslint were run
+on b7d52f20 and the later commits changed only macro.css and scripts); manual signed-in
+click-through of every app; Desktop main checkout untouched.
+Next: reconcile the Desktop main checkout (~560 commits behind) and merge this branch
+lineage into main; keep dda7609b as the rollback runtime until then.
+
+## 21 October 2026 — Push-reveal rail, Outfit, dynamic Home (release branch, deploy pending)
+
+Michael's review of the live Macro release: the rail must not overlay the work
+("the screen needs to move seamlessly right and the menu appears neatly behind"),
+the UI font should be rounder/posher, and Home was bland. Changes on
+codex/macro-ui-overhaul-20261020 (worktree /Users/michael/Desktop/atlas-macro-ui):
+- src/components/shell/rail-nav.tsx: rail hidden at rest (slim edge handle).
+  Hovering the handle / focusing into the rail / pinning (top-bar toggle
+  `RailToggle`, or ⌘.) widens the rail column so the floating workspace panel
+  slides right and uncovers the navigation; it slides back on leave, after
+  navigation, and stays open while the Apps popup is open. Pin preference in
+  localStorage key `atlas.rail` (per-viewer convenience only). Items cascade in.
+- Fonts: Outfit replaces Figtree for UI (bundled, OFL, README/SHA updated);
+  Fraunces titles unchanged.
+- src/app/(app)/home/page.tsx: "Today" band (weekday/date, greeting with first
+  name, live tiles for attention / open tasks via loadMyTaskCount / active goals),
+  apps index with serif section titles, sticky side column for attention (pigment
+  severity dots, Urgent/Review tags) and goals; staggered entrance reveal and a
+  slow aurora wash behind Home only. No marketing copy; every figure is real data.
+- scripts/check-home-menu.ts: on desktop widths pins the rail via "Toggle
+  navigation" before clicking Apps (rail is hidden by default now).
+Checks: npx tsc --noEmit PASS; eslint on changed files PASS; npm run build PASS.
+Deploy: delegated (ATLAS_RELEASE_ACCEPTANCE=polish); see next entry. PR
+michaelpatrickfrost-blip/Atlas#1 (main-sync) needs this merged in after deploy.
+
+## 21 October 2026 — main reconciled with the deployed Macro UI lineage (PR)
+
+Branch main-sync = origin/main (a9e01862, which had diverged from the release
+lineage by one docs-only commit) merged with codex/macro-ui-overhaul-20261020
+(ef8e3541; live runtime dda7609b). The only conflict was this file: both sides
+had prepended dated entries, so the release lineage's entries were kept first
+and main's 11 October Manufacturing entry after them; nothing was dropped.
+Checks on the merged tree: npx tsc --noEmit PASS; npm run build PASS (fresh
+npm ci). Not run: npm test, lint, deploy — this PR changes no code relative to
+the live runtime, only brings main up to it. The Desktop checkout
+/Users/michael/Desktop/RP SYSTEM and its uncommitted work were not touched; the
+merge was done in the worktree /Users/michael/Desktop/atlas-main-sync.
+Next: merge the PR, then future releases can run from main again per docs/DEPLOY.md.
+
+## 20 October 2026 — Macro ink-on-paper redesign LIVE at https://atlassystem.online
+
+Supersedes the "build and deploy delegated" status of the entry below. Deployed
+commit dda7609b7680bb79cf2cabd6a392d84805ad021d (branch
+codex/macro-ui-overhaul-20261020, worktree /Users/michael/Desktop/atlas-macro-ui,
+pushed to origin) = the design head f4250d6f plus one gate fix. Pre-deploy backup
+of the activated release: /home/administrator/backups/atlas-pre-deploy-20261020-214047.
+Rollback runtime retained: /opt/atlas-releases/ee18a2689d592dc0c837fb42c74c3a7fc739d487
+(the previous live release; database was not changed by the release).
+Checks that actually ran (all PASS unless stated):
+- npx tsc --noEmit; eslint src/app src/components/shell src/components/ui (0 errors,
+  8 pre-existing warnings: unused vars, <img>); npm run build (exit 0).
+- First deploy of f4250d6f FAILED at candidate acceptance (/home: "rendered Macro
+  editorial foundation", scripts/check-premium-ui.ts:72): the ink-on-paper pass moved
+  --m-ink from #1b1a17 to #1a1917 but the gate still pinned the old hex. The live
+  pointer was never switched (still ee18a268); backup of that attempt:
+  /home/administrator/backups/atlas-pre-deploy-20261020-213402.
+- Only script change: check-premium-ui.ts expects --color-ink "#1a1917" (commit
+  dda7609b). No other assertion changed; waitUntil "networkidle" left as is.
+  Before redeploying, both gates were rerun read-only (GET-only) against the sealed
+  candidate on loopback :3011 from a scratch overlay (since removed): 36 routes x 3
+  widths and the home-menu gate passed.
+- Redeploy (ATLAS_RELEASE_ACCEPTANCE=polish): candidate polish acceptance PASS
+  (36 routes x 3 widths, phone Apps/focus, client crossfade, reduced motion, writes
+  blocked; home-menu desktop/tablet/phone), runtime switched, then public-HTTPS polish
+  acceptance PASS (same gates, evidence /tmp/atlas-polish-public-wf2mDT on the
+  server), no restore. The earlier public `networkidle` timeout at /home (attempt of
+  dcd33f55) did not recur; its cause was not isolated.
+- Live verification: https://atlassystem.online/login 200; /api/health/release
+  reports dda7609b7680bb79cf2cabd6a392d84805ad021d; /opt/atlas-current resolves to
+  that release; atlas.service active. Public screenshots home-desktop/sales-desktop
+  were reviewed. The Home capture shows the slide-out rail open over the content
+  (pointer parked at the left edge in the test run); not investigated as a defect.
+Not run: manual click-through of every app in a signed-in browser; Desktop main
+checkout untouched.
+Next: reconcile the Desktop main checkout (~560 commits behind) and merge this branch
+lineage into main; keep ee18a268 as the rollback runtime until then.
+
+## 20 October 2026 — Macro-inspired total visual redesign (release branch)
+
+Branch codex/macro-ui-overhaul-20261020 (worktree /Users/michael/Desktop/atlas-macro-ui),
+cut from live-lineage 66a02a07 (live runtime ee18a268), not from the Desktop main
+checkout, which is ~560 commits behind and holds unrelated WIP (left untouched).
+Changes: new src/app/macro.css (all shared surfaces, rail, menus, app navigation,
+buttons, inputs, tables, cards, dialogs, tabs, launcher, sign-in); globals.css
+@theme remaps slate/gray/blue/indigo/sky to warm stone/bronze; 57 source files had
+cool blue hex/rgb literals shifted warm by script; layout.tsx uses Inter +
+Newsreader (Nunito removed); new shell/icon-rail.tsx + rail-nav.tsx; shell-chrome
+wraps content in one bordered panel; topbar.tsx is one slim header for all routes
+(TopbarVariant removed); CommandPalette also opens on "atlas:open-search".
+Second pass (same day, after reviewing candidate screenshots): "ink on paper"
+system — paper grain, floating bordered panel, slide-out icon rail (labels glide
+in on hover/focus), solid pigment app-icon tiles with white glyphs, Figtree
+(rounded sans) + Fraunces 600 (bold soft serif titles), 16–20px rounded floating
+menus/dialogs, soft diffuse shadows, editorial Home index (serif group headings,
+compact app rows). Topbar shows company / current app title. 140 app files had
+gradients, uppercase eyebrows, 20–32px radii and bold weights normalised by script.
+Workspace primitives (heading, stat row, links, empty state, tabs, status pill,
+auth frame) rewritten. scripts/check-premium-ui.ts and check-home-menu.ts updated
+for the new tokens/rail (candidate acceptance of commit dcd33f55 PASSED all 36
+routes × 3 widths; public acceptance timed out on networkidle at /home and the
+deploy auto-restored ee18a268 — live site unchanged so far).
+Checks on current head: npx tsc --noEmit PASS; eslint on app/shell/ui PASS.
+Build and deploy of this head: delegated — see the next entry when it lands.
+Next: deploy with ATLAS_RELEASE_ACCEPTANCE=polish; if public networkidle times
+out again, inspect the public runtime for a request that never settles and then
+merge this branch lineage into main once the Desktop checkout is reconciled.
+
+## 14 October 2026 — Premium overhaul live and publicly verified
+
+Supersedes the pending 14 October checkpoints below. Public HTTPS and the live
+runtime now report ee18a2689d592dc0c837fb42c74c3a7fc739d487; immediate rollback is
+75977b02dcb3355863788e968d839ec2481fa79a. Source is committed/pushed on
+codex/premium-ui-overhaul-20261014. Shared premium.css/shell/UI components deliver
+pearl surfaces, sapphire/white glass controls, coloured app tiles, refined Home,
+navigation, forms, tables, tabs, drawers, login and Admin/Studio surfaces. Finance,
+Customer Service, Manufacturing and Guides now share the light banner system.
+Page/tab crossfades and discrete menu transitions retain draft/focus behaviour and
+respect reduced motion. No domain, schema, grant or business-store changes.
+
+Production builds, strict TypeScript, scoped lint, diff/shell checks and15 focused
+tests/4 files PASS. Exact final candidate and public acceptance PASS:36 entry
+screens×1440/820/390, zero browser/asset errors, phone Apps/focus, actual native
+client crossfade and reduced motion; Home/Apps/header gates also pass down to320px.
+Standalone Studio designer was NOT exercised: the existing QA company lacks its
+entitlement. Admin Studio setup was covered; no grants/fixtures were added.
+Private final evidence: /tmp/atlas-polish-candidate-5eSG36 and
+/tmp/atlas-polish-public-NrbLw9; Home/menu obilsf and6rzNZ9. Full repository tests/lint
+were not run. Final release recovery backup: atlas-pre-deploy-20261014-200039.
+
+Switch/rollback rehearsalA2gG1x PASS45 page requests/45 Apps toggles and staff
+launcher28 authorised apps. PriorTrKQah interrupted a Service report response;
+unchanged repeat passed, with original failed evidence retained. Normal activation,
+public feature acceptance, compatibility and final login200 all PASS. Standard
+retention retired14 redundant generated runtimes, preserving source/evidence/data,
+current/rollback. Temporary2GiB build swap removed under both original locks with
+no compiler and3,893,496KiB available versus1,245,364,224 bytes swapped; no permanent
+service/fstab/PG changes. Maintenance evidence premium-build-memory-20261014.txt.
+
+Read-only live preview uses a45-minute loopback proxy to the actual runtime; no
+extra Next process or new permissions. Public screenshots were visually inspected.
+Canonical Desktop source reconciliation remains pending: read-only scoped patch
+check fails on its older/missing deployed paths and unrelated unfinished edits.
+No source patch/reset applied there; a shared CURRENT_STATE release pointer is
+added without replacing concurrent entries. Merge the deployed lineage and memory
+with that work before a future main release; do not deploy the unrelated WIP.
+
+## 14 October 2026 — Banner candidate passed; final launcher rehearsal correction
+
+Prepared5a2e28ac passed36 entry screens at1440/820/390, native crossfade, reduced
+motion and Home/Apps down to320px (privatekiVtdp coverage/screenshots). Finance
+preview visually verified with the shared light banner and glass action. Switch
+rehearsalfa1ssm passed20 read-only page loads/menu toggles but stopped on another
+stale launcher expectation: public / intentionally renders AtlasWebsite; /home is
+the authenticated launcher. Corrected only the checker navigation and result label.
+No app behaviour change. Scoped lint and diff checks PASS. Next: pinned retry,
+complete switch/rollback rehearsal and public acceptance, then safe swap cleanup.
+Public75977b02 remains unchanged; no new grants, fixtures or business writes.
+
+## 14 October 2026 — Align remaining banners with the premium UI
+
+Michael identified the dark Financial command centre and similar banners as out
+of line with the new UI. Finance and Customer Service now use shared WorkspaceHeading
+with sapphire/white glass actions; Finance entity selection retains links and active
+state in a light segmented strip. Manufacturing and all three Guides headers now
+use the same shared surface hook. No business/query/permission changes.
+Prepared0f574df1 passed36 roots×3 widths, native client crossfade, phone focus/menu,
+reduced motion and Home/all Apps down to320px; private evidenceYxo0sK/BeP6AH.
+No activation. The optional switch drill found a stale launcher checker expecting
+separate Stock/Planning after their existing consolidation, old icon sizes and
+description-free links. Updated to the actual authorised consolidated registry,
+separate Dashboards utility and shared48/54px tile contract, preserving access,
+disabled-app staff checks, responsive fit and continuity. EvidencewW1cl3 retained.
+Banner production build, strict TypeScript, scoped lint and diff checks PASS.
+Next: new pinned candidate, corrected switch drill and full public acceptance;
+temporary build swap remains pending safe cleanup. Preview0f574 remains read-only.
+
+## 14 October 2026 — Premium compiler memory recovery; activation still pending
+
+f9bb9b16 passed local production build, strict types and15/4 focused tests. Server
+kernel193355UTC confirms OOM killed candidate compiler1051146 before acceptance.
+SSH/HTTPS briefly timed out; public75977b02 recovered unchanged. Stopped the private
+preview processes. Under both original locks/no candidate process, retained failed
+source/config at /opt/atlas-maintenance-backups/failed-premium-f9bb9b16398de23fc7db46c329dc62c8f4e53f35-20261014
+and retired only its generated dependencies/build/client. Original193106 required
+backup/build log retained. Reused documented temporary2GiB build-buffer procedure:
+/var/tmp/atlas-release-build.swap active, no fstab/app/PG/database configuration
+changes; evidence premium-build-memory-20261014.txt in maintenance backups.
+Next: normal pinned retry and complete candidate/public acceptance; remove exact
+temporary swap under both locks once no compiler remains and RAM safely permits.
+
+## 14 October 2026 — Premium candidate review corrections
+
+Prepared59e806cb remains unactivated. Actual read-only desktop gate passed35 app/
+core/Admin roots, then correctly rejected the checker’s invalid staff Studio URL
+without a selected business. QA company has no Studio entitlement; corrected gate
+covers Admin Studio setup and only opens designer when already entitled, with the
+required business parameter. No grants/fixtures added; designer live coverage stays
+explicitly unavailable for this QA identity. Home/all Apps desktop/tablet passed;
+phone28px hit-target assertion failed during animated entry. Raised targets to30px,
+and visual phone review found the added Apps border could wrap header utilities;
+compact phone utility sizing now preserves the two-row header/search. Each polish
+checker now explicitly exits on failure so a following checker cannot mask it.
+Read-only private preview is open in the app through a loopback SSH tunnel; no POST
+requests or new access grants. Candidate screenshots and backup191858 retained.
+User explicitly reiterated fluid transitions. PageMotion now uses bundled React
+ViewTransition with260ms crossfades/streamed arrivals and an older-browser fallback;
+record tabs crossfade without remounting fields, menus ease both open and closed
+while closed contents immediately become inert. Shell chrome stays anchored and
+reduced-motion snapshot durations are zero. Native navigation assertion added to
+the browser gate. Final production build and strict TypeScript PASS; focused
+menu/shell/drawer/motion/tab-retention15/4 tests PASS; scoped lint, shell syntax and
+diff whitespace PASS. Existing topbar image warnings unchanged.
+Next: complete candidate/public responsive gate and activation.
+
+## 14 October 2026 — Premium visual overhaul prepared; candidate verification pending
+
+Michael requests a substantial, consistent polish across every Atlas app, clarified
+as bold/posh, with Apple-like glass buttons and no cheesy or tacky decoration. Based on
+actual live75977b02, the shared premium.css foundation adds pearl surfaces, sapphire
+glass-style controls, restrained app accent tiles, editorial Home grouping, refined
+navigation/search/forms/tables/status/tabs/dialogs and matching Admin/Studio/sign-in.
+AppDirectory and app-appearance preserve registry filtering and all destinations.
+PageMotion animates the existing content node for240ms without remounting drafts;
+reduced motion is honoured. Menus remain opaque; cards/header have no backdrop
+filters that trap overlays. No domain/schema/grant/storage changes.
+Local production build PASS; strict TypeScript PASS; existing menu/business-shell/
+drawer regressions12/3 PASS; changed-file lint0 errors/3 existing image warnings.
+New motion/draft-retention regressions2 PASS (total14/4); read-only whole-app browser gate pending.
+Navigation groups now use consistent purpose-specific thin-stroke icons. The polish
+release selector runs all authorised app roots/core/Admin/Studio at1440/820/390,
+Home/menu/focus and reduced-motion checks under the existing release locks; it
+creates no fixtures or additional dumps. Required release backup remains intact.
+Next: final checks, sealed candidate visual review, public activation/verification.
+Git repair: seven invalid space-suffixed duplicate ref files were moved intact to
+.git/atlas-ref-recovery-20261014; valid refs/source/other worktrees preserved.
+
+## 12 October 2026 — bridge0d80 stopped before activation on checker viewport sequencing
+
+## 12 October 2026 — MRP proposal acceptance correction (no app change)
+
+Original e3b3e024 release66634 EXIT1 before activation after native Ticket/Analytics,
+Home/Apps, Settings/Finance and Reports gates passed. MRP direct-denial/no-write,
+actual authorised single Run MRP and correct quantities/machine/duration passed;
+line185 incorrectly expected null proposal dates. Existing dated routing engine
+and finite-kiln regression evidence preserve ISO start/end for a dated forecast.
+Checker now requires exact startBy/neededBy ISO mirrors and a90-minute difference;
+no weakening of rights/no-write/native data checks and no domain change.
+Relevant29/2 regressions PASS; checker lint PASS. EvidenceOuJhU4 and mandatory
+002513/002701 backups retained. No activation, Phase2 gates still FAIL.
+Next original pinned retry with corrected checker; all future visual WIP excluded.
+
+
+## 12 October 2026 — connected visual dashboard and field controls (source)
+
+Integrated reviewed b45a72c8 original active/retained business View reader, pure
+Analytics DTO/charts and selected-business authoring, preserving receipt2/panel
+probe fixes. Sales@2 anchored zero-safe money KPI added behind independent actual
+reader family; strict owner policies and @1 retained hashes/budgets stay exact.
+Standalone /design-studio/dashboards library/designer uses original native Studio
+canvas, CAS saves, reviewed publishing/restoring; /business-dashboards customer
+reader and Home discovery independently reauthorise current used sources. Customer
+refresh clears figures on access/head failure. No personal-board persistence fallback.
+Friendly field change page now supplies explicit prepare/collect/seal/review/publish/
+convert/go-live/restore/finish and metadata-only recovery callbacks from b104/6bac.
+GET resumes only a review ID; no support window or business value read on mount.
+Settings/conversion edits invalidate review controls until saved.
+100/6 integrated focused tests PASS; connected dashboard/field editor10/2 PASS.
+Own-loader semantic probe includes real Sales zero-money display and business View
+reader/native chart/forged denial PASS. Full strict check found catalogue minimal
+entity ref typing; corrected to actual exact registry metadata, rerun pending.
+Build/lint/browser/live for this visual integration pending; Phase2 remains FAIL.
+Original e3b3 bridge candidate acceptance running with preserved001209/001359
+and new002513/002701 mandatory backups; no ad-hoc dumps or new worktrees.
+Next: strict/lint/production build, actual visual gates, immutable Page/View embedding
+and friendly conditional field authoring through original guarded dispatch.
+
+
+## 12 October 2026 — original bridge acceptance: Finance checker correction
+
+Pinned b408c4fa original release26087 stopped before activation: candidate Home/Apps,
+Admin/business login/provisioning and native Ticket/Analytics checks passed; Settings
+reached the native Finance invoice link but its checker expected an accessible name
+without the existing trailing arrow. The actual row/reference/href were present.
+The correction selects the exact native document href, verifies its reference and
+actually clicks to the expected detail route; spend still denies the foreign row
+and now also checks absence of its href. No permission or app behaviour changed.
+Scoped checker lint passed; actual acceptance retry remains required.
+Recovery: predeploy001209 and candidate001359 backups, candidate evidence
+/tmp/atlas-studio-candidate-Vf7R1k. No activation or whole Phase2 PASS claimed.
+Parallel visual editor, original business View reader, guided field lifecycle and
+immutable Page embedding integrations remain uncommitted and excluded from this
+bridge release. Next: original pinned bridge retry, then connected visual checks.
+
+
+Original15657 EXIT1. Actual native/private/form/search/Studio Admin gates PASS;
+Home and Apps desktop/tablet/phone/small-phone fit, Escape and focus PASS. Checker
+then tried cross-header Search click while still320px with open Apps covering its
+second header row. Source now explicitly restores desktop viewport for that
+separate header interaction; no forced click/test bypass/runtime navigation edit.
+Existing mobile coverage remains. Actual rerun pending; production not switched.
+Recovery000350/fixture000540 and private evidence retained. No duplicate dumps.
+Next: lint/diff small checker checkpoint, original pinned retry while visual source
+WIP stays excluded. WholePhase2 incomplete and featurefamily pairDEFERRED.
+
+## 12 October 2026 — Phase2 parallel visual integration in progress
+
+Pinned original bridge0d80a83a release15657 runs under original locks; candidate
+pair features[] against oldc385, so Page/profile/default/type still DEFERRED.
+Required recovery000350/fixture000540 retained; no ad-hoc dumps or extra copies.
+No public activation confirmed. Keep pinned tip fixed until original run ends.
+
+Integrated uncommitted reviewed Ticket panels22b2, original View publisher692757,
+field lifecycle/control f41d7908. Native INTERNAL evidence metadata is now filtered
+before filenames return. Root wires pure panels to customer Page outputs, preserves
+retained exact-source compilation for restore/comparison and trusted authoring
+source@1 fallback until new panel runtime pair is accepted. Actual customer/native
+panels, all used grants and unchanged command handlers remain independent.
+Root existing Analytics editor now has explicit business-draft CAS callback/max8,
+no personal save/copy/delete/monitor or wrong-business source navigation fallback.
+Eight focused editor tests PASS as part owner integration50/5 PASS; full strict
+9504 EXIT0 before latest server wrappers. Initial integration issues fixed: retained
+mock@2 duplicate; retained compiler mock; actual probe JSX React import; exact
+status:none/other:page descriptor expectation; predecessor receipt1 pinned38a1113.
+No pretending new View metadata compiler is an actual customer reader: its feature
+stays closed while helper adds genuine reader + native chart renderer.
+
+Seven original field lifecycle engine wrappers + fresh explicit status are reviewed;
+root adds11 explicit server actions with Session/Publish as first two statements.
+Independent source review found no blocker. Helper173/10 + final control29/types/
+lint PASS are explicit collaborators, not central SQL/runtime proof. Root lifecycle
+UI and actual gate remain pending. Status preflights private/current/written
+metadata before counts; cancellation sparse after native rights loss; terminal
+historical metadata omits only unused old default VALUE lookup, keeps all actual
+source/reference/history policies. No protocol2 visual support claimed.
+
+Exact next: retain pinned release tip; finish business dashboard original-editor
+routes and customer reader/Home cards, integrate typed field lifecycle panel and
+explicit URL resume, then approved Sales owner KPI slice/runtime pair and Page
+immutable view embedding. Helpers own disjoint source/renderer/control panels in
+existing worktrees. Whole Phase2 FAIL/incomplete; no Phase3/new engines.
+
+## 12 October 2026 — original2d9028c8 release stopped BEFORE activation
+
+Original release6793 EXIT1; actual configured Ticket field search/index catalogue,
+ordinary native/private/windows/concurrency and standalone Admin/native pages PASS.
+Page/profile/default/type remain DEFERRED against oldrollbackc385, not feature PASS.
+Then Home-menu checker rejected existing /guides (and omitted existing personal
+/profile/settings destination) from its stale fixed utility allowlist. Source now
+includes only those actual utility routes; unchanged Admin/business-boundary guards,
+actual authorised app links/responsive checks remain mandatory. Unknown-href failure
+now includes observed fixed routes. No application permission/navigation change.
+Required recovery235322/fixture235513 preserved. Fresh SSH confirms livec385a2be/
+rollback5b6390c8 unchanged; root141GiB/tmp1.4GiB free. No ad-hoc dump/cleanup.
+
+Scoped checker lint PASS; native business-shell boundary6/1 PASS. Diff reviewed;
+only existing utility allowlist/assertion changed. Next: small checkpoint and
+original pinned bridge retry. Future WIP Analytics explicit business-draft
+editor seam and neutral panel palette text are separate uncommitted work; exclude
+from this release. Helpers have source checkpoints for original field control/
+status and Ticketpanels; owner/compiler/publication/readiness integration follows.
+WholePhase2 remains FAIL/incomplete; no Phase3 engine work.
+
+## 12 October 2026 — Phase2 visual comparison and property controls IN PROGRESS
+
+Root checkpoint65ede12e built/strict/lint passed. Original pinned both-lock release
+19593 EXIT1 BEFORE activation after native whole-form/private/window/concurrency
+checks passed: actual bounded configured-search EXPLAIN chose another usable index
+on the tiny fixture. The exact chosen-index assertion was unsuitable for eligibility;
+source now checks actual PostgreSQL catalogue validity/readiness/key order/default
+operator classes while retaining the authorised bounded ANALYZE query, result and
+permission gates. Independent review agreed; central fingerprint catalogue SQL PASS.
+This is a corrected assertion, not an actual rerun PASS or performance guarantee.
+080 CONFIRMED APPLIED at2026-10-11 23:31:00.28027 UTC; required recovery233012 and
+fixture233203 retained. Last fresh livec385a2be/rollback5b6390c8 unchanged.
+
+Visual previous/current side-by-side sample comparison now implemented source using
+original sealed retained metadata/current compilation and inert shared renderer.
+18tests/2 PASS. Independently reviewed fact/table properties52783cbe integrated:
+friendly summary fields, table columns/order/page size with independent grants
+before labels. Combined index/catalogue/editor41tests/3 PASS. Actual comparison
+checker wired; fact/table runtime journey and current build/types/lint pending.
+No result caches/new dumps/worktrees/dependencies. FullPhase2 FAIL/incomplete.
+
+Integrated independently reviewed preview52b296d5/prepare-collect-seal a8a48963
+and Analytics compiler7c34c70b scoped deltas excluding donor memory. Friendly
+published-field /setup/[definitionId]/change save+preview UI is reachable, preserves
+input on conflict and labels complete scope versus bounded preview counts. Original
+visual checker now verifies persisted table properties/comparison/fact status and
+zero-record friendly preview without review writes. No actual run yet. Integrated
+147tests/8 PASS; lifecycle/UI25tests/2 PASS; production74423 EXIT0. First strict
+43088 caught DOM target narrowing/test mock tuple types; corrected strict85546 EXIT0.
+Post-build strict81285 EXIT0; final scopedlint54348 EXIT0. Next: final strict/diff/
+memory checkpoint, then original pinned release retry. Helpers own original migration lifecycle, native read-only Ticket component
+reuse and existing Analytics publication/readiness. No Phase3 engine work. Disabled
+reader readiness stays DEFERRED and does not pass a feature.
+
+## 12 October 2026 — Phase2 native creation integration IN PROGRESS
+
+Reviewed b2c88e8e checkpoint production19413/strict35359/lint16498 passed; original
+both-lock release93673 EXIT1 before activation. Candidate s8EcBB passed original
+native whole-form/private/window/concurrency checks, then configured field-search
+browser check timed out on exact Receiving team accessible label. RequestForm now
+explicitly labels Receiving team and Service / request; native permissions and
+checker assertions are preserved. Source fix still needs actual rerun.
+Readiness features[] against old c385 means Page/profile/default checks DEFERRED.
+Required recovery231358/fixture231546 retained. Fresh SSH12 October confirms
+livec385a2be/rollback5b6390c8 unchanged;145GiB root and1.5GiB tmp free.
+
+Projected independently reviewed1960afd1 genuine initial type selector/INSERT/
+receipt2/creation replay, actual own-loader readiness and additive080 original
+SQL guard. Independent review corrected original no-base replay to check today's
+canonical base and SQL JSON hash/UUID string shapes. Integrated146/6 source tests
+PASS; strict35645 EXIT0. Actual080 rehearsal/application, native HTTP/browser and
+compatible pair gates pending. Old selector absence/packet1/checksum/receipt1
+remain compatible. Existing reassignment redirect preserved.
+
+Customer record chooser now supports original bounded owner cursors, current
+head/version assertions and fresh native/private Read each request, with Next
+records/back-to-first controls. No source business-result cache. Source integration
+checks/build/live pending. Reviewed818c3af4 published-field target source integrated;
+current Tickets9 metadata is used only where it explicitly retains source-version
+migration coverage, preserving exact source/key/security and closed conversions.
+Helpers continue original migration preview, safe Analytics
+source contracts and existing-fixture visual type/default native journey.
+
+080 rehearsal12 October PASS under BOTH original exclusive locks using existing
+valid231358 recovery dump: BEGIN/CREATE FUNCTION/ROLLBACK restored exact guard
+hash43fe3efb; no persistent schema/data change.080 remains NOT APPLIED. Integrated
+creation/evolution264/7 PASS; Analytics27/1 PASS; chooser/visual-prefix42/3 PASS.
+Production83068 and scopedlint92155 EXIT0; strict61444 found test-only unsupported exact role option, corrected; final strict78429 EXIT0. New original
+visual record-layout checkeraf178218 integrated with existing Test A/B/session;
+no new fixture engine. Actual record/default/type checks require compatible readers.
+
+Exact next: final strict result/diff/memory checkpoint, then original pinned reader
+bridge release. Helpers continue original migration preview, approved fact/list
+editor controls and Analytics owner compiler facet. No Stage3 engine work.
+The b2 acceptance has ended; next reviewed checkpoint may advance its branch. WholePhase2
+FAIL/incomplete; no Phase3/new worktrees/dependency copies/ad-hoc dumps.
+
+## 12 October 2026 — exact record-default layout integration IMPLEMENTED
+
+Root c4f6fe59 friendly setup/Templates/cache checkpoint built/types/lint passed;
+original candidate wBSTZQ failed BEFORE activation at a private receiving-team
+reopen assertion expecting technical wording. The actual native action returned its
+existing explicit human access denial. Matcher now accepts that exact message;
+unchanged-state snapshot is checked before wording. No production/native permission
+change. Required225444 recovery/225632 fixture retained; original live c385/rollback5b
+remain. This is a checker correction, not a passing whole form/private proof.
+
+Source now integrates exact current profile-selected retained Page target/reader,
+shared existing visible button/native surface selectors, native Open business
+layout link, explicit record_default customer route and full mode/profile/native/
+head/version assertions through pagination/device refresh/forms. Native complete
+Ticket tools remain intact; type change returns to the native record so it resolves
+the newly selected layout instead of refreshing an obsolete address. Reader/control
+148/6 scoped cases PASS. Never-published all-type settings projection integrated:
+explicit read-only unsupported policies, stable server choice IDs, hydrated0/false
+and precise UTC defaults. Integrated183/5 cases PASS. First strict check found route
+narrowing/checker variable issues, corrected; production build19413, sequential strict35359 and scopedlint16498 EXIT0.
+Actual candidate/public feature verification still required. Original Analytics prerequisite dc7e0341 is now integrated: genuine fresh selected-
+business native save/CAS/Audit, same-transaction metadata catalogue and complete
+original editor callbacks.25/4 integrated checks PASS; no shared business publication
+or personal-owner change. Existing helpers continue true initial type receipt2,
+independent review and reviewed published-field target adapter. No Phase3 or extra dependency/build copies. Fresh server pointers remain
+livec385/rollback5b;147GiB free, local92GiB free, this checkout dependencies1.1GB/
+generatedNext303MB before current build. No ad-hoc dumps or storage cleanup needed.
+
+Exact next: checkpoint reviewed current default/settings/Analytics-prerequisite
+source and retry the original pinned both-lock bridge with exact native human
+denial matcher. Then integrate independently reviewed receipt2/080 and its actual
+checker; published field target and Analytics source contracts continue in existing
+helpers. New friendly setup/Templates actual checks are wired, not yet run. Then actual compatible Page/Profile/default/type
+candidate and public gates; never mark missing readiness DEFERRED as PASS.
+
+## 11 October 2026 — Phase 2 friendly visual setup and Templates integration IN PROGRESS
+
+Integrated source now includes noncoder all-15-type additional-field creation,
+base/type Page and required-field choices, saved review/GoLive/restore, unsaved-form
+review guard, and genuine selected-business document library/editor adapting the
+original Templates engine. Published Page compilation uses bounded metadata-only
+process cache after fresh sealed metadata/approval checks; actual grants and reads
+still run per request. Canonical visible list rows open existing native records.
+No extra source/dependency copies, business caches or ad-hoc dumps created.
+
+627beb7d original backed-up release failed BEFORE activation: foreign-tenant field
+retirement hit unavailable impact metadata before its opaque conflict check.
+Retirement now checks tenant/kind/revision/retired state under the existing lock
+before dependency traversal; focused rejection/impact regressions passed. This
+preserves every successful-retirement graph/CAS/Audit gate. Original recovery
+223332 and fixture223524 retained. Last live c385a2be, rollback5b6390c8 unchanged.
+Central history read this checkpoint CONFIRMS 060 and070 applied by candidate builds
+(21:30:49 /22:34:20 UTC); additive migrations remain, no business reset/rollback.
+
+Current coherent root checkpoint: production13758 EXIT0; sequential strict79234
+EXIT0; changed-source lint41989 plus new-route lint EXIT0 (only ignored Markdown
+warnings). Friendly/Templates/cache/retirement155/9 PASS; native type/profile/Page
+forms73/6 PASS. Warm-cache runtime now checks fresh native rights/data.
+Earlier:88/5 boundary suites PASS; friendly setup/dirty7/2 PASS; expanded
+friendly/backend/runtime/rows/dirty105/4 PASS. Final types75788/lint24532 passed
+before latest typed frontend/Templates/cache integration; latest complete source
+build/types/lint and actual original candidate/public run still required. Helper
+cache18/2, all-type frontend28/2 and Templates36/3 passed in their owned source
+checkpoints, not root/live evidence. Full Phase2 FAIL/incomplete, no Phase3.
+
+Exact next: finish native record-type selection/default Page integration, run one
+coherent current focused/build/types/lint checkpoint, then original pinned both-lock
+Studio release bridge and compatible runtime acceptance. Initial type-create receipt
+protocol and business Analytics integration remain separate bounded workstreams.
+See docs/studio/STUDIO_IMPLEMENTATION_PROGRESS.md and coverage for exact gate gaps.
+
+## 11 October 2026 — Phase 2 visual customer runtime checkpoint IMPLEMENTED
+
+Dedicated /design-studio library/saved editor now uses genuine fresh selected-
+business authoring and original draft/review/publication/activation/Audit. Presets,
+outline/canvas/properties, desktop/tablet/phone sample/actual preview, approved
+buttons, simple fact visibility and shallow alternate layouts are wired. Customer
+/home published screen cards, bounded owner record chooser, /screens runtime and
+Sales native PDF action share the protected renderer/gateway. Ticket edit surface
+reuses the complete original native progress form and typed packet/receipt writer.
+Device changes re-read SSR forms; stale Page/head/device slots request refresh.
+
+070 assignment schema/source, profile required/cohort guards, metadata-only profile
+Page reconstruction and active ancestor field impact are integrated. 070 DDL both-
+lock central BEGIN/ROLLBACK passed; not applied. 060 actual history still to inspect.
+Original profile checker25941bed and independently reviewed visual checker13263fa0
+are wired to the original backed-up release harness. Actual features need compatible
+sealed current/rollback readers; disabled readiness remains DEFERRED, never PASS.
+
+Latest local evidence: 89/11, 113/7, 64/5 and new context/checker/form/authoring47/5
+focused assertions PASS. Production build41429 exit0. Final scoped lint72614 exit0; latest strict
+found a typed surface-reference mismatch, corrected to registered logical strings;
+final strict66403 exit0. Last postbuild92519 exit0. Source tests are not actual central/browser proof.
+Original e5bf candidate failed before activation at Status locator; explicit Select
+label/source regression corrected. Fresh SSH confirms live c385a2be/rollback5b6390c8;
+server150GiB free, tmp1.5GiB free. Preserve pinned runtime/recovery data. Full Phase2 FAIL/incomplete, no Phase3.
+
+Next: checkpoint compatible visual source after final types/lint; original pinned
+locked candidate/public bridge. Integrate friendly field/type setup78725538 and its
+noncoder UI, assigned type selection/native form proof, actual visual/profile gates,
+existing Templates/Analytics entry integration. No extra worktree/dependencies,
+local business data cache or ad-hoc dumps. Permanent Studio ledger is authoritative.
+
+## 11 October — candidate creation-route wait corrected; Phase 2 continues
+
+9ad9e078 original Studio release59282 EXIT1 before activation. Candidate LwXpI8
+passed the existing metadata, field lifecycle/review/execution, ordinary value,
+native enforcement, genuine authority and concurrency checks. The first browser
+form creation check then read the reserved /tickets/create URL as a record ID:
+the previous alphanumeric route pattern already matched that current form URL.
+A shared exact-origin createdTicketUrl helper now excludes /tickets/create;
+all three new form/default/search checkers use it and two URL regression cases pass.
+This strengthens the original wait rather than altering business/acceptance rules.
+Required213004 recovery and213146 fixtures retained; no ad-hoc dump. No activation;
+last confirmed live c385/rollback5b. Complete Phase 2 remains FAIL/incomplete.
+
+Next source work is preserved separately: genuine selected-business authoring
+context (9 focused tests passed), Page definition compiler adapter, and proposed
+070000 assignment schema/client (Prisma validate/generate passed; SQL not applied).
+These are not part of the checker correction or a live-feature claim. Exact next:
+retry original pinned acceptance with corrected route wait; integrate Page approval
+factory/runtime and actual visual save/publish routes while assignment/requirements
+continue under their owned workstream. No Phase 3 work or duplicated dependencies.
+
+## 11 October — Phase 2 page ownership, configuration impact and profile binding checkpoint
+
+The ff91a303 original Studio release failed before activation: the metadata checker
+selected the first Sales query, now a bounded native projection rather than the
+legacy provider adapter. It now selects exact sales.template.order.list@1 and retains
+the original empty-array compatibility assertion. No acceptance criteria waived.
+Live c385a2be and rollback 5b6390c8 remain the last confirmed accepted runtimes;
+required recovery 211714 and candidate fixture 211859 retained. No new dump for diagnosis.
+
+Integrated explicit owner Page-source contracts efa8b13d and retained configuration
+usage/pin inspection 105d7783. Registry import conflict reconciled, preserving field
+search methods and all existing contract hashes. Impact follows immutable retained
+parents to active ancestors with bounded graph/seal checks, not only direct edges.
+New profile binding source/model/060000 SQL fixes permanent canonical ownership;
+one base definition per tenant/entity, immutable origin and later publication guard.
+Public profile/page dispatch remains closed until runtime and cohort checks are wired.
+
+Binding/compiler 23 focused tests passed. Integrated binding/usage/Page-owner checks
+76 assertions across five suites passed. Prisma validation and generation passed;
+060000 DDL compiled under both original release locks inside BEGIN/ROLLBACK using
+existing recovery backup: no retained schema or data change. Final integrated production build passed (3813); scoped lint passed (93011).
+Final standalone types49291 exit0; integrated editor17 interaction assertions
+passed. Controlled visual editor helper checks also passed;
+actual saved/live business integration and complete Phase 2 acceptance remain pending.
+Exact next action: finish integrated types/build, checkpoint these scoped sources,
+retry original pinned Studio acceptance; connect Page approvals/shared runtime to
+visual editor and original publication, while association/requirements proceed in
+an isolated source-only workstream. Phase 2 FAIL incomplete; no Phase 3 features.
+
+## 11 October — page/profile/Sales source integration; origin gate corrected
+
+Pinnedbridge0a5fe343 release45875 EXIT1 beforeactivation, privatecandidate nOSYuz.
+Original existing/native/window/concurrency gates PASS; f6 first directbrowserHTTP
+denial wasunexpectedorigin ratherthanexpectedrequired feedback. Actual installed
+NextRequest rewrites127.0.0.1 URLhost tolocalhost while preservingincomingHost/Origin.
+Scopedguard52bee536 retainsstrictcanonical sameorigin viaactualHost+requestprotocol,
+noforwardedheader exception/alias fallback; independentreview no sourceblocker.
+Actualcandidate/public proxyHTTP proof pending, existinglivec385/rollback5b unchanged.
+Centralmigrationhistory confirms040000/050000 applied bycandidatebuild; no schema
+rollback/businessreset. Recovery210453/fixture210634 retained, Testaccesssuspended.
+
+IntegratedpurePage2D1 b739, canonicalSalesread contractsabf+acknowledgement116823,
+actualsearchchecker9160 intooriginaldriver afterforms/defaults. Root2C2a authoring
+compiler reconstructsexactsealedbase/materialisedoverlay, requiredpin/currentfield
+generation/constraints/security andindependentgrants; pages/process/decisionsclosed
+untilactualcompileradapters. No publicprofiledispatch/assignment/activationenabled.
+Integrated55 assertions/5suitesPASS55649, types66482/lint64314exit0; finalrootprofile
+13PASS14629 afterrecordType-onlyoptinrefinement. Finalorigin/Sales/profile71 assertions/4 suites PASS54270; production48820
+exit0, standalone1787exit0, scopedlint1656exit0. ActualsafeSalesnavigation returnsnativePDFroute only; selected
+Adminsupportauthority NOT transferred tocookiePDFendpoint. Oldtemplatehashesremain.
+PurePage ordinaryRead/source nativeWrite metadata only, noCreategateway oractual
+renderer.2D2a/b genuineownerpagedeclaration/approvals inhelper;2E1controlled visual
+workspace/editor sourceinparallel, sharedpreview/live rendererrequired. FullPhase2
+stillFAILincomplete, noPhase3. Noextra dependencycopies/localDB/ad-hocdumps.
+Exactnext: commitpin/rerunoriginalbridge;
+thenactualdefaults/search gates,2Cbinding/assignment/coverage+2Dactualruntime/editor.
+
+## 11 October — record-type pure core and configuration pin storage checkpoint
+
+Integrated pure2C1 checkpoint5c06b118: exact tenant-independent pin shapes, one base
+and one overlay, explicit replacements/additive required fields, deterministic
+materialisation and conflicts/self-cycle rejection. New2C2a schema/source: distinct
+StudioConfigurationDependency with both tenant/composite version FKs, immutable
+exact sealed pins, original-transaction complete edge set, depth4/path500 guard.
+Internal metadata reader scopes exact versions to server tenant, validates checksum/
+kind/payload/edge mirror and bounded transitive graph; no data grant/ordinary runtime.
+32 assertions/2 suites PASS, scopedlint83650 and standalone56050 exit0. Prisma
+validate/generate49349 exit0. SQL source independently reviewed; NOT applied/proven.
+Central BEGIN/ROLLBACK syntax attempt safely refused while both original deployment
+locks held by another release; no SQL executed, no business changes/new dump.
+SSH observed public runtime c385a2b while that release held locks; completion/accepted
+source reconciliation must be refreshed, do not call it final based on pointer alone.
+Previous accepted5b history remains. No new type assignment/required profile/page
+runtime/publisher or visual completion implied. Pure2D1 page contracts in helper.
+Runtime-feature source06cb integrated separately awaiting prior-parser import fix;
+new defaults remain unpublished until accepted compatible rollback evidence.
+Exact next: guarded field bridge/type-independent gates and accepted-source merge;
+then2C compiler/publisher/entity binding/assignment/requirement impacts and2D/E.
+
+## 11 October — defaults/search source integrated; rollback bridge preparation
+
+Imported only owned source/tests from defaults6c50c7a and searchb291e55 into accepted
+c152 lineage; preserved newer live Manufacturing/UI source. Integrated223 assertions/
+11 suites PASS16843, standalone64449 and scopedlint76994 exit0. Receipt reference
+preflight review found original submitted/default target checks after typed reads:
+now encode using retained written schema and check ALL current/written reference
+rights before any typed-column lookup. Focused receipt/required-runtime/native-proof
+95 assertions/3 suites PASS37424; stronger reference-before-columns cases included.
+Database forward040000 receipt guard source-only; no Prisma/model change here.
+Historical absent metadata/receipt shapes retained; create-only defaults fill only
+omissions under actual INSERT proof, null wins, no edit backfill, rawpacket checksum
+and immutable written literal replay; legacy no-packet create stays non-idempotent.
+Bounded configured scalar search selects authorised native windows<=50, preflights
+all written policies, then current-generation indexed typed predicates. Empty+next
+is intentional continuation, no global total or command-palette completeness claim.
+New settings must remain closed until compatible current+rollback parser proof.
+Original release-specific immutable feature evidence planned under BOTH original
+locks; no client flags or activation bypass. Default/shared SQL/runtime/browser gate
+pending, Phase2 incomplete, visual2E required. Pure2C1 contracts in isolated helper;
+2C2 dependency/association/requirement-impact plan captured before coding.
+Exact next: finish release feature readiness/server guard, build/source checkpoint,
+original candidate/public f6 gate; then defaults/search actual acceptance and2C/D/E.
+No ad-hoc dumps/localDB/duplicate installs. Macfree93GiB current observation.
+
+## 11 October — typed-form candidate stopped at checker locator ambiguity
+
+Pinned c152bb309eaac8dcc7d22a1ec146e79d8bb19429 deployment29161 EXIT1,
+/tmp/atlas-studio-typed-forms-release.txt. Candidate XyFyYX reached all original
+Studio/native/window/concurrency checks PASS, then typed-form check failed because
+substring accessible-label lookup matched both actual input and Clear button.
+No candidate activation/public typed-form claim. Recovery202921 and required fixture
+203058 retained; synthetic companies suspended, QA unchanged. Narrow checker now
+selects spinbutton/combobox with the actual accessible name; no requirement removed.
+Current live remains to be freshly checked before the next pinned release.
+Independent isolated default6c50c7a and bounded searchb291e55 source checkpoints
+implemented with focused checks; central/runtime evidence pending. Full Phase2
+including visual editor still incomplete. Independent pure2C contracts may proceed
+in parallel within this phase; publisher/runtime wiring follows verified2B.
+Exact next: review/import those scoped checkpoints, integrated focused checks/build,
+then original candidate/public gates; implement2C/D and full visual2E, no Phase3.
+
+## 11 October — Studio/native forms preserving newer accepted live source
+
+Read-only public health+SSH confirm LIVE5b6390c874b42571f091a53b1b017aea70121df7,
+rollback6e5c39bebe2db2bf76dc9eabf49170f631c3f05b; Atlas active, root149GiB free,
+/tmp1.6GiB free. This supersedes ad9 current-pointer claims below; ad9 native proof
+remains valid historical evidence. Accepted live5b contains ad9 plus Manufacturing,
+Dashboard/account/website/dropdown improvements. Merging accepted5b into Studio94d3
+preserves those finished features; no ancestry bypass or schema rollback. Only
+CURRENT_STATE/DECISIONS/domain-only test fixture conflicts: union contributor memory,
+complete Session/module lookup fixture plus explicit native authority/validation
+collaborators, actual domain engine/CAS remains. Integrated root212 assertions/10 suites PASS51673; standalone strict85862 and
+scoped lint9881 exit0; regenerated currentPrisma56337 exit0; production56451 exit0.
+New typed native forms are checkpoint94d3 IMPLEMENTED/localPASS, not live. F6checker
+022ad6c completed locally/types/lint, originaldriver integration and central/public
+proof pending. New reserved receipt migration source-only, no local DB/ad-hocdump.
+Parallel bounded2B5 literaldefault/2B6 configuredsearch source work begins in existing
+shared-dependency helpers; fullPhase2 visual2E required and stillunfinished. NoPhase3.
+Exact next: finishacceptedlive merge, refresh generatedPrisma client, integratef6,
+focused merge-regression/types/lint/build, commit/pin and original Studio gates.
+
+## 11 October — native foundation VERIFIED LIVE; typed forms in progress
+
+Original pinned ad9d5a430e2b92e6b08448a45d11f694f5ce2066 studio release
+completed: exec13566 EXIT0, /tmp/atlas-studio-native-release-retry.txt. Candidate
+/tmp/atlas-studio-candidate-627MN9 and public /tmp/atlas-studio-public-jY9iVL BOTH
+ALL COMBINED ACCEPTANCE CHECKS PASSED. Actual native windows, enforcement and
+concurrency PASS, including reviewed publication races and genuine required-field
+storage activation. Existing Admin/business login and module regression gates PASS.
+Fresh HTTPS release health and SSH /opt/atlas-current confirm ad9d5a4; immediate
+rollback /opt/atlas-previous is 1f4dc79d10e1017a203a5f181e8afa459376cc25.
+Required recovery UTC142445/142619/143132 retained; Test access suspended, history
+preserved, QA affiliation unchanged. Original locked retention retired only redundant
+generated runtimes for failed84/oldb34, preserving source/static/evidence/business
+records. No ad-hoc dump/local business database. This supersedes prior RUNNING and
+native SQL-pending claims below. Full Phase2 still FAIL incomplete; no Phase3.
+
+D4f1–5 IMPLEMENTED in root: bounded typed packet/shared stored1/2 writer, genuine
+current field manifest, narrow reference picker, whole-form immutable Audit receipt,
+atomic native create/update/reopen staging and existing ActionForm 15-type controls.
+Root182 assertions/8 suites PASS; production26422 PASS; final production24417 exit0 after latest feedback and
+optional Service child-discovery fix. Original domain regression13 stale fixtures
+failed missing sessionAuthorityStamp already required by HEAD native boundary;
+explicit domain-only authority/validated collaborators corrected, actual capability
+checks retained; domain+genuine proof30/2 PASS. Independent review found optional
+child Ticket manifests could block Service Query/case when Tickets disabled; existing
+isModuleEnabled now gates discovery/rendering. Mandatory action checks unchanged.
+Final standalone strict58993 and scoped lint8334 exit0; new20261011030000 reserved-Audit SQL guard source-only,
+not applied. No new Prisma model/table/backfill/reset/engine. Browser pure reference
+schema extraction preserves shape/hashes. Desktop registry adds only the intended
+narrow search; unrelated generator action/model drift excluded.
+Existing isolated checker workstream is preparing real central forms/receipt DDL/
+responsive/replay/atomic-failure acceptance. No typed-form public verification yet.
+User reaffirmed complete Phase2 INCLUDING visual editor and authorised parallel
+workstreams. Full-screen selected-business design workspace remains2E required;
+read-only2C/2D and remaining2B audits prepare exact next implementation dependencies,
+no Phase3. Exact next finish checker/types/lint/source checkpoint, original pinned
+build/candidate/public release, then2B gaps→2C→2D→2E→2F. Do not stop at foundation UI.
+Storage: removed2.4GB root .next/cache only after exact generated-path and process
+checks; source76MB/shared dependencies retained. No other app/process/source/business
+files touched, no extra dumps. Two older managed worktree archives remain queued,
+not confirmed completed; do not report their disk savings.
+
 ## 11 October 2026 — Exact Manufacturing & Supply and app guides LIVE / accepted
 
 Live runtime c385a2be2302a514e4b84e33198926cbf149bbf5 passed sealed candidate and public HTTPS
@@ -36,7 +893,6 @@ evidence reconciles shared documentation with the accepted implementation; the
 dirty canonical Desktop checkout remains untouched.
 PROJECT_MEMORY.md and the Manufacturing/Guides/deployment topic records now reflect
 the accepted exact-quantity/WIP/dated-purchase behavior and the remaining open scope.
-
 ## 11 October 2026 — Complete exact execution candidate passes; guide navigation refined
 
 Candidate e3b0639e passed every actual exact manufacturing/purchasing scenario,
@@ -13015,6 +13871,106 @@ Plant & machines copy and configurable batch/continuous process types added.
 Migration 20261011180000_decimal_operational_quantities is authored, NOT applied.
 No local business database/cache was created. No live customer records changed.
 
+Research now explicitly covers Microsoft workspace personalisation and saved
+views. Target custom fields/forms/dashboards/workflows use owner-approved Studio
+contracts with preview/publication/rollback; current console supplies bookmarkable
+role/shortcut views only. No later Studio compiler is claimed implemented here.
+
+Inspection confirmed a pre-existing planning-cost visibility gap in the legacy
+cockpit and Planned orders. This is now repaired: manufacturing.cost.read gates
+pending/actioned estimates and cockpit cost cells independently of plan.read.
+Operational quantities remain visible. Rendered-page regressions check restricted
+and permitted profiles. This is not verification of every historical Manufacturing
+profile boundary; the new Finance report uses independent source gates.
+
+Form-refinement prepare stopped before writes because the shared live service
+advanced to Messages 9303039. Preserved that exact live shell/chat implementation
+and its record/draft retention; console consolidation remains permission-filtered.
+Reconciled both tasks' decisions. Newer private Admin candidate is not included
+until its activation is observed. Combined source verification remains required.
+
+Messages-compatible source: production build, strict TypeScript and ten focused
+files/61 tests passed, including chat draft preservation and purchase retry inputs.
+No shared user drafts/records were replaced. Next: prepare the combined immutable
+candidate and repeat connected/public acceptance; no completion claimed yet.
+
+Candidate 265ab11 fully passed the connected Test workflow: responsive console,
+real MRP/Make/Buy (including retained supplier retry), repeat refusal, internal
+sales eligibility, GBP/EUR/restricted spend, drill-through, nine guides and zero
+browser exceptions. Visual screenshots reviewed. Backup atlas-pre-deploy-20261009-
+210052; private candidate evidence /tmp/atlas-supply-staging-3NQkiH. Activation
+stopped before writes because private Admin/auth release 1dafe16 had become live.
+Preserving its exact source and login-rate controls before combined preparation.
+
+The observed private Admin baseline is exact 1dafe16, including retained rejected
+sign-in inputs and verified retry. Preserved its central authentication limits and
+Company/Admin path binding. It does not change Manufacturing/Finance capabilities;
+no existing user grants, passwords or profile data were altered by this task.
+
+Exact live sign-in source integration: Prisma generation/validation, production
+build, strict TypeScript and 13 focused files/72 tests passed, including central
+authentication limits, private/customer selectors, rejected-input preservation,
+MRP/source conversion, spend permissions and release failure gates. Preparing
+compatible source; complete public feature acceptance remains pending.
+
+Candidate f0807fa passed the complete central Manufacturing & Supply browser
+workflow; private evidence /tmp/atlas-supply-staging-6nLSJ6. Activation stopped at
+Studio compatibility after backup atlas-pre-deploy-20261009-212304: one active
+metadata pointer in a suspended Test company references tickets.ticket@2 from
+another candidate. No live pointer change or missing real-customer contract.
+Read-only diagnosis confirmed isTest=true/status=SUSPENDED; retained history was
+being scanned as runtime configuration. Compatibility scanning now selects only
+metadata and skips suspended Test history. All real companies (including suspended),
+active Tests and unknown statuses remain checked; a resumed Test is checked again.
+No metadata/tenant status or other contributor's records are modified. Added
+lifecycle/expiry/pagination regressions. Build/types, prepared candidate and live
+acceptance must be repeated for this source; no completed deployment claim yet.
+
+Final lifecycle/cost refinement: production build, explicit strict TypeScript,
+scoped ESLint, diff check and 14 focused files/67 assertions PASS. The first cockpit
+redaction test fixture lacked shortagesByPriority; completed the fixture and all
+three real rendered-page permission regressions pass. Full suite not rerun after
+later live integrations; earlier exact-baseline 85 failures remain documented.
+Next: prepare pinned clean source, recheck complete central/browser workflow,
+activate and verify public HTTPS. Preserve other contributors' dirty canonical
+checkout; integration must not overwrite unfinished content.
+
+Consolidation checks: production build and explicit strict TypeScript PASS; nine
+focused files/47 regressions PASS, then the final four-file/14-test runtime/search/
+workspace check PASS. Scoped lint PASS after renaming a pre-existing `module`
+iterator rejected by Next's lint rule; no permission/enablement logic changed.
+Search now reads permitted source owners independently of launcher consolidation,
+labels their navigation under the parent workspace, and retains source access.
+Getting-started instructions reconciled with shared chrome and warehouse access.
+The extended checker includes tablet/phone Stock and Product viewport checks.
+No full-suite rerun. Prepare and real candidate/public acceptance remain pending.
+
+Studio remaining Phase 2 correctness requirements recorded in STUDIO_PHASE_2_FIELDS.md: required-if, owner canonical-record coverage for new required fields and metadata-runtime schema compatibility. These remain unimplemented; Phase 2 gate not passed.
+
+## 11 October — Studio workspace product requirement and typed form integration
+
+Michael confirms Studio should open as its own app-sized workspace. Recorded in
+STUDIO_VISUAL_BUILDER_REQUIREMENTS.md for2E: dedicated full-screen route/navigation,
+component library/live preview/properties/preview-publish controls, clear return to
+business, separate private Admin console; same Atlas domains/data/security/renderers.
+No premature Phase3 or claim native typed controls complete the designer.
+
+Root packet/shared writer/read/required focused110/5 PASS; standalone strict96977
+exit0 and scoped lint10098 exit0. New current manifest/contract/narrow reference
+search source implemented; manifest strict71356 exit0 before action integration.
+Read-only review found cross-record identical-revision seal gap, corrected server
+company+actor+record identity in opaque checksum. Current+written metadata precedes
+typed values; active-generation batch scope avoids retained-history bounds. Native
+create/update packet integration now written locally: whole-form replay before
+effects, creation actual INSERT callback, normal update stage before CAS, authorised
+reopen stage after actual CAS, receipt completion after final native validation.
+Agent receipt/helper/guard and shared15-type renderer awaiting scoped integration.
+Browser boundary requires unchanged referenceSchema extraction to compiler/reference.ts;
+kernel reexports, field schema imports pure reference; sealed shapes/hashes unchanged.
+No DDL applied/build/new actual form proof/deploy yet. Exact next integrate helper/
+renderer/tests, final type/lint/build, actual central typed form/receipt guard and
+native compatibility checks, original candidate/public release. FullPhase2FAIL.
+
 Checks so far: Prisma generation passed; strict tsc passed at the intermediate
 quantity revision (must rerun after later edits); 12 relevant Vitest files / 101
 cases passed after adjusting fractional-stock expectations and completing the
@@ -13023,3 +13979,36 @@ yet. Unit/decimal work still needs final diff/security/replay review, central
 compatibility and live workflow evidence. Partial reports, actual lot-allocation
 history, mixed loads and Finance-owned WIP remain unimplemented at this checkpoint.
 See the current dated entry at the top for final status; this is not a finished handoff.
+## 11 October — immutable field-default compatibility bridge source checkpoint
+
+Integrated feature06cb19a9/e37bd2e4 and defaults acceptance40b9bf77; root17 tests/
+2 suites PASS41541, standalone38580/scopedlint55661 exit0, bash syntax/diff PASS.
+Actual candidate and rollback probe their own parsers/loaders. First bridge probes
+the predecessor's strict field schema before importing absent new receipt modules;
+unsupported defaults produce an empty immutable feature set, not a probe crash.
+Release-bound .studio-runtime-features.json is written once before sealing; new
+default-bearing publication/activation closed until both accepted readers support
+it. Readers remain available on rollback. Original locks/backups/ancestry/gates
+retained. Actual defaults checker wired immediately after typed forms; disabled
+bridge reports DEFERRED before fixture writes, never a default-runtime PASS.
+Source implementation only: candidate/public browser and SQL checks still pending.
+Fresh SSH: current/control/HTTPS c385a2be2302a514e4b84e33198926cbf149bbf5,
+rollback5b6390c874b42571f091a53b1b017aea70121df7; original locks no longer held.
+Reconcile that accepted newer source before the pinned integrated build/deployment.
+No new dumps/local business DB/dependency copies. Full Phase2/visual editor unfinished.
+Exact next: merge acceptedc385, refresh Prisma, integrated build; original locked
+candidate/public typed-form bridge; then defaults/search gates and2C/D/E runtime.
+## 11 October — accepted c385 source reconciliation and additive DDL rehearsal
+
+Merged acceptedc385 into scopedStudio source preserving operational purchase dates,
+Finance receipt ownership, guide/UI changes and both contributors' memory. Narrow
+native reference-picker action retained in regenerated actionregistry. Prisma
+validate/generate67043 exit0, integrated production77784 exit0, merged70 assertions/
+8 suites PASS83796. Initial standalone types raced generation and saw stale client;
+final sequential standalone85658 exit0. Central both-lock BEGIN/ROLLBACK23631
+exit0 compiled040000/defaultreceipt and050000/configurationpin SQL without retaining
+changes. No new dump. Read-only central migration query confirms030000 native form
+receipt migration already applied by earlier candidate, correcting source-only claim;
+040000/050000 NOT applied at this checkpoint. FullPhase2/visual editor incomplete.
+Exact next: final standalone types, commit/pin integratedbridge; original candidate
+and public typed-form gates, then compatible default/search evidence and2C/D/E.

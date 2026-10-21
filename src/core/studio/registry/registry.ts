@@ -3,7 +3,13 @@ import { sessionAuthorityStamp, type Session } from "@/core/auth/session";
 import { assertCapability, can } from "@/core/permissions/check";
 import { checksum } from "./contracts";
 import type { ContractMetadata, ContractReference, Contribution, FieldMigrationIntentVersion, NativeValidationRequest, RecordAnchor, RecordContext, StudioModuleContract } from "./types";
-import { entityDetailsSchema, fieldMigrationQueryPolicySchema, fieldSettlementPolicySchema, nativeValidationPolicySchema, nativeValidationRequestSchema, recordAnchorSchema, recordRequestSchema, supportsFieldMigrationIntent, supportsFieldMigrationQueryIntent } from "./entities";
+import { entityDetailsSchema, fieldSearchPolicySchema, fieldMigrationQueryPolicySchema, fieldSettlementPolicySchema, nativeValidationPolicySchema, nativeValidationRequestSchema, recordAnchorSchema, recordRequestSchema, supportsFieldMigrationIntent, supportsFieldMigrationQueryIntent } from "./entities";
+import { fieldSearchWindowSchema, fieldSearchWindowResultSchema } from "../fields/search-contract";
+import { pageReadAnchorSchema, pageReadRequestSchema, pageQueryOutputSchema, pageQueryRequestSchema, pageSourcePolicySchema } from "../pages/owner-contract";
+import { validatePageSourceRegistration } from "../pages/owner-validation";
+import { viewSourcePolicySchema, preparedViewSchema, compiledOwnerViewSchema, validateViewSourceRegistration, type ViewSourceApproval } from "../views/owner-contract";
+import { registeredMetricSourceSchema, registeredMetricInputSchema } from "./analytics-source-contracts";
+import { viewJsonSchema } from "../views/schema";
 
 const logicalId = /^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+$/;
 const identity = z.object({ id: z.string().regex(logicalId), version: z.number().int().positive(),
@@ -18,14 +24,15 @@ function freezeJson<T>(value: T): T {
   return value;
 }
 export type ModuleAvailability = (session: Session, ownerModuleId: string) => Promise<boolean>;
+type RegisteredContribution = { metadata: ContractMetadata } & Pick<Contribution, "run" | "authoriseRecord" | "authoriseInitialRecord" | "authoriseNativeValidationProof" | "pageSource" | "viewSource">;
 export class CapabilityRegistry {
-  private readonly items = new Map<string, { metadata: ContractMetadata; run?: Contribution["run"]; authoriseRecord?: Contribution["authoriseRecord"]; authoriseInitialRecord?: Contribution["authoriseInitialRecord"]; authoriseNativeValidationProof?: Contribution["authoriseNativeValidationProof"] }>();
+  private readonly items = new Map<string, RegisteredContribution>();
   constructor(private readonly available: ModuleAvailability) {}
 
   register(ownerModuleId: string, bundle: StudioModuleContract): void {
     if (!/^[a-z][a-z0-9_]*$/.test(ownerModuleId)) throw new Error("Invalid Studio contract owner.");
     // Validate an entire bundle before adding anything; duplicate failures are atomic.
-    const additions = new Map<string, { metadata: ContractMetadata; run?: Contribution["run"]; authoriseRecord?: Contribution["authoriseRecord"]; authoriseInitialRecord?: Contribution["authoriseInitialRecord"]; authoriseNativeValidationProof?: Contribution["authoriseNativeValidationProof"] }>();
+    const additions = new Map<string, RegisteredContribution>();
     for (const item of bundle.contributions) {
       const m = identity.parse(item.metadata);
       if (!m.id.startsWith(`${ownerModuleId}.`)) throw new Error("Studio identifier must belong to its owner.");
@@ -45,7 +52,23 @@ export class CapabilityRegistry {
       const snapshot = JSON.parse(JSON.stringify({ ...item.metadata, ownerModuleId })) as Omit<ContractMetadata, "contractHash">;
       const contract = Object.fromEntries(Object.entries(snapshot).filter(([key]) => key !== "label"));
       const metadata = freezeJson({ ...snapshot, contractHash: checksum(contract) });
-      additions.set(key, { metadata, run: item.run, authoriseRecord: item.authoriseRecord, authoriseInitialRecord: item.authoriseInitialRecord, authoriseNativeValidationProof: item.authoriseNativeValidationProof });
+      additions.set(key, { metadata, run: item.run, authoriseRecord: item.authoriseRecord, authoriseInitialRecord: item.authoriseInitialRecord, authoriseNativeValidationProof: item.authoriseNativeValidationProof,
+        ...(item.pageSource ? { pageSource: Object.freeze({ ...item.pageSource }) } : {}),
+        ...(item.viewSource ? { viewSource: Object.freeze({ ...item.viewSource }) } : {}) });
+    }
+    const lookup = (id: string, version: number) => (additions.get(`${id}@${version}`) ?? this.items.get(`${id}@${version}`))?.metadata;
+    for (const item of additions.values()) {
+      validatePageSourceRegistration(item.metadata, item.pageSource, lookup);
+      validateViewSourceRegistration(item.metadata, item.viewSource);
+      if (item.metadata.details.pageSource === undefined) continue;
+      const policy = pageSourcePolicySchema.parse(item.metadata.details.pageSource);
+      for (const other of [...this.items.values(), ...additions.values()]) {
+        if (other.metadata.details.pageSource === undefined) continue;
+        const otherPolicy = pageSourcePolicySchema.parse(other.metadata.details.pageSource);
+        if ((otherPolicy.entity.id === policy.entity.id && other.metadata.id !== item.metadata.id)
+          || (other.metadata.id === item.metadata.id && otherPolicy.entity.id !== policy.entity.id))
+          throw new Error("One stable page source identifier is allowed per canonical entity.");
+      }
     }
     for (const { metadata: m } of additions.values()) {
       if (m.details.nativeValidation !== undefined) {
@@ -64,6 +87,25 @@ export class CapabilityRegistry {
           if ((other.entityId === policy.entityId && other.operation === policy.operation && item.metadata.id !== m.id)
             || (item.metadata.id === m.id && (other.entityId !== policy.entityId || other.operation !== policy.operation)))
             throw new Error("One stable native validation query identifier is allowed per entity and operation.");
+        }
+      }
+      if (m.details.fieldSearch !== undefined) {
+        const policy = fieldSearchPolicySchema.parse(m.details.fieldSearch);
+        if (m.kind !== "query" || m.details.transaction !== "required" || m.details.pagination !== "cursor"
+          || m.details.maxCardinality !== 50)
+          throw new Error("Field search requires a bounded transactional owner cursor query.");
+        for (const version of policy.fieldVersions) {
+          const source = additions.get(`${policy.entityId}@${version}`) ?? this.items.get(`${policy.entityId}@${version}`);
+          if (!source || source.metadata.kind !== "entity" || source.metadata.ownerModuleId !== ownerModuleId
+            || source.metadata.capability !== m.capability || !entityDetailsSchema.parse(source.metadata.details).record?.fieldPolicy)
+            throw new Error("Field search must cover typed-field versions with the same owner and native read capability.");
+        }
+        for (const item of [...this.items.values(), ...additions.values()]) {
+          if (item.metadata.details.fieldSearch === undefined) continue;
+          const other = fieldSearchPolicySchema.parse(item.metadata.details.fieldSearch);
+          if ((other.entityId === policy.entityId && item.metadata.id !== m.id)
+            || (item.metadata.id === m.id && other.entityId !== policy.entityId))
+            throw new Error("One stable field search window query identifier is allowed per entity.");
         }
       }
       if (m.details.fieldMigration !== undefined) {
@@ -197,6 +239,183 @@ export class CapabilityRegistry {
     if (reference.schemaHash !== m.schemaHash || reference.contractHash !== m.contractHash) throw new Error("DEPENDENCY_BROKEN: Studio contract changed; republish or restore compatibility");
     return m;
   }
+  /** Current owner opt-in cannot silently fall back to a historical compiler.
+   * Only label/version releases preserving the exact policy/content schema can
+   * continue to compile retained envelopes through their original owner callback. */
+  describeViewSource(reference: ContractReference) {
+    const metadata = this.describe(reference.id, reference.version);
+    if (metadata.kind !== "surface" || metadata.schemaHash !== reference.schemaHash || metadata.contractHash !== reference.contractHash)
+      throw new Error("DEPENDENCY_BROKEN: the owning view compiler changed.");
+    const policy = viewSourcePolicySchema.parse(metadata.details.viewSource), pinned = this.items.get(`${metadata.id}@${metadata.version}`);
+    const current = [...this.items.values()].filter(item => item.metadata.id === metadata.id).sort((a, b) => b.metadata.version - a.metadata.version)[0];
+    if (!pinned?.viewSource || !current?.viewSource || current.metadata.details.viewSource === undefined
+      || current.metadata.kind !== metadata.kind || current.metadata.capability !== metadata.capability
+      || current.metadata.schemaHash !== metadata.schemaHash || checksum(current.metadata.details.viewSource) !== checksum(policy))
+      throw new Error("DEPENDENCY_BROKEN: current view compiler requires republishing.");
+    return { metadata, policy, currentMetadata: current.metadata, callbacks: pinned.viewSource };
+  }
+  /** Internal metadata-only entry. Caller owns fresh identity locks and the
+   * Serializable transaction; no native/provider query or command can run here. */
+  async compileViewSourceInTransaction(context: RecordContext, reference: ContractReference, content: unknown) {
+    this.genuinePageContext(context);
+    const resolved = this.describeViewSource(reference);
+    await this.allowed(context.session, resolved.metadata); await this.allowed(context.session, resolved.currentMetadata);
+    assertCapability(context.session, resolved.policy.authoringCapability);
+    for (const moduleId of resolved.policy.requiredModules) if (!await this.available(context.session, moduleId))
+      throw new Error(`DEPENDENCY_BROKEN: module ${moduleId} unavailable`);
+    const prepared = preparedViewSchema.parse(resolved.callbacks.prepare(viewJsonSchema.parse(content)));
+    if (new Set(prepared.sources.map(source => `${source.id}@${source.version}`)).size !== prepared.sources.length
+      || prepared.sources.some(source => !resolved.policy.sources.some(approved => approved.id === source.id && approved.version === source.version)))
+      throw new Error("DEPENDENCY_BROKEN: a view source is not explicitly approved.");
+    const approvals: ViewSourceApproval[] = [], dependencies = new Map<string, ContractMetadata>();
+    dependencies.set(`${resolved.metadata.id}@${resolved.metadata.version}`, resolved.metadata);
+    for (const selected of prepared.sources) {
+      const source = this.describe(selected.id, selected.version), policy = registeredMetricSourceSchema.parse(source.details.analyticsSource);
+      const currentSource = [...this.items.values()].filter(item => item.metadata.id === source.id).sort((a, b) => b.metadata.version - a.metadata.version)[0]?.metadata;
+      const query = this.describe(policy.query.id, policy.query.version);
+      const currentQuery = [...this.items.values()].filter(item => item.metadata.id === query.id).sort((a, b) => b.metadata.version - a.metadata.version)[0]?.metadata;
+      if (source.kind !== "metric" || source.id !== `${policy.providerId}.metric` || !policy.providerId.startsWith(`${source.ownerModuleId}.`)
+        || source.capability !== policy.requiredCapabilities[0] || source.classification !== policy.classification
+        || checksum(source.details.references) !== checksum([query.id]) || query.kind !== "query" || query.ownerModuleId !== source.ownerModuleId
+        || query.capability !== source.capability || query.classification !== policy.classification || !policy.requiredModules.includes(source.ownerModuleId)
+        || query.details.pagination !== "none" || query.details.maxCardinality !== policy.maxCardinality || query.details.costClass !== policy.costClass
+        || query.details.transaction !== undefined || checksum(query.inputSchema) !== checksum(z.toJSONSchema(registeredMetricInputSchema(policy), { io: "input" }))
+        || checksum(query.outputSchema) !== checksum(source.outputSchema)
+        || source.schemaHash !== checksum(source.outputSchema) || query.schemaHash !== checksum({ inputSchema: query.inputSchema, outputSchema: query.outputSchema })
+        || !currentSource || currentSource.kind !== source.kind || currentSource.capability !== source.capability
+        || currentSource.schemaHash !== source.schemaHash || checksum(currentSource.details) !== checksum(source.details)
+        || !currentQuery || currentQuery.kind !== query.kind || currentQuery.capability !== query.capability
+        || currentQuery.schemaHash !== query.schemaHash || checksum(currentQuery.details) !== checksum(query.details))
+        throw new Error("DEPENDENCY_BROKEN: the registered metric/query approval changed.");
+      for (const contract of [source, currentSource, query, currentQuery]) await this.allowed(context.session, contract);
+      for (const capability of policy.requiredCapabilities) assertCapability(context.session, capability);
+      for (const moduleId of policy.requiredModules) if (!await this.available(context.session, moduleId))
+        throw new Error(`DEPENDENCY_BROKEN: module ${moduleId} unavailable`);
+      const exact = (metadata: ContractMetadata) => ({ id: metadata.id, version: metadata.version, schemaHash: metadata.schemaHash, contractHash: metadata.contractHash });
+      approvals.push({ source: exact(source), metadata: source, query: exact(query), queryMetadata: query, policy });
+      dependencies.set(`${source.id}@${source.version}`, source); dependencies.set(`${query.id}@${query.version}`, query);
+    }
+    const compiled = compiledOwnerViewSchema.parse(resolved.callbacks.compile(prepared.content, freezeJson(approvals)));
+    if (new Set(compiled.requests.map(request => request.widgetId)).size !== compiled.requests.length
+      || compiled.requests.length > resolved.policy.maxQueries || compiled.requests.length * 3 > resolved.policy.maxQueryCost)
+      throw new Error("The view exceeds its approved query cost budget.");
+    const used = new Set<string>();
+    for (const request of compiled.requests) {
+      const approved = approvals.find(approval => checksum(approval.query) === checksum(request.query));
+      if (!approved || checksum(registeredMetricInputSchema(approved.policy).parse(request.input)) !== checksum(request.input))
+        throw new Error("DEPENDENCY_BROKEN: the compiled view has an unapproved query input or reference.");
+      used.add(`${approved.source.id}@${approved.source.version}`);
+    }
+    if (used.size !== approvals.length) throw new Error("A view cannot retain unused source approvals.");
+    return { content: compiled.content, requests: compiled.requests, dependencies: [...dependencies.values()]
+      .sort((a, b) => a.id.localeCompare(b.id) || a.version - b.version).map(metadata => ({ id: metadata.id, version: metadata.version,
+        schemaHash: metadata.schemaHash, contractHash: metadata.contractHash, ownerModuleId: metadata.ownerModuleId,
+        kind: metadata.kind, classification: metadata.classification })) };
+  }
+  /** Exact metadata reconstruction does not require every authored query/fact
+   * grant. Those grants are checked only before its actual visible read. */
+  describePageSourceForEntity(reference: ContractReference) {
+    const entity = this.describe(reference.id, reference.version);
+    if (entity.kind !== "entity" || entity.schemaHash !== reference.schemaHash || entity.contractHash !== reference.contractHash)
+      throw new Error("DEPENDENCY_BROKEN: page entity changed.");
+    const candidates = [...this.items.values()].filter(item => item.metadata.details.pageSource !== undefined
+      && pageSourcePolicySchema.parse(item.metadata.details.pageSource).entity.id === entity.id)
+      .sort((a, b) => b.metadata.version - a.metadata.version);
+    const current = candidates[0];
+    if (!current) throw new Error("DEPENDENCY_BROKEN: no owning page source is registered.");
+    const resolved = this.describePageSource(current.metadata);
+    if (resolved.source.version !== entity.version) throw new Error("DEPENDENCY_BROKEN: page source requires its exact entity version.");
+    return resolved;
+  }
+  describePageSource(reference: ContractReference) {
+    const metadata = this.describe(reference.id, reference.version);
+    if (metadata.kind !== "surface" || metadata.schemaHash !== reference.schemaHash || metadata.contractHash !== reference.contractHash)
+      throw new Error("DEPENDENCY_BROKEN: page source changed.");
+    const current = [...this.items.values()].filter(item => item.metadata.id === metadata.id).sort((a, b) => b.metadata.version - a.metadata.version)[0];
+    const policy = pageSourcePolicySchema.parse(metadata.details.pageSource);
+    // Never fall back to an older supported policy. Label/version-only releases
+    // can retain exact historical pages; a changed policy requires republishing.
+    if (!current?.pageSource || current.metadata.details.pageSource === undefined
+      || checksum(pageSourcePolicySchema.parse(current.metadata.details.pageSource)) !== checksum(policy))
+      throw new Error("DEPENDENCY_BROKEN: current page source requires republishing.");
+    const source = this.describe(policy.entity.id, policy.entity.version);
+    if (source.kind !== "entity" || source.ownerModuleId !== metadata.ownerModuleId || source.capability !== metadata.capability)
+      throw new Error("DEPENDENCY_BROKEN: page source owner is unavailable.");
+    return { metadata, source, policy, currentMetadata: current.metadata };
+  }
+  private genuinePageContext(context: RecordContext): void {
+    const stamp = sessionAuthorityStamp(context.session);
+    if (!context.transaction || !stamp || stamp.userId !== context.session.userId || stamp.organisationId !== context.session.organisationId
+      || stamp.membershipId !== context.session.membershipId)
+      throw new Error("Page reads require a genuine current principal and owning transaction.");
+  }
+  /** Metadata authority only. No canonical row, query or native fact is read. */
+  async resolvePageSourceMetadata(context: RecordContext, reference: ContractReference) {
+    this.genuinePageContext(context);
+    const resolved = this.describePageSource(reference);
+    for (const contract of [resolved.metadata, resolved.currentMetadata, resolved.source]) {
+      if (!await this.available(context.session, contract.ownerModuleId)) throw new Error(`DEPENDENCY_BROKEN: module ${contract.ownerModuleId} unavailable`);
+      if (contract.lifecycle === "deprecated" && Date.parse(contract.supportedUntil!) <= Date.now()) throw new Error("DEPENDENCY_BROKEN: contract support window expired");
+    }
+    return resolved;
+  }
+  async resolvePageSourcePolicy(context: RecordContext, reference: ContractReference) {
+    const resolved = await this.resolvePageSourceMetadata(context, reference);
+    await this.allowed(context.session, resolved.metadata); await this.allowed(context.session, resolved.currentMetadata); await this.allowed(context.session, resolved.source);
+    return resolved;
+  }
+  async authorisePageRead(context: RecordContext, reference: ContractReference, input: unknown) {
+    const request = pageReadRequestSchema.parse(input), resolved = await this.resolvePageSourcePolicy(context, reference);
+    const callbacks = this.items.get(`${resolved.currentMetadata.id}@${resolved.currentMetadata.version}`)?.pageSource;
+    if (!callbacks) throw new Error("DEPENDENCY_BROKEN: owning page adapter is unavailable.");
+    const anchor = pageReadAnchorSchema.parse(await callbacks.authoriseRead({ session: context.session, transaction: context.transaction }, request));
+    if (anchor.organisationId !== context.session.organisationId || anchor.kind !== request.kind
+      || (request.kind === "record" && (anchor.kind !== "record" || anchor.recordId !== request.recordId)))
+      throw new Error("FIELD_STORAGE_INVALID: owner returned an invalid page scope.");
+    return { ...resolved, anchor };
+  }
+  /** The only page query gateway. Owner Read is rechecked per invocation; full
+   * projection grants precede protected data, not just selected visual columns. */
+  async invokePageRead(context: RecordContext, reference: ContractReference, sourceRequest: unknown, input: unknown) {
+    this.genuinePageContext(context);
+    const request = pageQueryRequestSchema.parse(input), resolved = this.describePageSource(reference);
+    const approval = resolved.policy.queries.find(value => value.query.id === request.query.id && value.query.version === request.query.version);
+    const parsedSourceRequest = pageReadRequestSchema.parse(sourceRequest);
+    if (!approval || approval.scope !== parsedSourceRequest.kind)
+      throw new Error("DEPENDENCY_BROKEN: query is not approved for this page scope.");
+    const query = this.describe(request.query.id, request.query.version);
+    if (query.kind !== "query" || query.ownerModuleId !== resolved.source.ownerModuleId || query.details.transaction !== "required")
+      throw new Error("DEPENDENCY_BROKEN: owning page query changed.");
+    await this.allowed(context.session, query);
+    for (const column of approval.columns) if (column.capability) assertCapability(context.session, column.capability);
+    for (const fact of resolved.policy.facts.filter(value => value.query.id === query.id && value.query.version === query.version))
+      await this.allowed(context.session, this.describe(fact.contract.id, fact.contract.version));
+    for (const metric of resolved.policy.metrics.filter(value => value.query.id === query.id && value.query.version === query.version))
+      await this.allowed(context.session, this.describe(metric.metric.id, metric.metric.version));
+    for (const surface of resolved.policy.surfaces.filter(value => value.queries.some(ref => ref.id === query.id && ref.version === query.version)))
+      await this.allowed(context.session, this.describe(surface.surface.id, surface.surface.version));
+    const authorised = await this.authorisePageRead(context, reference, parsedSourceRequest);
+    const callbacks = this.items.get(`${authorised.currentMetadata.id}@${authorised.currentMetadata.version}`)!.pageSource!;
+    const ownerContext = { session: context.session, transaction: context.transaction };
+    const single = query.details.pagination === "none";
+    if (single && request.cursor !== null) throw new Error("Page record projections do not accept a cursor.");
+    const boundRequest = { ...request, pageSize: single ? Math.min(1, request.pageSize) : Math.min(request.pageSize, Number(query.details.maxCardinality)) };
+    const boundInput = await callbacks.bindQueryInput(ownerContext, authorised.anchor, boundRequest);
+    const rawOutput = await this.invokeQueryInTransaction(ownerContext, query, boundInput);
+    const output = pageQueryOutputSchema.parse(await callbacks.projectQueryOutput(ownerContext, authorised.anchor, boundRequest, rawOutput));
+    if (output.rows.length > Math.min(boundRequest.pageSize, Number(query.details.maxCardinality))
+      || (single && output.nextCursor !== null) || new Set(output.rows.map(row => row.id)).size !== output.rows.length)
+      throw new Error("FIELD_STORAGE_INVALID: invalid owning page result bounds.");
+    for (const row of output.rows) {
+      if (approval.purpose === "fact" && authorised.anchor.kind === "record" && row.id !== authorised.anchor.recordId)
+        throw new Error("FIELD_STORAGE_INVALID: invalid owning page record projection.");
+      if (Object.keys(row.values).length !== approval.columns.length || approval.columns.some(column => {
+        const value = row.values[column.id];
+        return value === null ? !column.nullable : typeof value !== column.valueType || (column.format !== undefined && !Number.isSafeInteger(value));
+      })) throw new Error("FIELD_STORAGE_INVALID: invalid owning page scalar projection.");
+    }
+    return { anchor: authorised.anchor, output };
+  }
   /** Exact live owning-mutation proof substitutes only this record's visibility.
    * Metadata approval happens before any native facts are projected. */
   async resolveNativeValidationFieldPolicy(context: RecordContext, reference: ContractReference,
@@ -327,6 +546,40 @@ export class CapabilityRegistry {
       throw new Error("DEPENDENCY_BROKEN: field settlement needs current owning-domain coverage.");
     await this.allowed(session, policy);
     return policy;
+  }
+  /** Only an explicit current owner window, never client-chosen record IDs or
+   * predicates. Latest unsupported policies fail closed rather than fall back. */
+  async invokeFieldSearchWindow(context: RecordContext, reference: ContractReference, input: unknown) {
+    const stamp = sessionAuthorityStamp(context.session);
+    if (!context.transaction || !stamp || stamp.userId !== context.session.userId
+      || stamp.organisationId !== context.session.organisationId || stamp.membershipId !== context.session.membershipId)
+      throw new Error("Field search requires a genuine current principal and shared transaction.");
+    const source = await this.resolve(context.session, reference);
+    if (source.kind !== "entity" || !entityDetailsSchema.parse(source.details).record?.fieldPolicy)
+      throw new Error("DEPENDENCY_BROKEN: field search source is unavailable.");
+    const policyId = [...this.items.values()].find(({ metadata }) => metadata.kind === "query"
+      && metadata.ownerModuleId === source.ownerModuleId && metadata.details.fieldSearch !== undefined
+      && fieldSearchPolicySchema.parse(metadata.details.fieldSearch).entityId === source.id)?.metadata.id;
+    const current = [...this.items.values()].filter(({ metadata }) => metadata.id === policyId).sort((a, b) => b.metadata.version - a.metadata.version)[0];
+    const policy = current?.metadata.details.fieldSearch === undefined ? undefined : fieldSearchPolicySchema.parse(current.metadata.details.fieldSearch);
+    if (!current?.run || current.metadata.kind !== "query" || current.metadata.ownerModuleId !== source.ownerModuleId
+      || current.metadata.capability !== source.capability || current.metadata.details.transaction !== "required"
+      || !policy?.fieldVersions.includes(source.version))
+      throw new Error("DEPENDENCY_BROKEN: current owner does not approve this field search version.");
+    await this.allowed(context.session, current.metadata);
+    const request = fieldSearchWindowSchema.parse(input);
+    const result = fieldSearchWindowResultSchema.parse(await current.run({ session: context.session, transaction: context.transaction }, request));
+    if (result.records.length > request.limit || (result.next !== null && result.next !== result.records.at(-1)?.recordId))
+      throw new Error("FIELD_STORAGE_INVALID: invalid owning search window.");
+    let previous = request.after ?? "";
+    for (const record of result.records) {
+      if (record.organisationId !== context.session.organisationId || record.recordId <= previous)
+        throw new Error("FIELD_STORAGE_INVALID: invalid owning search record order or tenant.");
+      const anchor = await this.authoriseRecord(context, reference, { recordId: record.recordId, intent: "read" });
+      if (anchor.revision !== record.revision) throw new Error("CONFLICT: owning search record changed.");
+      previous = record.recordId;
+    }
+    return result;
   }
   async invoke(session: Session, reference: ContractReference, input: unknown, idempotencyKey?: string): Promise<unknown> {
     const m = await this.resolve(session, reference);

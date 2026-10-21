@@ -33,7 +33,7 @@ export default async function ManufacturingToday() {
       </div>
       <SourceGoals session={session} prefixes={["manufacturing."]}/>
       <section>
-        <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Needs attention</h2>
+        <h2 className="text-xs font-semibold tracking-[0.16em] text-[var(--color-ink-faint)]">Needs attention</h2>
         <div className="mt-3 divide-y divide-[var(--color-border)] rounded-3xl border border-[var(--color-border)] bg-white">
           {board.attention.length === 0 && <p className="px-5 py-6 text-sm text-[var(--color-ink-muted)]">Nothing is overdue or blocked.</p>}
           {board.attention.map((item) => (
@@ -45,7 +45,7 @@ export default async function ManufacturingToday() {
         </div>
       </section>
       <section>
-        <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Next completions</h2>
+        <h2 className="text-xs font-semibold tracking-[0.16em] text-[var(--color-ink-faint)]">Next completions</h2>
         <div className="mt-3 divide-y divide-[var(--color-border)] rounded-3xl border border-[var(--color-border)] bg-white">
           {board.nextCompletions.length === 0 && <p className="px-5 py-6 text-sm text-[var(--color-ink-muted)]">Nothing is currently running.</p>}
           {board.nextCompletions.map((row) => (

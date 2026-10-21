@@ -234,7 +234,7 @@ export function JourneyCanvas({
             aria-label="Customer journey canvas"
             className="max-h-[820px] min-w-0 overflow-auto bg-slate-50"
             style={{
-              backgroundImage: "radial-gradient(#cbd5e1 1px, transparent 1px)",
+              backgroundImage: "radial-gradient(#dad6d2 1px, transparent 1px)",
               backgroundSize: "20px 20px",
             }}
           >
@@ -259,7 +259,7 @@ export function JourneyCanvas({
                         refY="4"
                         orient="auto"
                       >
-                        <path d="M0,0 L8,4 L0,8" fill="#60a5fa" />
+                        <path d="M0,0 L8,4 L0,8" fill="#bb9161" />
                       </marker>
                       <marker
                         id="journey-branch"
@@ -269,7 +269,7 @@ export function JourneyCanvas({
                         refY="4"
                         orient="auto"
                       >
-                        <path d="M0,0 L8,4 L0,8" fill="#8b5cf6" />
+                        <path d="M0,0 L8,4 L0,8" fill="#b98e5c" />
                       </marker>
                     </defs>
                     {stages.slice(0, -1).map((stage) => (
@@ -277,7 +277,7 @@ export function JourneyCanvas({
                         key={stage.id}
                         d={`M ${nodeX(stage.id) + 272} 175 H ${nodeX(stage.id) + 299}`}
                         fill="none"
-                        stroke="#60a5fa"
+                        stroke="#bb9161"
                         strokeWidth="2"
                         markerEnd="url(#journey-arrow)"
                       />
@@ -291,7 +291,7 @@ export function JourneyCanvas({
                           <path
                             d={`M ${start} 150 C ${start} ${y}, ${end} ${y}, ${end} 145`}
                             fill="none"
-                            stroke="#8b5cf6"
+                            stroke="#b98e5c"
                             strokeWidth="2"
                             strokeDasharray={
                               path.kind === "RETURN" ? "5 4" : undefined
@@ -302,10 +302,10 @@ export function JourneyCanvas({
                             x={(start + end) / 2}
                             y={y + 7}
                             textAnchor="middle"
-                            fill="#7c3aed"
+                            fill="#a97c49"
                             fontSize="11"
                             paintOrder="stroke"
-                            stroke="#f8fafc"
+                            stroke="#fbfaf9"
                             strokeWidth="5"
                             strokeLinejoin="round"
                           >
@@ -332,9 +332,9 @@ export function JourneyCanvas({
                           type="button"
                           aria-pressed={selectedId === stage.id}
                           onClick={() => setSelectedId(stage.id)}
-                          className="block w-full bg-gradient-to-br from-blue-50 to-white p-4 text-left"
+                          className="block w-full bg-[var(--color-surface)] p-4 text-left"
                         >
-                          <span className="text-[10px] font-semibold uppercase tracking-wide text-blue-500">
+                          <span className="text-[10px] font-semibold text-blue-500">
                             Stage {index + 1}
                           </span>
                           <span className="mt-2 block text-lg font-semibold text-slate-900">
@@ -489,7 +489,7 @@ export function JourneyCanvas({
           {selected ? (
             <div className="space-y-5">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">
+                <p className="text-xs font-semibold text-blue-600">
                   Selected stage
                 </p>
                 <h3 className="mt-2 text-lg font-semibold">{selected.name}</h3>

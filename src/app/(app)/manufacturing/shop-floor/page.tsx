@@ -26,7 +26,7 @@ export default async function ShopFloorPage() {
 
       {running.length > 0 && (
         <section className="space-y-4">
-          <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Now</h2>
+          <h2 className="text-sm font-semibold tracking-[0.16em] text-[var(--color-ink-faint)]">Now</h2>
           {running.map((w) => {
             const requestKey = `${w.id}-${w.version}`;
             return (
@@ -75,7 +75,7 @@ export default async function ShopFloorPage() {
       )}
 
       <section className="space-y-3">
-        <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Next</h2>
+        <h2 className="text-sm font-semibold tracking-[0.16em] text-[var(--color-ink-faint)]">Next</h2>
         <div className="divide-y divide-[var(--color-border)] rounded-3xl border border-[var(--color-border)] bg-white">
           {upNext.length === 0 && <p className="px-6 py-8 text-center text-base text-[var(--color-ink-muted)]">Nothing waiting.</p>}
           {upNext.map((w) => (
@@ -97,7 +97,7 @@ export default async function ShopFloorPage() {
 
       {blocked.length > 0 && (
         <section className="space-y-3">
-          <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-rose-600">Blocked</h2>
+          <h2 className="text-sm font-semibold tracking-[0.16em] text-rose-600">Blocked</h2>
           <div className="divide-y divide-[var(--color-border)] rounded-3xl border border-rose-200 bg-rose-50">
             {blocked.map((w) => (
               <div key={w.id} className="px-6 py-5 text-base">{w.product} — {w.operationName} · {w.orderNumber}</div>

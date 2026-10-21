@@ -18,7 +18,7 @@ export function MonthGrid({ year, month, marks, dense = false }: { year: number;
   const today = dayKey(new Date());
   return (
     <div>
-      <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-semibold uppercase tracking-wide text-[var(--color-ink-faint)]">
+      <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-semibold text-[var(--color-ink-faint)]">
         {WEEKDAYS.map((day) => <div key={day} className="py-2">{day}</div>)}
       </div>
       <div className="grid grid-cols-7 gap-1">
@@ -61,7 +61,7 @@ export async function MarketingCalendar({ session, month }: { session: Session; 
   const manage = session.capabilities.has('marketing.program.manage');
   return (
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-      <section className="rounded-[28px] border border-slate-200 p-5 sm:p-6">
+      <section className="rounded-2xl border border-slate-200 p-5 sm:p-6">
         <div className="mb-4 flex items-center justify-between gap-3">
           <div>
             <p className="text-sm text-[var(--color-ink-muted)]">Delivery calendar</p>
@@ -76,7 +76,7 @@ export async function MarketingCalendar({ session, month }: { session: Session; 
         <MonthGrid year={year} month={monthNumber} marks={marks} />
       </section>
       <div className="space-y-4">
-        <section className="rounded-[28px] border border-slate-200 p-5">
+        <section className="rounded-2xl border border-slate-200 p-5">
           <h2 className="text-lg font-semibold">On the board</h2>
           <div className="mt-4 space-y-3">
             {inMonth.length ? inMonth.map((activity) => (
@@ -100,7 +100,7 @@ export async function MarketingCalendar({ session, month }: { session: Session; 
           </div>
         </section>
         {manage && (
-          <section className="rounded-[28px] border border-slate-200 p-5">
+          <section className="rounded-2xl border border-slate-200 p-5">
             <h2 className="text-lg font-semibold">Schedule work</h2>
             {desk.campaigns.length ? (
               <div className="mt-4">

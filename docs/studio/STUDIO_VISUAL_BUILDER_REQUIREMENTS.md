@@ -38,7 +38,7 @@ Workstream 2E verification must include real selection/configuration, draft prev
 publication and resulting runtime, plus desktop/tablet/phone screenshots and checks
 for permissions, hidden queries, required fields and saved/unsaved state. A screenshot
 or preset selector alone is not a completed builder. Status: requirements recorded;
-visual builder NOT STARTED until 2B–2D dependencies pass their checkpoints.
+visual builder was NOT STARTED at that checkpoint; the 12 October source status below supersedes it.
 
 Michael also requires published designs to reach each business's live dashboards
 and screens, with configurable buttons. The editor must offer clear choices,
@@ -75,3 +75,45 @@ layouts and clear additions/removals/changes. Foundation reference-set compariso
 must explain descriptions and selected references in plain language, not JSON,
 checksums or hashes. Draft check results also need readable readiness/review states.
 Technical integrity still runs on the server and never substitutes for design preview.
+
+11 October: Michael wants the visual Studio to open entirely as its own app-sized
+workspace. Workstream2E must deliver a dedicated full-screen Studio route/shell,
+its own task-focused navigation and enough room for a component library, large
+shared live-preview canvas, properties panel and preview/publication controls.
+Keep ordinary ERP app navigation out of that editing canvas; provide a clear way
+back to the business workspace. The separate private Atlas Admin console retains
+platform/company administration. This is a distinct workspace inside the same
+Atlas platform, canonical records, authenticated tenant and capabilities, not a
+new ERP or duplicate rendering/permission system. Current native typed controls
+are a dependency for shared preview; they do not satisfy this designer requirement.
+
+11 October: Michael also requires Atlas administrators to build for any business
+account they are authorised to administer. The visual workspace needs a clear
+selected-business entry from the separate Admin console and a persistent business
+context in the editor/preview/publication flow. Server derives that authorised
+context through existing audited support/company access; never a client tenant ID
+or a configuration-granted privilege. Customer Studio remains limited to its own
+business. Publication must affect only the selected business and its approved
+page/audience rules; verify another business and private data remain isolated.
+
+12 October source checkpoint: the standalone shared-renderer designer, original
+draft/review/live actions and Sales/Ticket presets are IMPLEMENTED. The fact-panel
+/table properties slice exposes only permission-filtered approved read-only facts
+and exact query columns/row bounds; labels, field ordering, instructions, buttons,
+preview devices and native Ticket form reuse remain intact. Saved table columns
+and order are preserved; unavailable saved choices remain explicit/read-only.
+These are source/local checks, not whole Phase 2 or live acceptance. Activity,
+documents, relationships, approvals/tasks, existing-stage display and embedded
+metric/chart families still require actual owner adapters. Reuse existing owning
+services and Analytics rendering; no new Process/Approval/Flow engine. Friendly
+type/capability condition choices and visual prior-design comparison remain
+bounded editor work. Root's original candidate/public visual gate owns runtime
+proof, including the new native record-layout journey.
+
+12 October root: previous/current designs render labelled inert side-by-side
+previews from original sealed versions; draft input/live pointers are preserved.
+The additional-field change link opens friendly settings and explicit choice
+matching with save and bounded before/after preview. It deliberately labels page
+counts and preview-only status. Complete reviewed migration controls and compatible
+live browser verification remain required before Phase2 completion. Shared business
+dashboard owner compiler exists, but no live shared dashboard claim.

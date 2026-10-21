@@ -13,7 +13,7 @@ export default async function LogisticsCompanySettings() {
   const policy = await policyFor(session.organisationId);
   return (
     <div className="max-w-3xl space-y-6">
-      <Link href="/settings?tab=workspace" className="text-xs font-medium text-[#0071e3]">Company administration</Link>
+      <Link href="/settings?tab=workspace" className="text-xs font-medium text-[#826038]">Company administration</Link>
       <div>
         <h2 className="text-2xl font-semibold tracking-tight">Logistics</h2>
         <p className="mt-2 max-w-2xl text-sm text-slate-500">Choose what happens when an order leaves the warehouse.</p>

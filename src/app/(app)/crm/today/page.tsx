@@ -41,7 +41,7 @@ export default async function TodayPage() {
         <>
           {high.length > 0 && (
             <section>
-              <h2 className="text-xs font-medium uppercase tracking-[0.14em] text-[var(--color-ink-faint)]">Needs you first</h2>
+              <h2 className="text-xs font-medium tracking-[0.14em] text-[var(--color-ink-faint)]">Needs you first</h2>
               <div className="flex flex-col gap-2">
                 {high.map((item) => (
                   <WorkItemCard key={item.id} item={item} />
@@ -52,7 +52,7 @@ export default async function TodayPage() {
 
           {normal.length > 0 && (
             <section>
-              <h2 className="text-xs font-medium uppercase tracking-[0.14em] text-[var(--color-ink-faint)]">Also today</h2>
+              <h2 className="text-xs font-medium tracking-[0.14em] text-[var(--color-ink-faint)]">Also today</h2>
               <div className="flex flex-col gap-2">
                 {normal.map((item) => (
                   <WorkItemCard key={item.id} item={item} />

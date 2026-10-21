@@ -46,7 +46,7 @@ export default async function SiteDetailPage({ params }: { params: Promise<{ pro
     <Link href="/sales/sites" className="text-xs text-slate-500">← All sites</Link>
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <p className="text-xs font-medium uppercase tracking-wider text-slate-400">{site.reference}{site.opportunity ? ` · from ${site.opportunity.name}` : ""}</p>
+        <p className="text-xs font-medium text-slate-400">{site.reference}{site.opportunity ? ` · from ${site.opportunity.name}` : ""}</p>
         <h2 className="mt-2 flex flex-wrap items-center gap-3 text-2xl font-semibold tracking-tight">{site.name}<StatusPill label={word(site.status)} tone={tone(site.status)} /></h2>
         <p className="mt-2 text-sm text-slate-500">{site.party ? <Link href={`/customers/${site.party.id}`} className="text-blue-700">{site.party.name}</Link> : "No customer"} · {day(site.startAt)} to {day(site.targetAt)}</p>
         {site.notes && <p className="mt-2 max-w-2xl whitespace-pre-wrap text-sm text-slate-600">{site.notes}</p>}

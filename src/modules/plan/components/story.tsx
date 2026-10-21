@@ -107,7 +107,7 @@ export async function PlanStory({
         <p className="mt-1 text-sm text-[var(--color-ink-muted)]">Goals, phases and actions across this plan. Today is the thin line.</p>
         {timeline.bars.length ? (
           <div className="mt-4 overflow-x-auto rounded-3xl border border-slate-200 p-5">
-            <div className="mb-3 flex min-w-[640px] justify-between text-[11px] uppercase tracking-wide text-[var(--color-ink-faint)]">
+            <div className="mb-3 flex min-w-[640px] justify-between text-[11px] text-[var(--color-ink-faint)]">
               {timeline.months.map((month) => <span key={month}>{month.slice(5)}</span>)}
             </div>
             <div className="min-w-[640px] space-y-1">
@@ -119,7 +119,7 @@ export async function PlanStory({
                   </div>
                   <div className="relative h-8 rounded-full bg-slate-50">
                     {timeline.marker != null ? <div className="absolute inset-y-0 w-px bg-slate-400" style={{ left: `${timeline.marker}%` }} /> : null}
-                    <div className="absolute top-1.5 h-5 rounded-full" style={{ left: `${bar.left}%`, width: `${bar.width}%`, background: bar.overdue ? "#c2410c" : bar.kind === "goal" ? "#0f172a" : bar.kind === "initiative" ? "var(--color-atlas-blue)" : "#bfdbfe" }} title={bar.detail} />
+                    <div className="absolute top-1.5 h-5 rounded-full" style={{ left: `${bar.left}%`, width: `${bar.width}%`, background: bar.overdue ? "#c2410c" : bar.kind === "goal" ? "#201d19" : bar.kind === "initiative" ? "var(--color-atlas-blue)" : "#e3dfda" }} title={bar.detail} />
                   </div>
                 </div>
               ))}

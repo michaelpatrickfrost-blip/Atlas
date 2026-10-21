@@ -126,7 +126,7 @@ export default async function Workspace({
   const heading = (
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <p className="text-xs uppercase tracking-wider text-emerald-700">
+        <p className="text-xs text-emerald-700">
           Atlas Finance
         </p>
         <h1 className="mt-2 text-3xl font-semibold">{titles[workspace]}</h1>
@@ -220,8 +220,8 @@ export default async function Workspace({
         {heading}
         {["payables", "purchases", "spend"].includes(workspace) && tabs}
         {workspace === "purchases" && (
-          <section className="rounded-2xl border border-blue-100 bg-gradient-to-br from-white to-blue-50/60 p-6">
-            <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
+          <section className="rounded-2xl border border-blue-100 bg-[var(--color-surface)] p-6">
+            <p className="text-xs font-semibold text-blue-600">
               A controlled purchase, from need to receipt
             </p>
             <h2 className="mt-2 text-xl font-semibold">

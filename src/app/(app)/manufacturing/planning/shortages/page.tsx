@@ -42,7 +42,7 @@ export default async function ShortageWorkbenchPage() {
       ) : (
         <div className="overflow-hidden rounded-3xl border border-[var(--color-border)] bg-white">
           <table className="w-full text-sm">
-            <thead className="bg-[var(--color-surface-sunken)] text-left text-xs uppercase tracking-wide text-[var(--color-ink-faint)]">
+            <thead className="bg-[var(--color-surface-sunken)] text-left text-xs text-[var(--color-ink-faint)]">
               <tr>
                 <th className="px-5 py-3">Component</th>
                 <th className="px-5 py-3 text-right">Needed</th>
@@ -90,7 +90,7 @@ function SummaryCard({ count, label, tone }: { count: number; label: string; ton
     <Card className={colors[tone]}>
       <div className="flex items-end gap-2 p-5">
         <div>
-          <div className="text-3xl font-bold">{count}</div>
+          <div className="text-3xl font-semibold">{count}</div>
           <p className="text-xs text-[var(--color-ink-muted)]">{label}</p>
         </div>
         {Icon && <Icon className="mb-1 h-5 w-5 opacity-50" />}

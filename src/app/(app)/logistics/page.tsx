@@ -35,7 +35,7 @@ export default async function LogisticsToday() {
         ))}
       </div>
       <section>
-        <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Needs attention</h2>
+        <h2 className="text-xs font-semibold tracking-[0.16em] text-[var(--color-ink-faint)]">Needs attention</h2>
         <div className="mt-3 divide-y divide-[var(--color-border)] rounded-3xl border border-[var(--color-border)] bg-white">
           {board.attention.length === 0 && <p className="px-5 py-6 text-sm text-[var(--color-ink-muted)]">Nothing is late, short or blocked.</p>}
           {board.attention.map((item) => (
@@ -48,7 +48,7 @@ export default async function LogisticsToday() {
       </section>
       <section className="grid gap-6 lg:grid-cols-[1.4fr_0.8fr]">
         <div>
-          <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Dispatch today</h2>
+          <h2 className="text-xs font-semibold tracking-[0.16em] text-[var(--color-ink-faint)]">Dispatch today</h2>
           <div className="mt-3 space-y-2">
             {board.dispatch.length === 0 && <p className="rounded-3xl border border-[var(--color-border)] bg-white px-5 py-6 text-sm text-[var(--color-ink-muted)]">No carrier is waiting on a collection.</p>}
             {board.dispatch.map((row) => (
@@ -60,7 +60,7 @@ export default async function LogisticsToday() {
           </div>
         </div>
         <div className="rounded-3xl border border-[var(--color-border)] bg-white p-5">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Warehouse</h2>
+          <h2 className="text-xs font-semibold tracking-[0.16em] text-[var(--color-ink-faint)]">Warehouse</h2>
           <dl className="mt-4 space-y-4 text-sm">
             <div><div className="flex justify-between"><dt>Picking</dt><dd>{board.warehouse.picking}%</dd></div><div className="mt-2 h-1.5 rounded-full bg-slate-100"><div className="h-1.5 rounded-full bg-[var(--color-atlas-blue)]" style={{ width: `${board.warehouse.picking}%` }} /></div></div>
             <div><div className="flex justify-between"><dt>Packing</dt><dd>{board.warehouse.packing}%</dd></div><div className="mt-2 h-1.5 rounded-full bg-slate-100"><div className="h-1.5 rounded-full bg-emerald-500" style={{ width: `${board.warehouse.packing}%` }} /></div></div>

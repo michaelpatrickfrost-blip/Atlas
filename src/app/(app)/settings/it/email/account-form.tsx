@@ -26,7 +26,7 @@ export function AccountForm({ scope, existing }: { scope: "COMPANY" | "PERSONAL"
       <label className="text-sm font-medium">Sender name<input name="fromName" defaultValue={existing?.fromName ?? ""} placeholder="Jane at Northbridge" className={input} /></label>
       <label className="text-sm font-medium">Sending address<input name="fromEmail" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={input} /></label>
       <label className="text-sm font-medium">Reply-to (optional)<input name="replyTo" type="email" defaultValue={existing?.replyTo ?? ""} className={input} /></label>
-      <p className="md:col-span-2 mt-2 border-t border-slate-100 pt-4 text-xs font-semibold uppercase tracking-wide text-slate-500">Sending (SMTP)</p>
+      <p className="md:col-span-2 mt-2 border-t border-slate-100 pt-4 text-xs font-semibold text-slate-500">Sending (SMTP)</p>
       <label className="text-sm font-medium">Outgoing server<input key={`h${key}`} name="smtpHost" required defaultValue={existing?.smtpHost ?? p.smtpHost} className={input} /></label>
       <div className="grid grid-cols-2 gap-3">
         <label className="text-sm font-medium">Port<input key={`p${key}`} name="smtpPort" type="number" defaultValue={existing?.smtpPort ?? p.smtpPort} className={input} /></label>
@@ -36,7 +36,7 @@ export function AccountForm({ scope, existing }: { scope: "COMPANY" | "PERSONAL"
       </div>
       <label className="text-sm font-medium">Username<input name="smtpUser" required value={undefined} defaultValue={existing?.smtpUser ?? ""} placeholder={email || "usually the full address"} className={input} /></label>
       <label className="text-sm font-medium">{existing ? "New password (leave blank to keep)" : "Password or app password"}<input name="password" type="password" autoComplete="new-password" className={input} /></label>
-      <p className="md:col-span-2 mt-2 border-t border-slate-100 pt-4 text-xs font-semibold uppercase tracking-wide text-slate-500">Receiving (IMAP)</p>
+      <p className="md:col-span-2 mt-2 border-t border-slate-100 pt-4 text-xs font-semibold text-slate-500">Receiving (IMAP)</p>
       <label className="text-sm font-medium">Incoming server<input key={`i${key}`} name="imapHost" defaultValue={existing?.imapHost ?? p.imapHost} placeholder="imap.yourprovider.com" className={input} /></label>
       <div className="grid grid-cols-2 gap-3">
         <label className="text-sm font-medium">Port<input name="imapPort" type="number" defaultValue={existing?.imapPort ?? 993} className={input} /></label>
@@ -44,7 +44,7 @@ export function AccountForm({ scope, existing }: { scope: "COMPANY" | "PERSONAL"
       </div>
       <label className="text-sm font-medium">Inbox username<input name="imapUser" defaultValue={existing?.imapUser ?? ""} placeholder="Same as sending username" className={input} /><span className="mt-1 block text-xs font-normal text-slate-500">Leave blank if it is the same. The password is the same one.</span></label>
       <label className="flex items-start gap-2 self-end pb-2 text-sm font-medium"><input type="checkbox" name="imapEnabled" defaultChecked={existing ? existing.imapEnabled : true} className="mt-0.5 size-4" /><span>Bring replies into Atlas<span className="block text-xs font-normal text-slate-500">Checked every five minutes. Mail from a known contact appears on that customer.</span></span></label>
-      <p className="md:col-span-2 mt-2 border-t border-slate-100 pt-4 text-xs font-semibold uppercase tracking-wide text-slate-500">Limits and signature</p>
+      <p className="md:col-span-2 mt-2 border-t border-slate-100 pt-4 text-xs font-semibold text-slate-500">Limits and signature</p>
       <label className="text-sm font-medium">Daily sending limit<input name="dailyLimit" type="number" defaultValue={existing?.dailyLimit ?? 500} className={input} /></label>
       <label className="md:col-span-2 text-sm font-medium">Signature (plain HTML allowed)<textarea name="signatureHtml" rows={3} defaultValue={existing?.signatureHtml ?? ""} className={input} /></label>
       <div className="md:col-span-2"><button className="rounded-xl bg-blue-600 px-5 py-2.5 text-xs text-white">{existing ? "Save and test sending and receiving" : "Add mailbox and test sending and receiving"}</button></div>

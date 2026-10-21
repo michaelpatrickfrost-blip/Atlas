@@ -25,7 +25,7 @@ export function SettingsNav({ groups }: { groups: Group[] }) {
     <>
       {groups.map((group) => (
         <section key={group.label}>
-          <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          <p className="px-3 pb-2 text-[10px] font-semibold text-slate-400">
             {group.label}
           </p>
           <div className="space-y-1">
@@ -41,7 +41,7 @@ export function SettingsNav({ groups }: { groups: Group[] }) {
                 >
                   <Icon size={17} className="mt-0.5 shrink-0" />
                   <span className="min-w-0">
-                    <span className="block text-xs font-bold">
+                    <span className="block text-xs font-semibold">
                       {item.label}
                     </span>
                     <span className="mt-1 block text-[10px] leading-4 text-slate-500">
@@ -62,7 +62,7 @@ export function SettingsNav({ groups }: { groups: Group[] }) {
   return (
     <nav
       aria-label="Company administration"
-      className="rounded-[24px] border border-white bg-white/70 p-3 shadow-sm xl:sticky xl:top-4"
+      className="rounded-2xl border border-white bg-white/70 p-3 shadow-sm xl:sticky xl:top-4"
     >
       <details className="xl:hidden">
         <summary className="cursor-pointer px-2 py-2 text-xs font-semibold text-blue-700">

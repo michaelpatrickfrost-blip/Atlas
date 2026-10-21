@@ -121,7 +121,7 @@ export default async function Page({
           >
             <item.icon size={20} className="mt-1 shrink-0 text-blue-600" />
             <div>
-              <h2 className="text-sm font-bold text-slate-800">{item.title}</h2>
+              <h2 className="text-sm font-semibold text-slate-800">{item.title}</h2>
               <p className="mt-2 text-xs leading-6 text-slate-500">
                 {item.detail}
               </p>
@@ -138,7 +138,7 @@ export default async function Page({
                 href={`/maintenance/equipment/${asset.id}`}
                 className="rounded-xl border border-amber-100 bg-amber-50/40 p-4"
               >
-                <p className="text-sm font-bold text-slate-800">{asset.name}</p>
+                <p className="text-sm font-semibold text-slate-800">{asset.name}</p>
                 <p className="mt-1 text-xs text-slate-500">
                   {asset.code} · Due{" "}
                   {asset.nextServiceAt?.toLocaleDateString("en-GB", {
@@ -224,7 +224,7 @@ export default async function Page({
             </>
           )}
           <div className="flex items-center gap-3">
-            <button className="min-h-11 rounded-xl bg-blue-600 px-4 text-sm font-bold text-white">
+            <button className="min-h-11 rounded-xl bg-blue-600 px-4 text-sm font-semibold text-white">
               Apply filters
             </button>
             <Link

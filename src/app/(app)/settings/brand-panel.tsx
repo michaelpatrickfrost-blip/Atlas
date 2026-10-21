@@ -51,7 +51,7 @@ export function BrandPanel({ name, logoDataUrl, profile }: { name: string; logoD
   return (
     <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
       <ActionForm action={saveCompanyBrand} className="space-y-5">
-        <section className="rounded-[28px] border border-slate-200 bg-white p-6 sm:p-8">
+        <section className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
           <h3 className="text-lg font-semibold">Logo</h3>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-slate-500">PNG or JPG is printed on invoices, quotations, order acknowledgements and proformas. WEBP and GIF stay in the workspace. Square or wide, under 350 KB.</p>
           <div className="mt-5 flex flex-wrap items-center gap-4">
@@ -70,7 +70,7 @@ export function BrandPanel({ name, logoDataUrl, profile }: { name: string; logoD
             </div>
           </div>
         </section>
-        <section className="rounded-[28px] border border-slate-200 bg-white p-6 sm:p-8">
+        <section className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
           <h3 className="text-lg font-semibold">Colour and name</h3>
           <p className="mt-2 text-sm text-slate-500">The colour is the rule and the document title on customer paperwork. The trading name is the name in the letterhead.</p>
           <div className="mt-5 grid gap-4 sm:grid-cols-[auto_1fr]">
@@ -80,7 +80,7 @@ export function BrandPanel({ name, logoDataUrl, profile }: { name: string; logoD
             <label className="text-xs">Legal name<input name="legalName" value={legalName} maxLength={200} onChange={(event) => setLegalName(event.target.value)} className={field} /></label>
           </div>
         </section>
-        <section className="rounded-[28px] border border-slate-200 bg-white p-6 sm:p-8">
+        <section className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
           <h3 className="text-lg font-semibold">Letterhead</h3>
           <p className="mt-2 text-sm text-slate-500">Address, company number, VAT and contact details print under your name. The same details stay on Workspace.</p>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -95,7 +95,7 @@ export function BrandPanel({ name, logoDataUrl, profile }: { name: string; logoD
             <label className="text-xs sm:col-span-2">Website<input name="website" value={website} maxLength={200} onChange={(event) => setWebsite(event.target.value)} placeholder="https://" className={field} /></label>
           </div>
         </section>
-        <section className="rounded-[28px] border border-slate-200 bg-white p-6 sm:p-8">
+        <section className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
           <h3 className="text-lg font-semibold">Terms and payment</h3>
           <p className="mt-2 text-sm text-slate-500">These print at the end of every customer invoice, credit note, quotation, acknowledgement and proforma.</p>
           <label className="mt-5 block text-xs">How to pay<textarea name="paymentDetails" value={paymentDetails} maxLength={1500} onChange={(event) => setPaymentDetails(event.target.value)} rows={4} placeholder="Bank, sort code, account number and the reference to quote." className={field} /></label>
@@ -105,9 +105,9 @@ export function BrandPanel({ name, logoDataUrl, profile }: { name: string; logoD
         </section>
       </ActionForm>
       <aside className="space-y-4 xl:sticky xl:top-6">
-        <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[var(--shadow-atlas)]">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[var(--shadow-atlas)]">
           <div className="border-b border-slate-100 px-5 py-4">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400">Customer copy</p>
+            <p className="text-[10px] font-semibold tracking-[0.16em] text-slate-400">Customer copy</p>
             <p className="mt-1 text-sm text-slate-500">Invoices open looking like this.</p>
           </div>
           <div className="bg-slate-50 p-4">
@@ -133,7 +133,7 @@ export function BrandPanel({ name, logoDataUrl, profile }: { name: string; logoD
             </div>
           </div>
         </div>
-        <ul className="rounded-[28px] border border-slate-200 bg-white p-5 text-sm">
+        <ul className="rounded-2xl border border-slate-200 bg-white p-5 text-sm">
           {ready.map((item) => <li key={item.label} className="flex items-center justify-between border-b border-slate-100 py-2 last:border-0"><span>{item.label}</span><span className={item.ok ? "text-emerald-600" : "text-slate-400"}>{item.ok ? "Ready" : "Add"}</span></li>)}
         </ul>
       </aside>

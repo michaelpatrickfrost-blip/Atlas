@@ -1,3 +1,4 @@
+import type { Prisma } from "@/generated/prisma/client";
 import { db } from "@/core/db/client";
 import { getImplementedModules, getModule, MODULE_CATALOGUE } from "@/core/modules/registry";
 import type { ModuleManifest, ModuleNavItem } from "@/core/modules/types";
@@ -6,8 +7,8 @@ import { ATLAS_CAPABILITIES } from "@/core/admin/access";
 import { can, canAny } from "@/core/permissions/check";
 import { syncAdminCapabilities } from "@/core/permissions/role-sync";
 
-export async function getEnabledModuleIds(organisationId: string): Promise<Set<string>> {
-  const states = await db.moduleState.findMany({ where: { organisationId, }  });
+export async function getEnabledModuleIds(organisationId: string, transaction?: Prisma.TransactionClient): Promise<Set<string>> {
+  const states = await (transaction ?? db).moduleState.findMany({ where: { organisationId, }  });
   const enabled = new Set(states.filter((state) => state.enabled && state.entitled).map((state) => state.moduleId));
   return enabled;
 }
@@ -25,9 +26,9 @@ function allImplementedModuleIds(): Set<string> {
 /** Enabled app ids for this session's company, honouring the Atlas staff exception.
  *  Atlas staff must be able to open every app in every company, including the
  *  internal Atlas team workspace, which has no per-company enablement rows. */
-export async function enabledModulesForSession(session: Session): Promise<Set<string>> {
+export async function enabledModulesForSession(session: Session, transaction?: Prisma.TransactionClient): Promise<Set<string>> {
   if (isAtlasStaff(session)) return allImplementedModuleIds();
-  const enabled = await getEnabledModuleIds(session.organisationId);
+  const enabled = await getEnabledModuleIds(session.organisationId, transaction);
   for (const entry of getImplementedModules()) if (entry.utility) enabled.add(entry.id);
   return enabled;
 }

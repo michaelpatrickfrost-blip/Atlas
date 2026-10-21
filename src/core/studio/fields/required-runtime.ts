@@ -10,7 +10,9 @@ import { fieldRuntimeAuthorityInTransaction } from "./runtime-authority";
 import { createRequiredMetadataProvider, createInitialRequiredMetadataProvider, createNativeRequiredMetadataProvider } from "./required-source";
 import { readVersionedFieldContextInTransaction, readInitialFieldContextInTransaction, readCandidateFieldContextInTransaction, readNativeFieldContextInTransaction } from "./runtime-read";
 import type { FieldRuntimeAuthority } from "./runtime-authority";
-import { evaluateConditionalInputsInTransaction, nativeRequiredResultSchema as nativeResult, readResultingFieldValue as resultingValue, preflightNativeResultingFieldValue, preflightNativeConditionalInputsInTransaction } from "./required-inputs";
+import { evaluateConditionalInputsInTransaction, nativeRequiredResultSchema as nativeResult, readResultingFieldValue as resultingValue, preflightResultingFieldValue, preflightNativeConditionalInputsInTransaction } from "./required-inputs";
+import { inspectRecordProfileInTransaction, preflightRecordProfileFields, resolveRecordProfileInTransaction, type ResolvedRecordProfile } from "../record-types/runtime-profile";
+import { configurationReferenceSchema } from "../record-types/schema";
 import type { RequiredFactMetadata } from "./required-compiler";
 import type { RequiredFactSource } from "./required-contract";
 
@@ -91,6 +93,21 @@ export async function validateResultingFieldRequirements(authenticated: Session,
   return validateResulting(await fieldRuntimeAuthorityInTransaction(authenticated, transaction), input, proof);
 }
 
+/** Candidate profile coverage only. Load the exact sealed server version and
+ * substitute its additive requirements in the shared resulting-state validator.
+ * No temporary active pointer, supplied plan, native writer or access grant. */
+export async function validateCandidateRecordProfileRequirements(authenticated: Session, transaction: Prisma.TransactionClient,
+  input: unknown, candidate: unknown) {
+  const authority = await fieldRuntimeAuthorityInTransaction(authenticated, transaction), request = recordRequest.parse(input);
+  const pin = configurationReferenceSchema.parse(candidate);
+  const inspected = await inspectRecordProfileInTransaction(authority, pin);
+  if (inspected.entity.id !== request.entity.id) invalid();
+  await preflightRecordProfileFields(authority, inspected.profile, request.entity.id, { kind: "ordinary" });
+  const profile: ResolvedRecordProfile = { baseProfile: inspected.baseProfile, recordType: pin.kind === "recordType" ? pin : null,
+    profile: inspected.profile, assignmentId: null, fingerprint: checksum({ candidate: pin, profile: inspected.profile }) };
+  return validateResulting(authority, request, undefined, undefined, profile);
+}
+
 /** Internal owning mutation only. A live native proof substitutes this record's
  * visibility, never field/native-fact/reference grants or creation authority. */
 export async function validateNativeResultingFieldRequirements(authority: FieldRuntimeAuthority, input: { entity: ContractReference; recordId: string; expectedRevision: number }, operation: string, proof: object) {
@@ -103,7 +120,8 @@ export async function validateNativeResultingFieldRequirements(authority: FieldR
   return validateResulting(fresh, request, undefined, access);
 }
 
-async function validateResulting(authority: FieldRuntimeAuthority, input: unknown, proof?: object, native?: NativeFieldValidationAccess) {
+async function validateResulting(authority: FieldRuntimeAuthority, input: unknown, proof?: object, native?: NativeFieldValidationAccess,
+  candidateProfile?: ResolvedRecordProfile) {
   const request = recordRequest.parse(input), { session, transaction, registry } = authority;
   const nativePolicy = native && await registry.resolveNativeValidationFieldPolicy({ session, transaction }, request.entity, native.request, native.operation, native.proof);
   const metadata = nativePolicy ? nativePolicy.source : proof ? (await registry.resolveCurrentFieldInitialisation(session, request.entity)).source : await registry.resolve(session, request.entity);
@@ -117,6 +135,8 @@ async function validateResulting(authority: FieldRuntimeAuthority, input: unknow
     const native = nativeResult.parse(await registry.invokeInitialRecordFacts(context, request.entity, proof));
     if (native.recordId !== request.recordId || native.organisationId !== session.organisationId || native.revision !== request.expectedRevision) invalid();
   }
+  const profile = candidateProfile ?? await resolveRecordProfileInTransaction(authority, request, native ?? (proof ? { kind: "initial", proof } : { kind: "ordinary" }));
+  const profileRequired = new Set(profile.profile?.requiredFields.map(pin => pin.definitionId) ?? []);
   const extension = await transaction.studioExtensionRecord.findFirst({ where: { organisationId: session.organisationId, entityId: request.entity.id, recordId: request.recordId }, select: { id: true, revision: true } });
   await transaction.$queryRaw`SELECT d.id FROM studio_definitions d JOIN studio_field_bindings b ON b."definitionId"=d.id AND b."organisationId"=d."organisationId"
     WHERE d."organisationId"=${session.organisationId} AND b."entityId"=${request.entity.id} AND d.kind='customField' AND d."retiredAt" IS NULL AND d."activeVersionId" IS NOT NULL
@@ -124,20 +144,23 @@ async function validateResulting(authority: FieldRuntimeAuthority, input: unknow
   const fields = await transaction.studioDefinition.findMany({ where: { organisationId: session.organisationId, kind: "customField", retiredAt: null,
     activeVersionId: { not: null }, fieldBinding: { entityId: request.entity.id } }, include: { activeVersion: true }, orderBy: { id: "asc" }, take: policy.maxFields + 1 });
   if (fields.length > policy.maxFields) invalid();
+  if ([...profileRequired].some(id => !fields.some(field => field.id === id))) invalid();
   // Complete metadata-only preflight before ANY native facts or typed columns.
   // False conditional targets have no written target read; their inputs do.
-  if (native) for (const field of fields) {
+  if (native || profileRequired.size > 0) for (const field of fields) {
     if (!field.activeVersion || field.organisationId !== session.organisationId || field.activeVersionId !== field.activeVersion.id) invalid();
     const plan = inspectSealedFieldVersion(registry, field.activeVersion, session.organisationId, field.id);
     if (plan.payload.entity.id !== request.entity.id || field.key !== `${request.entity.id}.${plan.payload.field.key}`) invalid();
-    if (plan.schemaVersion === 1 && !plan.payload.field.required) continue;
-    const current = await readNativeFieldContextInTransaction(authority, { definitionId: field.id, recordId: request.recordId, expectedRevision: request.expectedRevision }, native);
+    if (plan.schemaVersion === 1 && !plan.payload.field.required && !profileRequired.has(field.id)) continue;
+    const fieldRequest = { definitionId: field.id, recordId: request.recordId, expectedRevision: request.expectedRevision };
+    const current = native ? await readNativeFieldContextInTransaction(authority, fieldRequest, native)
+      : proof ? await readInitialFieldContextInTransaction(authority, fieldRequest, proof) : await readVersionedFieldContextInTransaction(authority, fieldRequest);
     if (current.version.id !== field.activeVersionId || (current.extension?.id ?? null) !== (extension?.id ?? null)
       || (current.extension?.revision ?? null) !== (extension?.revision ?? null)) invalid();
-    await validateRequiredFieldMetadataInTransaction(authority, field.id, current.version, undefined, native);
-    if (plan.schemaVersion === 2) await preflightNativeConditionalInputsInTransaction(authority, { entity: current.payload.entity, extension: current.extension }, plan,
+    await validateRequiredFieldMetadataInTransaction(authority, field.id, current.version, proof, native);
+    if (native && plan.schemaVersion === 2) await preflightNativeConditionalInputsInTransaction(authority, { entity: current.payload.entity, extension: current.extension }, plan,
       { definitionId: field.id, recordId: request.recordId, expectedRevision: request.expectedRevision }, native);
-    if (plan.payload.field.required) await preflightNativeResultingFieldValue(authority, current, native);
+    if (plan.payload.field.required || profileRequired.has(field.id)) await preflightResultingFieldValue(authority, current, proof, native);
   }
   const checked: { definitionId: string; fingerprint: string }[] = [];
   for (const field of fields) {
@@ -146,16 +169,17 @@ async function validateResulting(authority: FieldRuntimeAuthority, input: unknow
     if (plan.payload.entity.id !== request.entity.id || field.key !== `${request.entity.id}.${plan.payload.field.key}`) invalid();
     // Optional unconditional fields cannot impose unrelated private value reads
     // on native operations. Their actual writes still validate type/access.
-    if (plan.schemaVersion === 1 && !plan.payload.field.required) { checked.push({ definitionId: field.id, fingerprint: field.activeVersion.checksum }); continue; }
+    if (plan.schemaVersion === 1 && !plan.payload.field.required && !profileRequired.has(field.id)) { checked.push({ definitionId: field.id, fingerprint: field.activeVersion.checksum }); continue; }
     const evaluated = await evaluateRequirement(session, transaction, { definitionId: field.id, recordId: request.recordId, expectedRevision: request.expectedRevision }, proof, undefined, native);
     if (evaluated.current.definition.activeVersionId !== field.activeVersionId) invalid();
     if ((evaluated.current.extension?.id ?? null) !== (extension?.id ?? null) || (evaluated.current.extension?.revision ?? null) !== (extension?.revision ?? null)) invalid();
-    if (evaluated.result.required) {
+    if (evaluated.result.required || profileRequired.has(field.id)) {
       const value = await resultingValue(evaluated.authority, evaluated.current, request.recordId, proof, native);
       if (value === null || (value.type === "multi_enum" && value.value.length === 0)) throw new Error(`${evaluated.current.payload.field.label} is required.`);
     }
     checked.push({ definitionId: field.id, fingerprint: evaluated.result.fingerprint });
   }
   return { recordRevision: anchor.revision, extensionRevision: extension?.revision ?? null, fieldsChecked: checked.length, fingerprint: checksum({ entity: request.entity,
-    recordId: request.recordId, recordRevision: anchor.revision, extensionRevision: extension?.revision ?? null, checked }) };
+    recordId: request.recordId, recordRevision: anchor.revision, extensionRevision: extension?.revision ?? null,
+    ...(profile.profile || profile.assignmentId ? { profileFingerprint: profile.fingerprint } : {}), checked }) };
 }

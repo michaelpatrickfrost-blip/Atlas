@@ -1,3 +1,17 @@
+## 21 October 2026 — main reconciled with the deployed Macro UI lineage (PR)
+
+Branch main-sync = origin/main (a9e01862, which had diverged from the release
+lineage by one docs-only commit) merged with codex/macro-ui-overhaul-20261020
+(ef8e3541; live runtime dda7609b). The only conflict was this file: both sides
+had prepended dated entries, so the release lineage's entries were kept first
+and main's 11 October Manufacturing entry after them; nothing was dropped.
+Checks on the merged tree: npx tsc --noEmit PASS; npm run build PASS (fresh
+npm ci). Not run: npm test, lint, deploy — this PR changes no code relative to
+the live runtime, only brings main up to it. The Desktop checkout
+/Users/michael/Desktop/RP SYSTEM and its uncommitted work were not touched; the
+merge was done in the worktree /Users/michael/Desktop/atlas-main-sync.
+Next: merge the PR, then future releases can run from main again per docs/DEPLOY.md.
+
 ## 20 October 2026 — Macro ink-on-paper redesign LIVE at https://atlassystem.online
 
 Supersedes the "build and deploy delegated" status of the entry below. Deployed

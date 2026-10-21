@@ -94,6 +94,8 @@
 .website-brand img {
   width: 154px;
   height: 54px;
+  object-fit: contain;
+  object-position: left center;
 }
 .website-links {
   display: flex;

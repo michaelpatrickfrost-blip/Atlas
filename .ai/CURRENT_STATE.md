@@ -1,3 +1,42 @@
+## 21 October 2026 — Push-reveal rail, Outfit and dynamic Home LIVE at https://atlassystem.online
+
+Supersedes "deploy pending" in the entry below. Deployed commit
+e95cd16433c72db6904c3313c78bacc6ba646578 (branch codex/macro-ui-overhaul-20261020,
+worktree /Users/michael/Desktop/atlas-macro-ui, pushed). App source is e3ad90b4; e95cd164
+adds only a gate change. Backup of the activated release:
+/home/administrator/backups/atlas-pre-deploy-20261021-061839. Rollback runtime retained:
+/opt/atlas-releases/dda7609b7680bb79cf2cabd6a392d84805ad021d (previous Macro release;
+database not changed by the release).
+Deploy attempts before it, none of which switched the live pointer:
+- b7d52f20: premium gate PASS; home-menu failed on the "Your apps" heading (it now
+  carries a live count). Fixed by 45fc82c6 (heading matched with /^Your apps\b/).
+- 45fc82c6 replayed read-only on the sealed b7d52f20 candidate: failed at
+  check-home-menu.ts:240, the Apps popup covered the header Search button and the page's
+  module tab strip (z-62) drew through the popup. Fixed in src by e3ad90b4 (.atlas-rail
+  z-index 76; .atlas-rail-popup top 50px, below the header). Popups already used the
+  opaque --m-surface (#fbfaf7); the bleed-through was layering, not transparency.
+- e3ad90b4: premium gate PASS; home-menu failed "desktop utility icons and labels must
+  fit the rail" because the hidden-at-rest rail slides items 14px aside and fades them.
+  Backups of these attempts: atlas-pre-deploy-20261021-055934 and -061003.
+Gate change in e95cd164 (scripts/check-home-menu.ts only): on viewports >= 1024px the
+rail is pinned ("Toggle navigation") and transitions are awaited before the fit check;
+the popup anchoring assertion now requires the popup beside the rail and below the
+header (was: top level with the Apps button). The Search-click-while-Apps-open assertion
+is unchanged and passes. Before redeploying this was run read-only on the sealed
+e3ad90b4 candidate (loopback :3011, scratch overlay since removed): PASS.
+Checks that ran and PASSED on e95cd164: tsc and eslint on b7d52f20 (0 errors); candidate
+polish acceptance (36 routes x 3 widths, phone Apps/focus, crossfade, reduced motion;
+home-menu desktop/tablet/phone/small-phone, business boundary, Search with Apps open);
+runtime switched; public-HTTPS polish acceptance PASS (evidence /tmp/atlas-polish-public-kHXAjs
+and /tmp/atlas-home-menu-check-L6gWog on the server); no restore. Live:
+/login 200, /api/health/release = e95cd164..., /opt/atlas-current resolves to it, atlas active.
+Public screenshots reviewed: Apps menu solid, header/Search unobstructed.
+Not run: a fresh local build of e95cd164 (the server built the candidate; tsc/eslint were run
+on b7d52f20 and the later commits changed only macro.css and scripts); manual signed-in
+click-through of every app; Desktop main checkout untouched.
+Next: reconcile the Desktop main checkout (~560 commits behind) and merge this branch
+lineage into main; keep dda7609b as the rollback runtime until then.
+
 ## 21 October 2026 — Push-reveal rail, Outfit, dynamic Home (release branch, deploy pending)
 
 Michael's review of the live Macro release: the rail must not overlay the work

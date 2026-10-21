@@ -17,7 +17,7 @@ export default async function UnsubscribePage({ params }: { params: Promise<{ to
   const message = await db.emailMessage.findFirst({ where: { openToken: token }, select: { organisationId: true } });
   const brand = message ? await loadBrand(message.organisationId) : null;
   return (
-    <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f4f4f5", padding: 24 }}>
+    <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f5f5f4", padding: 24 }}>
       <div style={{ maxWidth: 420, width: "100%", background: "#fff", borderRadius: 16, padding: 32, textAlign: "center" }}>
         <p style={{ fontWeight: 700, marginBottom: 16 }}>{brand?.name ?? "Atlas"}</p>
         <form action={async () => { "use server"; await unsubscribe(token); }}>

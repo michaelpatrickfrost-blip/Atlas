@@ -15,7 +15,7 @@ import {
   signOutOtherSessions,
 } from "@/core/auth/security-actions";
 import { saveProfile } from "../actions";
-const card = "rounded-[26px] border border-blue-100/60 bg-white p-6 shadow-sm";
+const card = "rounded-2xl border border-blue-100/60 bg-white p-6 shadow-sm";
 const input =
   "mt-2 w-full rounded-xl border border-blue-100 bg-white px-4 py-3 text-sm font-normal";
 export default async function PersonalSettings() {
@@ -30,8 +30,8 @@ export default async function PersonalSettings() {
   });
   return (
     <div className="mx-auto max-w-5xl space-y-5">
-      <header className="rounded-[28px] border border-white bg-white/80 p-6 sm:p-8">
-        <p className="text-xs font-bold uppercase tracking-[.17em] text-blue-600">
+      <header className="rounded-2xl border border-white bg-white/80 p-6 sm:p-8">
+        <p className="text-xs font-semibold tracking-[.17em] text-blue-600">
           Your account
         </p>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight">
@@ -66,7 +66,7 @@ export default async function PersonalSettings() {
                 {session.userEmail}
               </p>
             </div>
-            <button className="min-h-11 rounded-xl bg-blue-600 px-5 text-xs font-bold text-white">
+            <button className="min-h-11 rounded-xl bg-blue-600 px-5 text-xs font-semibold text-white">
               Save personal details
             </button>
           </ActionForm>
@@ -145,7 +145,7 @@ export default async function PersonalSettings() {
                 />
               </label>
             ))}
-            <button className="min-h-11 rounded-xl bg-blue-600 px-5 text-xs font-bold text-white md:col-span-3 md:justify-self-start">
+            <button className="min-h-11 rounded-xl bg-blue-600 px-5 text-xs font-semibold text-white md:col-span-3 md:justify-self-start">
               Change password
             </button>
           </ActionForm>

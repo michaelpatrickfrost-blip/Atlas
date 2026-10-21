@@ -9,5 +9,5 @@ export function FormSection({ title, intro, children }: { title: string; intro?:
 }
 
 export function RecordIntro({ kicker, title, detail }: { kicker: string; title: string; detail: string }) {
-  return <div><p className="text-[10px] font-semibold uppercase tracking-[.16em] text-blue-600">{kicker}</p><h2 className="mt-2 text-3xl font-semibold tracking-tight">{title}</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">{detail}</p></div>;
+  return <div><p className="text-[10px] font-semibold tracking-[.16em] text-blue-600">{kicker}</p><h2 className="mt-2 text-3xl font-semibold tracking-tight">{title}</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">{detail}</p></div>;
 }

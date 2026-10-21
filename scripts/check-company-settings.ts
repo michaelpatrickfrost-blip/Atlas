@@ -706,10 +706,11 @@ async function main() {
     });
     await signIn(target.context, target.user.id, company.id);
     await target.page.goto("/finance/receivables");
-    await expect(
-      target.page.getByRole("link", { name: invoice.reference, exact: true }),
-    ).toBeVisible();
-    await target.page.goto(`/finance/documents/${invoice.id}`);
+    const invoiceLink = target.page.locator(`a[href="/finance/documents/${invoice.id}"]`);
+    await expect(invoiceLink).toBeVisible();
+    await expect(invoiceLink).toContainText(invoice.reference);
+    await invoiceLink.click();
+    await target.page.waitForURL(`**/finance/documents/${invoice.id}`);
     await expect(
       target.page.getByRole("heading", {
         name: invoice.reference,
@@ -774,9 +775,10 @@ async function main() {
       }),
     ).toBeVisible();
     await target.page.goto("/finance/spend");
-    await expect(
-      target.page.getByRole("link", { name: request.reference, exact: true }),
-    ).toBeVisible();
+    const requestLink = target.page.locator(`a[href="/finance/documents/${request.id}"]`);
+    await expect(requestLink).toBeVisible();
+    await expect(requestLink).toContainText(request.reference);
+    await expect(target.page.locator(`a[href="/finance/documents/${hidden.id}"]`)).toHaveCount(0);
     await expect(
       target.page.getByText(hidden.reference, { exact: true }),
     ).toHaveCount(0);

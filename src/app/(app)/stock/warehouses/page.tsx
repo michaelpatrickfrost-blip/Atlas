@@ -32,7 +32,7 @@ export default async function WarehousesPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{group.places.map((place) => {
         const balances = snapshot.balances.filter((balance) => balance.warehouseId === place.id && balance.quantity > 0);
         return <div key={place.id} className="rounded-2xl border border-slate-200 bg-white p-6">
-          <p className="text-xs font-medium uppercase tracking-wider text-slate-400">{place.kind === "YARD" ? "Yard" : "Warehouse"} · {place.code}</p>
+          <p className="text-xs font-medium text-slate-400">{place.kind === "YARD" ? "Yard" : "Warehouse"} · {place.code}</p>
           <h3 className="mt-2 text-lg font-semibold">{place.name}</h3>
           <p className="mt-6 text-3xl font-semibold">{balances.length}</p>
           <p className="mt-1 text-xs text-slate-500">products with stock</p>

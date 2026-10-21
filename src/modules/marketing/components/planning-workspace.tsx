@@ -18,7 +18,7 @@ export async function PlanningWorkspace({ session }: { session: Session }) {
     : null;
   return (
     <div className="space-y-6">
-      <section className="rounded-[28px] border border-slate-200 p-6">
+      <section className="rounded-2xl border border-slate-200 p-6">
         <h2 className="text-lg font-semibold">From campaign to Sales</h2>
         <p className="mt-2 max-w-2xl text-sm text-[var(--color-ink-muted)]">Leads handed across from a campaign, and the opportunities Sales opened from them. Pipeline value is potential business, not posted invoice revenue.</p>
         <div className="mt-5 flex flex-wrap gap-3">
@@ -27,7 +27,7 @@ export async function PlanningWorkspace({ session }: { session: Session }) {
         </div>
       </section>
       <div className="grid gap-6 lg:grid-cols-2">
-        <section className="rounded-[28px] border border-slate-200 p-6">
+        <section className="rounded-2xl border border-slate-200 p-6">
           <h2 className="mb-4 text-lg font-semibold">Campaign leads</h2>
           {prospects === null ? <p className="text-sm text-[var(--color-ink-muted)]">CRM access is required.</p> : prospects.length ? prospects.map((prospect) => (
             <Link className="block border-b border-black/5 py-4" key={prospect.id} href={`/crm/prospect/${prospect.id}`}>
@@ -36,7 +36,7 @@ export async function PlanningWorkspace({ session }: { session: Session }) {
             </Link>
           )) : <p className="text-sm text-[var(--color-ink-muted)]">Campaign handoffs appear here once they are sent to CRM.</p>}
         </section>
-        <section className="rounded-[28px] border border-slate-200 p-6">
+        <section className="rounded-2xl border border-slate-200 p-6">
           <h2 className="mb-4 text-lg font-semibold">Campaign pipeline</h2>
           {opportunities === null ? <p className="text-sm text-[var(--color-ink-muted)]">CRM opportunity access is required.</p> : opportunities.length ? opportunities.map((opportunity) => (
             <Link className="block border-b border-black/5 py-4" key={opportunity.id} href={`/crm/opportunities/${opportunity.id}`}>

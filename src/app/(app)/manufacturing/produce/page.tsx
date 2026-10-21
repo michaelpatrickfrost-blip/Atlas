@@ -22,7 +22,7 @@ export default async function ProduceWorkspace({ searchParams }: { searchParams:
       </header>
       <div className="overflow-x-auto rounded-3xl border border-[var(--color-border)] bg-white">
         <table className="w-full text-sm">
-          <thead className="bg-[var(--color-surface-sunken)] text-left text-xs uppercase tracking-wide text-[var(--color-ink-faint)]">
+          <thead className="bg-[var(--color-surface-sunken)] text-left text-xs text-[var(--color-ink-faint)]">
             <tr>
               <th className="px-5 py-3">MO</th>
               <th className="px-5 py-3">Product</th>

@@ -16,6 +16,8 @@ import { versionedFieldPayloadSchema } from "@/core/studio/fields/required-contr
 import { readStoredFieldMigrationIntent, readStoredFieldMigrationReview } from "@/core/studio/fields/migrations/stored-protocol";
 import { checksum } from "@/core/studio/registry/contracts";
 
+import { fieldSearchRequestSchema, fieldSearchWindowSchema, fieldSearchWindowResultSchema } from "@/core/studio/fields/search-contract";
+
 const recordId = z.string().min(1).max(100).regex(/^[a-zA-Z0-9_-]+$/);
 const listInput = z.strictObject({
   search: z.string().max(200).optional(), status: z.enum(WORK_STATUSES).optional(),
@@ -459,6 +461,39 @@ export const ticketStudioContract: StudioModuleContract = { contributions: [
         // or merged work. This approves access only, not changing those records.
         return { organisationId: ctx.session.organisationId, entityId: "tickets.ticket" as const, count, accessComplete: true as const };
       }, { isolationLevel: "Serializable" });
+    } }),
+  query({ ...identity, id: "tickets.ticket.field_search_window", label: "Accessible Ticket search window", kind: "query",
+    input: fieldSearchWindowSchema, output: fieldSearchWindowResultSchema, transaction: "required",
+    fieldSearch: { entityId: "tickets.ticket", fieldVersions: [2, 3, 4, 5, 6, 7, 8, 9] },
+    pagination: "cursor", maxCardinality: 50, costClass: "medium",
+    async execute(ctx, input) {
+      const client = await requireSource(ctx);
+      const rows = await client.serviceWorkItem.findMany({ where: { AND: [workScope(ctx.session),
+        { kind: "TICKET", ...(input.after ? { id: { gt: input.after } } : {}) }] },
+        select: { id: true, organisationId: true, version: true }, orderBy: { id: "asc" }, take: input.limit + 1 });
+      const records = rows.slice(0, input.limit).map(row => ({ recordId: row.id, organisationId: row.organisationId, revision: row.version }));
+      return { records, next: rows.length > input.limit ? records.at(-1)!.recordId : null };
+    } }),
+  query({ ...identity, id: "tickets.ticket.field_search", label: "Search configured Ticket field", kind: "query", input: fieldSearchRequestSchema,
+    output: z.strictObject({ records: z.array(projection).max(50), next: z.strictObject({ after: recordId, checksum: z.string().regex(/^[a-f0-9]{64}$/) }).nullable() }),
+    pagination: "cursor", maxCardinality: 50, costClass: "high",
+    async execute(ctx, input) {
+      const { withFieldRuntimeAuthority, fieldRuntimeAuthorityInTransaction } = await import("@/core/studio/fields/runtime-authority");
+      const { searchCurrentFieldValuesInTransaction } = await import("@/core/studio/fields/search");
+      const search = async (authority: Awaited<ReturnType<typeof fieldRuntimeAuthorityInTransaction>>) => {
+        // This owning surface can search Tickets only; another opted-in entity's
+        // field is never accepted merely because this caller also has its grants.
+        const found = await searchCurrentFieldValuesInTransaction(authority, input, "tickets.ticket");
+        const client = await requireSource({ session: authority.session, transaction: authority.transaction });
+        const rows = found.records.length ? await client.serviceWorkItem.findMany({ where: { AND: [workScope(authority.session),
+          { kind: "TICKET", id: { in: found.records.map(record => record.recordId) } }] }, select, take: input.limit }) : [];
+        if (rows.length !== found.records.length) throw new Error("CONFLICT: configured search records changed.");
+        return { records: found.records.map(record => { const row = rows.find(row => row.id === record.recordId);
+          if (!row || row.version !== record.revision) throw new Error("CONFLICT: configured search record changed.");
+          return project(row); }), next: found.next };
+      };
+      if (ctx.transaction) return search(await fieldRuntimeAuthorityInTransaction(ctx.session, ctx.transaction));
+      return withFieldRuntimeAuthority(ctx.session, search);
     } }),
   query({ ...identity, id: "tickets.ticket.list", label: "Tickets", kind: "query", input: listInput,
     output: z.strictObject({ records: z.array(projection).max(50), next: listInput.shape.cursor.nullable() }),

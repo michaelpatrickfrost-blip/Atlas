@@ -33,7 +33,7 @@ export default async function CompanySetupPage({ params }: { params: Promise<{ o
       {/* Brand setup first — customers should personalise before importing data */}
       <section>
         <div className="mb-4">
-          <p className="text-[10px] font-semibold uppercase tracking-[.2em] text-blue-600">Step 1 · White-label</p>
+          <p className="text-[10px] font-semibold tracking-[.2em] text-blue-600">Step 1 · White-label</p>
           <h2 className="text-2xl font-semibold tracking-tight">Company identity</h2>
         </div>
         <SetupBrand organisationId={org.id} name={org.name} logoDataUrl={org.logoDataUrl} profile={profile} />
@@ -41,8 +41,8 @@ export default async function CompanySetupPage({ params }: { params: Promise<{ o
 
       {/* Data import portal */}
       <section>
-        <div className="rounded-3xl bg-[#12213c] p-8 text-white">
-          <p className="text-[10px] font-semibold uppercase tracking-[.2em] text-blue-300">Step 2 · Data setup</p>
+        <div className="rounded-3xl bg-[#402f1c] p-8 text-white">
+          <p className="text-[10px] font-semibold tracking-[.2em] text-blue-300">Step 2 · Data setup</p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight">Import your business data</h1>
           <p className="mt-3 max-w-2xl text-sm text-slate-300">
             Download a template, fill it in, check it, then import. Files load into this company only. {org._count.parties} customers,{" "}

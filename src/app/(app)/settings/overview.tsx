@@ -35,12 +35,12 @@ export function SettingsOverview({
   );
   return (
     <div className="space-y-5">
-      <section className="relative overflow-hidden rounded-[28px] border border-blue-100 bg-gradient-to-br from-white via-blue-50/60 to-blue-100/60 p-6 sm:p-8">
+      <section className="relative overflow-hidden rounded-2xl border border-blue-100 bg-[var(--color-surface)] p-6 sm:p-8">
         <div className="absolute -right-5 -top-4 text-blue-200/70">
           <Building2 size={180} strokeWidth={0.6} />
         </div>
         <div className="relative max-w-xl">
-          <p className="text-xs font-bold uppercase tracking-[.18em] text-blue-600">
+          <p className="text-xs font-semibold tracking-[.18em] text-blue-600">
             Made for your company
           </p>
           <h3 className="mt-3 text-3xl font-semibold leading-tight tracking-tight">
@@ -55,7 +55,7 @@ export function SettingsOverview({
           {links.some((l) => l.href === "/settings?tab=roles") && (
             <Link
               href="/settings?tab=roles"
-              className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-xl bg-blue-600 px-4 text-xs font-bold text-white"
+              className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-xl bg-blue-600 px-4 text-xs font-semibold text-white"
             >
               Build access profiles
               <ArrowUpRight size={15} />
@@ -97,7 +97,7 @@ export function SettingsOverview({
       </label>
       {[...new Set(filtered.map((link) => link.group))].map((group) => (
         <section key={group}>
-          <h3 className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500">
+          <h3 className="mb-3 flex items-center gap-2 text-xs font-semibold text-slate-500">
             <SlidersHorizontal size={14} />
             {group}
           </h3>

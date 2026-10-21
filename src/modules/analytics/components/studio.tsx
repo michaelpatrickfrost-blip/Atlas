@@ -62,6 +62,23 @@ import {
   arrangeDashboard,
   dashboardLooks,
 } from "../appearance";
+/** Complete server-action bundle for a genuinely selected-business adapter.
+ * Each callback must independently refresh its target authority. Supplying an
+ * adapter never falls back to native data/actions in another login workspace. */
+export type AnalyticsStudioActions = {
+  saveAction: typeof saveAnalyticsDashboard;
+  deleteAction: typeof deleteAnalyticsDashboard;
+  loadMetricsAction: typeof loadLiveMetrics;
+  loadDataAction: typeof loadDashboardData;
+  loadSliceAction: typeof loadMetricSlice;
+  loadGoalsAction: () => Promise<GoalMarker[]>;
+};
+const nativeStudioActions = { saveAction: saveAnalyticsDashboard, deleteAction: deleteAnalyticsDashboard,
+  loadMetricsAction: loadLiveMetrics, loadDataAction: loadDashboardData, loadSliceAction: loadMetricSlice };
+function internalPageHref(value: string) {
+  if (!/^\/(?!\/)[a-zA-Z0-9/_-]*$/.test(value)) throw new Error("Choose an internal dashboard workspace.");
+  return value;
+}
 export type SavedBoard = {
   id: string;
   name: string;
@@ -94,6 +111,9 @@ export function Studio({
   startEditing = false,
   openMenuMetric,
   goals = [],
+  serverActions,
+  workspaceHref = "/analytics",
+  monitorHref = "/board",
 }: {
   metrics: AnalyticsResult[];
   datasets?: ReportSpec[];
@@ -108,7 +128,15 @@ export function Studio({
   startEditing?: boolean;
   openMenuMetric?: string;
   goals?: GoalMarker[];
+  serverActions?: AnalyticsStudioActions;
+  workspaceHref?: string;
+  monitorHref?: string;
 }) {
+  if (serverActions && [serverActions.saveAction, serverActions.deleteAction, serverActions.loadMetricsAction,
+    serverActions.loadDataAction, serverActions.loadSliceAction, serverActions.loadGoalsAction].some(action => typeof action !== "function"))
+    throw new Error("This selected-business dashboard adapter is incomplete.");
+  const actions = serverActions ?? nativeStudioActions;
+  const workspace = internalPageHref(workspaceHref), monitorPage = internalPageHref(monitorHref);
   const router = useRouter(),
     selected = dashboards.find((b) => b.id === selectedId),
     template = boardTemplates.find((t) => t.id === templateId);
@@ -169,14 +197,16 @@ export function Studio({
     board.refreshSeconds,
     sample,
     tick,
+    actions.loadMetricsAction,
   );
   const liveGoals = useLiveGoals(
       goals,
       board.refreshSeconds,
       sample || board.refreshSeconds <= 0,
+      serverActions?.loadGoalsAction,
     ),
     active = board.widgets.find((w) => w.id === focused),
-    base = sample ? "/analytics-preview" : "/analytics";
+    base = sample ? "/analytics-preview" : workspace;
   const queryKey = JSON.stringify({
     widgets: board.widgets.map((w) => ({
       id: w.id,
@@ -206,7 +236,7 @@ export function Studio({
     });
     const run = async () => {
       try {
-        const result = await loadDashboardData({
+        const result = await actions.loadDataAction({
           widgets: board.widgets.filter((w) => w.data),
           filters: board.filters,
         });
@@ -220,7 +250,7 @@ export function Studio({
         try {
           entries.push([
             `${job.metricId}:${job.breakdown}`,
-            await loadMetricSlice({ ...job, period }),
+            await actions.loadSliceAction({ ...job, period }),
           ] as const);
         } catch {
           entries.push([
@@ -247,7 +277,7 @@ export function Studio({
     };
     // queryKey is the serialised data query; styling edits do not refetch source records.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queryKey, period, updated, sample, opened, tick]);
+  }, [queryKey, period, updated, sample, opened, tick, actions.loadDataAction, actions.loadSliceAction]);
   function change(next: BoardState) {
     setHistory((h) => [...h.slice(-29), board]);
     setFuture([]);
@@ -378,7 +408,7 @@ export function Studio({
     }
     if (
       !window.open(
-        `/board?dashboard=${selected.id}&period=${period}`,
+        `${monitorPage}?dashboard=${encodeURIComponent(selected.id)}&period=${period}`,
         `atlas-board-${selected.id}`,
         "popup,width=1680,height=980",
       )
@@ -388,7 +418,7 @@ export function Studio({
   function save(asCopy = false) {
     startTransition(async () => {
       try {
-        const id = await saveAnalyticsDashboard({
+        const id = await actions.saveAction({
           ...board,
           period,
           name: asCopy ? `${board.name.slice(0, 60)} copy` : board.name,
@@ -396,7 +426,7 @@ export function Studio({
           expectedUpdatedAt: asCopy ? undefined : selected?.updatedAt,
         });
         setDirty(false);
-        router.push(`/analytics?dashboard=${id}&period=${period}`);
+        router.push(`${workspace}?dashboard=${encodeURIComponent(id)}&period=${period}`);
         router.refresh();
       } catch (e) {
         setMessage(
@@ -500,7 +530,7 @@ export function Studio({
                       if (window.confirm(`Delete ${b.name}?`))
                         startTransition(async () => {
                           try {
-                            await deleteAnalyticsDashboard(b.id);
+                            await actions.deleteAction(b.id);
                             router.refresh();
                           } catch {
                             setMessage("Could not delete this dashboard.");
@@ -1935,6 +1965,7 @@ function useLiveMetrics(
   seconds: number,
   sample: boolean,
   tick: number,
+  loadMetricsAction: AnalyticsStudioActions["loadMetricsAction"] = loadLiveMetrics,
 ) {
   const [metrics, setMetrics] = useState(initial),
     [updated, setUpdated] = useState(0),
@@ -1950,7 +1981,7 @@ function useLiveMetrics(
       inFlight = true;
       setRefreshing(true);
       try {
-        const result = await loadLiveMetrics(period);
+        const result = await loadMetricsAction(period);
         if (!stopped) {
           setMetrics(result);
           setUpdated(Date.now());
@@ -1974,6 +2005,6 @@ function useLiveMetrics(
       stopped = true;
       if (timer) window.clearInterval(timer);
     };
-  }, [period, seconds, sample, tick]);
+  }, [period, seconds, sample, tick, loadMetricsAction]);
   return { metrics, updated, refreshError, refreshing };
 }

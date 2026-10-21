@@ -111,7 +111,7 @@ export default async function PipelinePage({ searchParams }: { searchParams: Pro
               const cards = prospects.filter((prospect) => prospect.lifecycleStage === stage);
               return (
                 <div key={stage} className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-sunken)] p-3">
-                  <p className="px-1 text-xs font-semibold uppercase tracking-wide text-[var(--color-ink-muted)]">{label} <span className="ml-1 font-normal text-[var(--color-ink-faint)]">{cards.length}</span></p>
+                  <p className="px-1 text-xs font-semibold text-[var(--color-ink-muted)]">{label} <span className="ml-1 font-normal text-[var(--color-ink-faint)]">{cards.length}</span></p>
                   <div className="mt-2 flex max-h-72 flex-col gap-2 overflow-y-auto">
                     {cards.map((prospect) => (
                       <div key={prospect.id} className="rounded-xl border border-[var(--color-border)] bg-white px-3 py-2.5 hover:border-[var(--color-atlas-blue)]">

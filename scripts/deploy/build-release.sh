@@ -11,6 +11,7 @@ npx prisma migrate deploy --config prisma7.config.ts > "$BACKUP-migrate.log" 2>&
 NODE_OPTIONS=--max-old-space-size=6144 npm run build > "$BACKUP-build.log" 2>&1
 [[ -s .next/BUILD_ID && -f .next/server/app-paths-manifest.json ]]
 node --env-file=.env.local --import tsx scripts/studio/check-compatibility.ts > "$BACKUP-studio-compatibility.log" 2>&1
+node --import tsx scripts/studio/prepare-runtime-features.ts "$CANDIDATE" "$PREVIOUS" "$REV" > "$BACKUP-studio-runtime-features.log" 2>&1
 node scripts/deploy/release-files.mjs assets "$PREVIOUS/.next/static" .next/static
 printf 'ATLAS_RELEASE_REVISION=%s\nNEXT_DEPLOYMENT_ID=%s\n' "$REV" "$REV" > .release.env
 printf '%s\n' "$REV" > .atlas-ready

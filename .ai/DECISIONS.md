@@ -1,3 +1,130 @@
+## 20 October 2026 — Macro-inspired visual system supersedes premium pearl/sapphire
+
+Michael asked for a total redesign of every app, menu, button and icon using the
+Macro.com interface as the muse: warm paper surfaces, hairline borders, monochrome
+thin line icons, an editorial serif for titles and near-black primary controls,
+"clean and sophisticated, not a small tweak". src/app/macro.css loads last and
+unlayered so it restyles shared classes and Tailwind utilities everywhere; the
+Tailwind slate/gray/blue/indigo/sky scales are remapped in globals.css @theme to
+warm stone and bronze; cool blue hex literals in source were shifted to warm
+equivalents. Fonts: Inter (UI) + Newsreader (titles), bundled locally.
+The desktop shell now has a persistent left icon rail (black "+" opens Apps,
+Search, Home, Dashboards, Reports, My tasks, Messages, Guides, Settings, account)
+beside one bordered workspace panel; this supersedes the 8 October "no sidebar"
+direction. Phones keep the top-bar controls. Behaviour, routes, permissions and
+features are unchanged — presentation only.
+
+## 14 October 2026 — One premium visual system across all apps
+
+Michael requests a substantial visual overhaul with smooth motion, glass-like
+buttons and classy coloured icons throughout Atlas; he clarified an Apple-like,
+bold and posh feel with no cheesy or tacky decoration. Keep the supplied brand and
+Nunito, with pearl surfaces, navy text, sapphire primary actions and muted curated
+app accents. Shared premium.css and shell/UI components own this system; no new
+per-module theme engines. The colour map is presentation only and grants nothing.
+Opaque menus and filter-free content containers preserve readability and layering.
+Michael explicitly rejected the dark Finance/Customer Service banners as inconsistent;
+workspace hero banners use the shared light pearl surface, navy heading and glass
+actions. Manufacturing/Guides share the same surface hook rather than isolated themes.
+Route motion uses bundled React ViewTransition to coordinate streamed arrivals,
+with an arrival fallback for unsupported browsers. No keyed layout remounts, so
+unsaved form state survives. Tabs keep their mounted panels; closed menus are
+immediately inert while display transitions finish. Reduced motion disables
+movement and snapshot animations; native dialogs retain focus and
+save guards. Business/Admin separation and central data remain unchanged.
+
+## 11 October 2026 — One publisher and genuine standalone visual Studio context
+
+The standalone /design-studio route sits outside Admin/customer shell chrome;
+Atlas staff explicitly open an ACTIVE customer through the existing audited
+support-affiliation policy. Every subsequent operation freshly resolves actual
+source and selected-business sessions in the same Serializable transaction;
+GET/save never creates affiliations and target IDs grant no authority. Customer
+Studio stays scoped to its authenticated business. Publication/activation reuse
+original immutable version/CAS/Audit primitives atomically, not a second engine.
+Preview/customer rendering share Page runtime/renderer; design mode is inert.
+
+Owner Page contributions compose through lazy manifest getters and owner authority
+imports inside callbacks, because eager composition creates a Core registry /
+module callback import cycle. This preserves Core's only module-wiring point and
+all retained native/provider contracts. Each current source approves closed
+projections and exact supported field generations before reads; metadata-only
+Page reconstruction for native Create validation grants no ordinary Read.
+
+Record associations retain exact type/base evidence in append-only tenant-owned
+history and a revision-CAS head with paired Audit. Candidate profile activation
+validates the canonical owner-authorised cohort under the original entity lock
+before changing the pointer, including zero/false and unchanged requirement sets.
+Current field changes/retirement inspect active configuration ancestors through
+retained sealed versions. No direct protected domain writes or configuration
+permission grants are introduced. Actual central acceptance remains pending.
+
+## 11 October — permanent profile identity and explicit Page owner approval
+
+A record design binds permanently to a canonical entity through metadata-only
+StudioProfileBinding. One stable base identity is allowed per tenant/entity, with
+an exact immutable published origin; later versions cannot repurpose the binding.
+This evolves existing Studio definitions and canonical extension records without
+creating module business copies. Additive060000 SQL has only been rehearsed inside
+a rolled-back transaction. Public authoring waits for runtime/coverage integration.
+
+Pages use an explicit owner Page-source contribution and closed, transaction-scoped
+scalar projections. Ordinary native Read remains mandatory, and owner callbacks
+recheck canonical/private scope per query. Existing entity/query contracts and
+hashes are retained; a new Page source declares additional exposure rather than
+silently widening an existing contract. Historical configuration usage shares the
+exact seal verifier and can inspect retired metadata without granting runtime use.
+
+## 11 October — desktop data API same-origin authority with NextRequest
+
+InstalledNext16.3.8 normalisesloopbackrequest.url hostname127 tolocalhost and uses
+internal URLsbehindproxy; comparingbrowserOrigin tothatURL alone rejectsactual
+sameoriginrequests. Retainexactdesktopclient marker andcanonicalHTTP(S) Origin;
+comparetheactual incomingHost authority withrequestURLprotocol. Hostparsingrejects
+userinfo/path/lists/whitespace/escapes/noncanonicalaliases. No forwardedHost/proto
+exceptions orloopbackalias expansion. MissingHost fallsbackoriginalURLonly; absent
+Origin preserves existingnativeclient policy. Allowlist/session/domain/tenant guards
+staymandatory. Actual candidate/publicHTTP checks must verifyproxyprotocol.52bee536.
+
+## 11 October — exact configuration pins separate from registry dependencies
+
+Keep StudioDependency's module contract semantics intact. StudioConfigurationDependency
+stores immutable tenant-owned source/target version FKs, exact kind/schema/checksum
+and complete sealed edge mirror in original publication transaction. New profiles
+and types use pinned base/page/required-field configuration; old field/kernel plans
+retain absent edge property and hashes. Shallow metadata graph is bounded at4 edges/
+500 traversed paths, with definition-cycle rejection across historical versions.
+One overlay adds required fields; page/eligibility/default choices replace explicitly.
+Incoming base activation does not silently rewrite existing overlay pins: republish
+explicitly. Reserved process/decision shapes do not permit later-phase publication.
+Actual canonical assignment/affected-cohort requirements/current field generation/
+retirement impacts remain mandatory separate2C2 work; no new business entity table.
+
+## 11 October — configured literal defaults and bounded owner search
+
+Optional typed field.defaultValue and create-only server receipt defaulted:true keep
+historical absent schema1/2 shapes/hashes exact. Default changes are structural
+reviewed migrations; actual owning INSERT proof fills omitted entries only, explicit
+null wins and edit/existing records never backfill. Deterministic domain-separated
+UUID8 binds whole operation/definition/written version; raw client packet fingerprint
+unchanged, replay uses immutable written literal with today's current/written and
+original reference rights. No-packet native create mints a fresh internal operation
+only for authorised defaults, preserving its non-idempotent historical API semantics.
+
+Configured indexed search uses owner-selected accessible canonical windows<=50,
+all selected written/current policies before typed predicates, exact active slot/
+generation and bounded indexable scalar equality/ranges. Cursor advances SCANNED
+native IDs, so empty results may have continuation. This fits current private owner
+contracts without generic cross-domain SQL/joins or private counts. UI must expose
+continuation; this does not claim global command-palette/full-text completeness.
+
+Absent hash compatibility does not make an old strict parser support a newly added
+metadata property. Default-bearing publication/activation therefore needs a release
+bridge: accepted current and proposed immediate rollback must execute actual parser/
+receipt probes. Bind small immutable per-release feature evidence to those SHAs
+under original BOTH locks; missing support stays server-closed. Reader/native writer
+support ships first, feature authoring opens only with compatible rollback. Apply
+this safety requirement to new2C/D artefact formats too, without schema rollback.
 ## 11 October 2026 — Supplier receipt date is an operational planning fact
 
 Keep FinanceDocument.expectedReceiptAt distinct from payment dueAt. Only approved/
@@ -2582,6 +2709,30 @@ business records; use an authorised genuine target business session or existing
 explicitly audited support opening. Ordinary Session-only API does not claim durable
 support-principal audit verification or create target affiliations/grants. This
 implements source6.5/24 validity/security requirements without silently changing
+the migration architecture. Actual required activation and native races passed
+ad9 candidate/public original gates; typed native form inputs remain incomplete.
+
+## 11 October 2026 — Native form retries use one reserved existing Audit receipt
+
+A per-field operation UUID cannot prevent duplicate canonical Ticket creation or
+native events after a lost form response. The owning Serializable transaction will
+store one immutable whole-form receipt in existing AuditEntry, namespaced by its
+operation UUID, exact tenant/actor/create-or-update, parsed native request checksum,
+complete bounded typed packet checksum and actual INSERT/CAS result. Replay occurs
+before native/value/window/event effects, rechecks current owning permissions and
+current/written field/reference rights, and returns only the original result.
+Creation replay requires current Create and exact requester-owned identity without
+native Read/Manage or a reminted INSERT proof; update replay retains current
+Read/Manage/private queue access without re-running terminal Extend/old transitions.
+All fields stage through the existing writer in stable definition order; original
+packet order/casing stays bound by its checksum. Store actual field staging revision
+separately from native result revision for active-to-final versus authorised reopen.
+A targeted additive Audit guard protects only the reserved receipt namespace and
+pairing; legitimate existing Party/Contact Audit scrubbing remains possible. No
+second form engine, table, permission model or domain mutation API. Helper/DDL are
+IN PROGRESS and unexecuted centrally at this decision; actual atomicity/replay/SQL
+checks and original live release gates remain required before VERIFIED.
+
 the migration architecture. Local verification only until actual central gates.
 
 ## 11 October 2026 — white private ERP introduction and physical production handoff
@@ -2640,3 +2791,119 @@ Operations includes Finance-owned Procurement; an area must not hide relevant wo
 because its owning app has other Business guides. Filter entries within app groups,
 carry area/search into app hubs and back/search navigation, and expose All app
 guides as an explicit choice. Counts describe the currently filtered entries.
+
+## 11 October 2026 — Visual domain forms and explicit owning read context
+
+The current Sales/Tickets Page adapters approve separate list and canonical record
+anchors. Mixing those contexts would require a false native anchor; publication and
+palette therefore reject/filter such a mix. Record-scoped related Sales line lists
+remain supported. This preserves bounded owner query contracts; later owner-specific
+related projections can explicitly extend them without a generic table API.
+
+Editable Ticket Page surfaces reuse the complete existing native progress form,
+typed receipt and domain update action. Standalone additional field panels are read
+only; they cannot bypass complete-form validation or native CAS. Responsive route
+changes re-read only currently visible owning forms in SSR, and slots require the
+same Page version/head/device. Preview remains inert. No parallel form/publisher,
+permission system, native data mutation API or client-supplied tenant grants.
+
+## 11 October 2026 — Phase 2 original Templates and metadata-only Page cache
+
+The standalone selected-business Studio adapts the existing TemplateEditor and
+DocumentTemplate renderer/storage. The original save path and Studio use the same
+native authoring service with genuine fresh authority, independent contract access,
+tenant/module scope and version CAS plus Audit in its owning transaction. No second
+document engine or customer-cookie switch is introduced. This satisfies source
+Sections18/20.32 and Michael's request for visual bespoke documents.
+
+Published Pages may cache only pure normalised compiled metadata after exact sealed
+pin loading and freshly reconstructed approvals. Cache is process memory, bounded
+100 entries/five-minute TTL, tenant/version/seal/metadata digest keyed, full checksum
+checked, cloned on return. Current owner/module/private/field/written/reference
+authorisation and actual data queries run on every request. Drafts and business
+values do not enter this cache. This implements Section17 without local data stores.
+
+Existing Ticket type selection is a sibling native form. Current server catalogue
+loads active exact type pins, genuine owner Extend and current/retained policies;
+posted IDs/revisions never grant access. Closed/merged native workflows retain their
+existing progress/reopen form without an unavailable reassignment control.
+
+## 12 October 2026 — Canonical profile layouts and safe visual draft settings
+
+A native Ticket opens its current resolved profile's exact retained Page version,
+independent of the Page active pointer. Native/private Read precedes profile and
+Page inspection. Route IDs and posted head/version/profile/native assertions only
+check freshness; they do not select authority. Shared existing visible command/form
+selectors remain the execution seam. Type changes return to the full native Ticket
+so the current layout link resolves again. Original native tools remain available.
+
+All-type settings may change structurally only on a genuinely never-published
+field draft. Unsupported/conditional/retained-choice/reference-default policies
+are explicit read-only projections, not lossy conversions. Matching unpublished
+choice labels retain their server logical IDs; new choices get server IDs, and
+default indexes resolve to those IDs. Published changes require the existing
+reviewed generation/migration path. This preserves Sections6–8/24 requirements.
+
+## 12 October 2026 — Analytics reuse remains personal until reviewed publication
+
+The original Analytics editor uses an optional complete server callback bundle; a
+partial bundle fails before any native-cookie fallback. Native default actions,
+queries, charts, personal ownership and routes remain unchanged. Shared authoring
+save refreshes genuine authority, native Manage/module/source availability and
+owner timestamp CAS, writes paired Audit in the same transaction. Source catalogue
+metadata can use that transaction; business query results are never cached.
+
+A selected-business authoring adapter must independently refresh every callback
+and key the editor by the actual business/selection. Personal Dashboard rows cannot
+be called customer-wide Go live: no per-user cloning or invented sentinel owner.
+A shared immutable publication must reuse the original Studio publisher and
+module-owned approved renderer/query contracts and pass its compatibility gates.
+
+## 12 October 2026 — Business dashboard publication uses original Studio views
+
+A personal Dashboard's mandatory user owner makes it unsuitable as customer-wide
+publication without clones/fake ownership. A typed Analytics-owned view uses the
+existing Studio immutable metadata publisher/activation, original24-widget editor
+and query/chart renderer. Source6 views/8.1 embedded analytics/20.30 Analytics owner
+responsibility are preserved. Core accepts only a closed registry-owned compiler
+facet and exact source dependencies; it never imports a module or accepts generic
+queries. No second publisher/template/workflow engine, shared-business-data table
+or result cache. New metadata remains unavailable until genuine current/rollback
+reader compatibility is verified. This is a deliberate platform contract extension,
+with ordered workstreams recorded in STUDIO_PHASE_2_PLAN.md.
+
+## 12 October 2026 — Published field targets use explicit current owner coverage
+
+Retaining a Tickets2 entity reference in a new evolution target would prevent the
+existing migration engine from operating: that owner contract has no migration
+snapshot approval. The visual target instead uses current Tickets9 only after both
+registered snapshot and representation contracts explicitly advertise protocol1
+and the exact retained source version. The immutable source version/reference,
+logical field identity, native security and reviewed conversion requirements stay
+unchanged. No inferred version range, new migration engine or conditional waiver.
+
+Initial Ticket business-type selection uses receipt2 only for genuine native
+INSERT plus same-transaction assignment and paired Audit. Old no-selector forms
+retain packet1/receipt1 byte contracts. Additive080 replaces the existing receipt
+guard and requires actual current-transaction INSERT evidence; no business backfill
+or new receipt table. Compatible current/rollback readers precede enablement.
+
+## 12 October 2026 — Search eligibility and visual comparison evidence
+
+A tiny-fixture EXPLAIN choosing a different usable index cannot establish that the
+expected configured scalar index is invalid. The acceptance gate now verifies the
+actual PostgreSQL index is valid/ready/live, ordinary complete B-tree, exact four
+ordered tenant/definition/generation/scalar keys, default operator classes and
+matching collations; the original authorised bounded ANALYZE query and native
+result/permission assertions stay. No synthetic forced-plan assertion or claim of
+production-scale performance. PostgreSQL18 primary guidance supports this distinction:
+https://www.postgresql.org/docs/18/indexes-examine.html and
+https://www.postgresql.org/docs/18/catalog-pg-index.html. Independent source review
+and actual central fingerprint catalogue query passed; full rerun remains required.
+
+Visual version comparison reconstructs the original sealed retained Page under
+fresh genuine authority and current owner compiler, then renders friendly labelled
+sample metadata beside the unsaved draft through the shared inert design renderer.
+It makes no native record query or activation, preserves unsaved input, and does not
+expose technical payload/hash differences. Current permissions remain independent
+of the retained seal. Actual original browser comparison proof remains pending.

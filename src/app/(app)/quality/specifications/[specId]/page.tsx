@@ -23,7 +23,7 @@ export default async function SpecificationDetail({ params }: { params: Promise<
 
       <section className="rounded-2xl border bg-white">
         <table className="w-full text-sm">
-          <thead className="border-b bg-slate-50 text-left text-xs uppercase text-slate-500">
+          <thead className="border-b bg-slate-50 text-left text-xs text-slate-500">
             <tr><th className="px-4 py-2">Characteristic</th><th className="px-4 py-2">Method</th><th className="px-4 py-2">Target</th><th className="px-4 py-2">Lower</th><th className="px-4 py-2">Upper</th></tr>
           </thead>
           <tbody className="divide-y">

@@ -61,7 +61,7 @@ export function AccessProfiles({
               >
                 <ShieldCheck size={17} className="shrink-0" />
                 <span className="min-w-0 flex-1">
-                  <span className="block break-words text-xs font-bold">
+                  <span className="block break-words text-xs font-semibold">
                     {p.name}
                   </span>
                   <span className="mt-1 block text-[10px] opacity-70">

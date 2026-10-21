@@ -91,6 +91,20 @@ rename that same owner/tenant board and check expected `updatedAt` atomically;
 a stale/foreign row cannot fall back to creating or overwriting another board.
 New boards/copies use unique-name creation. No sharing grants are introduced.
 
+The original save now delegates module-owned `services/authoring.ts`: a genuine
+authenticated session refreshes inside the owning Serializable transaction,
+rechecks native Manage/module rights, validates the existing source catalogue and
+data-view contract, and persists owner/tenant timestamp CAS plus Audit atomically.
+Metadata module/catalogue readers accept an optional existing transaction; ordinary
+callers retain their original defaults. No business metric/data query runs during
+save validation. The shared editor accepts a complete optional server-action bundle
+and internal workspace/monitor paths for selected-business authoring; default
+actions/routes and chart/Goal polling remain unchanged. A supplied adapter has no
+fallback into the user's native workspace. This source prerequisite does not
+introduce company-shared publication or change existing personal board ownership.
+Each adapter callback must authenticate its actual selected business independently;
+its server route must key the editor by that business/selection when switching.
+
 Save stores the measure period, record filters and refresh preference (manual,
 15/30/60/120 seconds). Changing period retains the unsaved canvas. Failed saves
 retain edits; editing is disabled during save. Undo covers canvas/settings, including the measure period; internal
@@ -117,3 +131,79 @@ The broader source brief still includes future governed relationships/calculated
 expressions, fiscal calendars, exact drill-through, company/team sharing/publication,
 version history, subscriptions/alerts, matrix pivots and external sources. Those
 are not represented as completed by this personal-dashboard redesign.
+
+## Explicit Studio source contracts — Phase2 prerequisite
+
+Existing Sales and Products manifests add owner-approved metric/report descriptors
+and typed query adapters. Native Analytics/Reports providers and existing registry
+contracts remain unchanged. Stable provider IDs form additive `.metric`,
+`.metric.read`, `.report` and `.report.read` logical IDs; labels are not identities.
+Each descriptor records exact query version, owner capability/module, classification,
+complete-result promise, dimensions/column semantics and conservative high query cost.
+Policies are immutable; changed native metadata or reader functions fail closed.
+
+The first family is deliberately small: Sales orders by complete status/type, Quotes
+by status, Products active catalogue by kind, and original paged Sales order/Quote/
+Product catalogue Reports. Original owner readers retain tenant predicates and
+allowlisted projections. Query adapters refresh genuinely issued current identity,
+reject changed auth/session/tenant/membership, and check current owner source grants
+and enabled/entitled modules before native queries. They do not infer native access
+from Studio permissions, metadata or an author's cached Session. An existing supplied
+transaction is used for identity/module metadata only: original provider business
+reads are unchanged, and no new atomic data snapshot is claimed.
+
+Count dimensions accept only declared finite enum labels with nonnegative safe
+integer results; unknown, duplicate, unsafe or overflow output fails rather than
+being sliced. Current snapshots accept only the all period. Record reports retain
+the original 100-row page and typed allowlisted filter/calendar validation, expose
+only requested columns, and include currency when amounts are selected. Monetary
+values retain native decimal numbers or exact large decimal text; this adapter
+performs no aggregation, currency conversion or cross-currency calculation. It never
+requests export mode, runs raw SQL, accepts arbitrary provider/query/tenant input, or
+caches business results.
+
+Sales customer/product/category/time dimensions and truncated 8,000-record trends,
+Finance/posted money, private Service/People/CRM/Goals, Core Customer and generated
+summary datasets are unavailable through these new contracts until separate precise
+owning approvals. Native existing catalogues remain available under their original
+permissions. This checkpoint adds source contracts only; immutable business views,
+publication, customer dashboard selection and runtime compatibility enablement are
+separate workstreams in the original Studio publisher and existing renderer.
+
+## Studio business view compiler prerequisite — 12 October 2026
+
+The additive `analytics.dashboard.view@1` descriptor is a closed metadata compiler
+facet. Core accepts only the explicit schema-1 envelope with its exact registered
+source reference and owner content. Original personal Dashboard records, raw native
+board payloads and existing renderer/provider entry points retain their behaviour;
+they are not silently converted into published business configuration.
+
+The owner reuses the native dashboard/widget presentation schemas while removing
+personal record IDs/CAS and rejecting unknown/security/result data. It currently
+approves at most eight widgets from registered complete Sales order/quote and
+Products catalogue count measures. Only their finite approved breakdowns/categories
+are selectable; empty native category/breakdown controls retain their clear/default
+meaning. Record filters and export-based report aggregation remain explicitly
+unavailable in this family. Original personal data views remain available through
+the native app. The eight-query, high-cost budget is recorded in the owner contract.
+
+Compilation refreshes genuine current customer identity in the original Serializable
+transaction, requires current Analytics Read and Manage and independently checks all
+used source capabilities, enabled/entitled modules, support windows and immutable
+source/query schemas/hashes/policies. Unused sources require no grants. Exact source
+approvals are frozen before pure owner callbacks; compiled query inputs/references,
+widget IDs, unused approvals and cost are checked again without executing providers.
+The plan retains exact source/query dependencies and immutable per-widget query
+requests; no business values, record cache, arbitrary SQL, generic query endpoint,
+permission grant or second rendering/publication engine is introduced.
+
+Pure registered source schemas live in `registry/analytics-source-contracts.ts` to
+avoid importing executable providers into registry initialisation. Existing exports
+and source hashes remain stable. `ReviewedCompiledDefinition` has a type-only view
+member; public service kind allowlists, publisher and activation behavior remain
+unchanged. This checkpoint does not enable business GoLive or a customer reader.
+
+Next: integrate explicit view authoring into the ORIGINAL publisher/activation with
+stable owner-origin checks, real candidate/rollback reader-format readiness and
+current-viewer source permission enforcement through the existing Analytics renderer.
+Actual central/SQL/browser/public verification remains mandatory before GoLive.

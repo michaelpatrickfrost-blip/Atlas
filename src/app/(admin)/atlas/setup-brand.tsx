@@ -72,7 +72,7 @@ export function SetupBrand({
   return (
     <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
       <ActionForm action={saveAtlasCompanyBrand} className="space-y-5"><input type="hidden" name="organisationId" value={organisationId} />
-        <section className="rounded-[28px] border border-slate-200 bg-white p-6 sm:p-8">
+        <section className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
           <h3 className="text-lg font-semibold">White-label your workspace</h3>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-slate-500">
             Add your logo, colours and company details. They appear on invoices and customer documents. Leave blank to use defaults.
@@ -80,7 +80,7 @@ export function SetupBrand({
 
           <div className="mt-6 space-y-5">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[.16em] text-slate-400">Logo</p>
+              <p className="text-xs font-semibold tracking-[.16em] text-slate-400">Logo</p>
               <p className="mt-1 text-sm text-slate-500">PNG or JPG is printed on invoices. WEBP and GIF stay in the workspace. Square or wide, under 350 KB.</p>
               <div className="mt-3 flex flex-wrap items-center gap-4">
                 <span className="flex size-24 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-2">
@@ -120,7 +120,7 @@ export function SetupBrand({
             </div>
 
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[.16em] text-slate-400">Brand colour & name</p>
+              <p className="text-xs font-semibold tracking-[.16em] text-slate-400">Brand colour & name</p>
               <p className="mt-1 text-sm text-slate-500">The colour is the rule on customer documents. The trading name is shown in the letterhead.</p>
               <div className="mt-3 grid gap-4 sm:grid-cols-2">
                 <label className="text-xs">
@@ -168,7 +168,7 @@ export function SetupBrand({
             </div>
 
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[.16em] text-slate-400">Letterhead</p>
+              <p className="text-xs font-semibold tracking-[.16em] text-slate-400">Letterhead</p>
               <p className="mt-1 text-sm text-slate-500">Address, VAT and contact details print on customer documents.</p>
               <div className="mt-3 grid gap-4 sm:grid-cols-2">
                 <label className="text-xs sm:col-span-2">
@@ -249,7 +249,7 @@ export function SetupBrand({
             </div>
 
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[.16em] text-slate-400">Payment & terms</p>
+              <p className="text-xs font-semibold tracking-[.16em] text-slate-400">Payment & terms</p>
               <p className="mt-1 text-sm text-slate-500">These print on every invoice and quotation your customers receive.</p>
               <div className="mt-3 space-y-4">
                 <label className="block text-xs">
@@ -290,9 +290,9 @@ export function SetupBrand({
       </ActionForm>
 
       <aside className="space-y-4 xl:sticky xl:top-6">
-        <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[var(--shadow-atlas)]">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[var(--shadow-atlas)]">
           <div className="border-b border-slate-100 px-5 py-4">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400">
+            <p className="text-[10px] font-semibold tracking-[0.16em] text-slate-400">
               Customer sees
             </p>
             <p className="mt-1 text-sm text-slate-500">Your invoice header.</p>

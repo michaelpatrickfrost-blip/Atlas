@@ -11,7 +11,7 @@ const TONE_CLASSES: Record<StatusTone, string> = {
 
 export function StatusPill({ label, tone }: { label: string; tone: StatusTone }) {
   return (
-    <span className={clsx("inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide", TONE_CLASSES[tone])}>
+    <span className={clsx("atlas-status-pill inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[12px] font-medium", TONE_CLASSES[tone])}>
       <span className="size-1.5 rounded-full bg-current" />
       {label}
     </span>

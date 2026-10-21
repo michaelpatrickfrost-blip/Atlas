@@ -62,7 +62,7 @@ export async function SalesProjectDetail({ base, params }: { base: ProjectBase; 
     <Link href={base} className="text-xs text-slate-500">← All projects</Link>
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <p className="text-xs font-medium uppercase tracking-wider text-slate-400">{project.reference}{primary ? ` · ${primary.party.name}` : ""}{project.industry ? ` · ${project.industry.name}` : ""}</p>
+        <p className="text-xs font-medium text-slate-400">{project.reference}{primary ? ` · ${primary.party.name}` : ""}{project.industry ? ` · ${project.industry.name}` : ""}</p>
         <h2 className="mt-2 flex flex-wrap items-center gap-3 text-2xl font-semibold tracking-tight">{project.name}<StatusPill label={stageLabel(project.stage)} tone={stageTone(project.stage)} /></h2>
         <p className="mt-2 text-sm text-slate-500">Owner {owner?.name ?? "—"} · in this stage since {day(project.stageEnteredAt)}</p>
         {project.description && <p className="mt-2 max-w-2xl text-sm text-slate-600">{project.description}</p>}

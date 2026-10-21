@@ -28,7 +28,7 @@ export default async function WorkPage({ params }: { params: Promise<{ taskId: s
     <div className="mx-auto max-w-3xl space-y-6">
       <Link href="/logistics/fulfil" className="text-sm text-[var(--color-ink-muted)]">Fulfil</Link>
       <header>
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-atlas-blue)]">{task.kind} · {task.method}</p>
+        <p className="text-xs font-semibold tracking-[0.16em] text-[var(--color-atlas-blue)]">{task.kind} · {task.method}</p>
         <h1 className="mt-2 text-4xl font-semibold tracking-tight">{task.reference}</h1>
         <p className="mt-2 text-lg">{task.requirement?.party.name}</p>
         {order && <p className="mt-1 text-sm text-[var(--color-ink-muted)]">{order.reference}{order.customerPoReference ? ` · PO ${order.customerPoReference}` : ""}{order.requestedDeliveryDate ? ` · requested ${order.requestedDeliveryDate.toLocaleDateString("en-GB")}` : ""}{order.promisedDeliveryDate ? ` · promised ${order.promisedDeliveryDate.toLocaleDateString("en-GB")}` : ""}</p>}

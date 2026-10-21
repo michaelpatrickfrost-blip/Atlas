@@ -5,7 +5,7 @@ import { recordCsatComment, recordCsatScore } from "@/modules/csat/services/acti
 export type CsatFormSurvey = { question: string; followUpQuestion: string; lowFollowUpQuestion: string; thanksText: string; lowLabel: string; highLabel: string; reasons: string[] };
 
 /** The customer's side of a survey. With `preview` nothing is saved. */
-export function CsatForm({ token, survey, initialScore, alreadyScore, accent = "#1d4ed8", preview = false }: { token: string; survey: CsatFormSurvey; initialScore?: number; alreadyScore?: number; accent?: string; preview?: boolean }) {
+export function CsatForm({ token, survey, initialScore, alreadyScore, accent = "#8d673c", preview = false }: { token: string; survey: CsatFormSurvey; initialScore?: number; alreadyScore?: number; accent?: string; preview?: boolean }) {
   const [score, setScore] = useState<number | undefined>(initialScore ?? alreadyScore);
   const [comment, setComment] = useState("");
   const [reasons, setReasons] = useState<string[]>([]);

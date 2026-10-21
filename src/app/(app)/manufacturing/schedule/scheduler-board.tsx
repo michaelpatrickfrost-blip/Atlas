@@ -132,7 +132,7 @@ export function SchedulerBoard({ rows, unassigned, windowStart, windowDays, edit
       <div className="overflow-x-auto rounded-3xl border border-[var(--color-border)] bg-white">
         <div className="min-w-[900px]">
           <div className="flex border-b border-[var(--color-border)] text-[11px] text-[var(--color-ink-faint)]">
-            <div className="w-48 shrink-0 px-3 py-2 font-semibold uppercase tracking-wide">Resource</div>
+            <div className="w-48 shrink-0 px-3 py-2 font-semibold">Resource</div>
             <div className="relative flex-1">
               <div className="flex">
                 {dayStarts.map((d,index) => (

@@ -20,10 +20,11 @@ async function main() {
   assert(session);
   assert(session.capabilities.has(ATLAS_CAPABILITIES.staff), "launcher acceptance requires an active Atlas staff identity");
   const apps = await getNavigableModules(session);
-  const expectedApps = getImplementedModules().filter(module => module.launcherVisible !== false && canOpenModule(session, module));
+  const accessible = getImplementedModules().filter(module => module.launcherVisible !== false && canOpenModule(session, module));
+  const expectedApps = accessible.filter(module => !module.launcherConsolidatedInto || !accessible.some(target => target.id === module.launcherConsolidatedInto));
   const enabledApps = await getEnabledModuleIds(session.organisationId);
   assert(expectedApps.some(module => !enabledApps.has(module.id)), "launcher acceptance requires at least one disabled or unentitled app");
-  assert.deepEqual(apps.map(module => module.id), expectedApps.map(module => module.id), "Atlas staff should see every implemented app they can access");
+  assert.deepEqual(apps.map(module => module.id), expectedApps.map(module => module.id), "Atlas staff see each authorised launcher, consolidating source owners only when their workspace is accessible");
   const disabledApp = apps.find(module => !enabledApps.has(module.id));
   assert(disabledApp);
   const token = jwt.sign({ userId: membership.userId, organisationId: membership.organisationId, authVersion: membership.user.authVersion, sessionVersion: membership.sessionVersion }, process.env.SESSION_SECRET, { expiresIn: "10m", algorithm: "HS256" });
@@ -31,7 +32,7 @@ async function main() {
   let failures = 0;
   try {
     const context = await browser.newContext({ baseURL: base });
-    await context.addCookies([{ name: "atlas_session", value: token, url: base, httpOnly: true, secure: true, sameSite: "Lax" }]);
+    await context.addCookies([{ name: "atlas_session", value: token, url: base, httpOnly: true, secure: baseUrl.protocol === "https:", sameSite: "Lax" }]);
     await context.route("**/*", route => ["GET", "HEAD"].includes(route.request().method()) ? route.continue() : route.abort());
     const page = await context.newPage();
     page.on("pageerror", () => failures++);
@@ -41,22 +42,27 @@ async function main() {
     await expect(page.locator("main")).not.toContainText(/disabled in your workspace|not enabled for this company/i);
     for (const width of [1440, 768, 390]) {
       await page.setViewportSize({ width, height: 1000 });
-      await page.goto(`${base}/`, { waitUntil: "networkidle" });
+      await page.goto(`${base}/home`, { waitUntil: "networkidle" });
       await expect(page).toHaveURL(`${base}/home`);
       await expect(page.getByRole("heading", { name: "Your apps", exact: true })).toBeVisible();
       const nav = page.getByRole("navigation", { name: "Apps", exact: true });
-      for (const app of apps) await expect(nav.getByRole("link", { name: app.name, exact: true })).toHaveAttribute("href", app.rootPath);
+      for (const app of apps.filter(app => app.id !== "analytics")) {
+        const link = nav.locator(`a[href="${app.rootPath}"]`);
+        await expect(link).toHaveCount(1);
+        await expect(link.locator(".atlas-launcher-title")).toHaveText(app.name);
+      }
+      if (apps.some(app => app.id === "analytics")) await expect(page.getByRole("navigation", { name: "Workspace utilities" }).locator('a[href="/analytics"]')).toBeVisible();
       const firstApp = nav.getByRole("link").first();
-      const iconSize = await firstApp.locator("svg").evaluate(el => {
+      const iconSize = await firstApp.locator(".atlas-app-icon svg").evaluate(el => {
         const { width, height } = el.getBoundingClientRect();
         return { width, height };
       });
-      assert(iconSize.width <= 20 && iconSize.height <= 20, "Launcher icons should remain compact.");
-      const iconTileSize = await firstApp.locator("span").first().evaluate(el => {
+      assert(iconSize.width >= 24 && iconSize.width <= 28 && iconSize.height === iconSize.width, "Premium launcher icons retain the shared 27px size.");
+      const iconTileSize = await firstApp.locator(".atlas-app-icon").evaluate(el => {
         const { width, height } = el.getBoundingClientRect();
         return { width, height };
       });
-      assert(iconTileSize.width <= 36 && iconTileSize.height <= 36, "Launcher icon marks should remain compact.");
+      assert(iconTileSize.width >= 48 && iconTileSize.width <= 54 && iconTileSize.height === iconTileSize.width, "Launcher tiles use the shared 48px phone / 54px desktop dimensions.");
       assert(await nav.locator("svg").count() >= apps.length);
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), "No horizontal overflow");
       const launcherTop = await nav.evaluate(el => el.getBoundingClientRect().top);
@@ -66,7 +72,7 @@ async function main() {
         fs.mkdirSync(process.env.ATLAS_LAUNCHER_SCREENSHOTS, { recursive: true, mode: 0o700 });
         await page.screenshot({ path: `${process.env.ATLAS_LAUNCHER_SCREENSHOTS}/launcher-${width}.png`, fullPage: true });
       }
-      await nav.getByRole("link", { name: "My work", exact: true }).click();
+      await nav.locator('a[href="/profile"]').click();
       await expect(page).toHaveURL(`${base}/profile`);
       const toggle = page.locator('[data-guardian-safe="toggle"]').first();
       await toggle.click(); await expect(toggle).toHaveAttribute("aria-expanded", "true");
@@ -74,7 +80,7 @@ async function main() {
       await expect(toggle).toHaveAttribute("aria-expanded", "false");
     }
     assert.equal(failures, 0);
-    console.log(`PASS launcher: ${apps.length} authorised module links/icons; desktop/tablet/phone, root landing, no overflow, My work navigation and Apps switching; zero browser/chunk errors. All writes blocked.`);
+    console.log(`PASS launcher: ${apps.length} authorised module links/icons; desktop/tablet/phone, Home landing, no overflow, My work navigation and Apps switching; zero browser/chunk errors. All writes blocked.`);
   } finally { await browser.close(); await db.$disconnect(); }
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });

@@ -84,14 +84,16 @@ export function FloatingModuleNav({ title, items }: { title: string; items: Modu
             }
             const groupActive = entry.items.some((i) => i.href === bestMatch);
             const open = openGroup === entry.label;
+            const GroupIcon = iconForNav(entry.label);
             return (
               <div key={entry.label} className="lg:relative" onMouseEnter={() => openGroupNow(entry.label)} onMouseLeave={scheduleGroupHide}>
                 <button type="button" onClick={() => toggleGroup(entry.label)} aria-expanded={open} aria-haspopup="menu"
                   className={`atlas-float-tab inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium ${groupActive ? "atlas-float-tab-active" : ""}`}>
+                  <GroupIcon size={14} strokeWidth={1.65} aria-hidden="true" />
                   {entry.label}
                   <ChevronDown size={13} strokeWidth={2} className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
                 </button>
-                <div role="menu" aria-label={entry.label} aria-hidden={!open} hidden={!open} className={`absolute inset-x-4 top-full z-[63] pt-2 transition-[opacity,transform] duration-200 ease-out lg:inset-x-auto lg:left-0 lg:w-52 ${open ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none -translate-y-1.5 opacity-0"}`}>
+                <div role="menu" aria-label={entry.label} aria-hidden={!open} hidden={!open} inert={!open} className="atlas-menu-motion absolute inset-x-4 top-full z-[63] pt-2 lg:inset-x-auto lg:left-0 lg:w-52">
                   <div className="atlas-float-dropdown rounded-2xl p-1.5">
                     {entry.items.map((item) => {
                       const Ico = iconForNav(item.label);

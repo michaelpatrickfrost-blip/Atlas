@@ -27,7 +27,7 @@ export async function MarketingBudgets({ session }: { session: Session }) {
   return (
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
       <div className="space-y-6">
-        <section className="rounded-[28px] border border-slate-200 p-6">
+        <section className="rounded-2xl border border-slate-200 p-6">
           <h2 className="text-lg font-semibold">Spend by place</h2>
           <p className="mt-1 text-sm text-[var(--color-ink-muted)]">A place is where the money goes: a market, a channel account, an event or a supplier.</p>
           <div className="mt-5 space-y-3">
@@ -49,7 +49,7 @@ export async function MarketingBudgets({ session }: { session: Session }) {
           const lines = desk.lines.filter((line) => line.campaignId === campaign.id);
           const planned = lines.reduce((sum, line) => sum + line.plannedMinor, 0);
           return (
-            <section key={campaign.id} className="rounded-[28px] border border-slate-200 p-6">
+            <section key={campaign.id} className="rounded-2xl border border-slate-200 p-6">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="text-xs text-[var(--color-ink-faint)]">{campaign.code}</p>
@@ -91,7 +91,7 @@ export async function MarketingBudgets({ session }: { session: Session }) {
         })}
       </div>
       {manage && (
-        <section className="h-fit rounded-[28px] border border-slate-200 p-5">
+        <section className="h-fit rounded-2xl border border-slate-200 p-5">
           <h2 className="text-lg font-semibold">Assign spend</h2>
           <p className="mt-1 text-xs text-[var(--color-ink-faint)]">Use the campaign currency. Finance approves the amount; this does not pay anyone.</p>
           {desk.campaigns.length ? (

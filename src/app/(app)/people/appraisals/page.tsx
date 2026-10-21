@@ -69,7 +69,7 @@ export default async function AppraisalsPage({ searchParams }: { searchParams: P
       {appraisals.length === 0 ? <EmptyState title="No appraisals scheduled" /> : (
         <>
           <section className="space-y-3">
-            <h3 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--color-ink-faint)]"><Clock size={14} /> Upcoming ({upcoming.length})</h3>
+            <h3 className="flex items-center gap-2 text-xs font-semibold text-[var(--color-ink-faint)]"><Clock size={14} /> Upcoming ({upcoming.length})</h3>
             {upcoming.length === 0 ? <p className="text-sm text-[var(--color-ink-muted)]">Nothing scheduled.</p> : (
               <div className="grid gap-4 lg:grid-cols-2">
                 {upcoming.map((a) => {
@@ -114,7 +114,7 @@ export default async function AppraisalsPage({ searchParams }: { searchParams: P
 
           {completed.length > 0 && (
             <section className="space-y-3">
-              <h3 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--color-ink-faint)]"><CheckCircle2 size={14} /> Completed ({completed.length})</h3>
+              <h3 className="flex items-center gap-2 text-xs font-semibold text-[var(--color-ink-faint)]"><CheckCircle2 size={14} /> Completed ({completed.length})</h3>
               <div className="grid gap-4 lg:grid-cols-2">
                 {completed.map((a) => (
                   <article key={a.id} className="space-y-2 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-sunken)] p-6">

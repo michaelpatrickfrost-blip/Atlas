@@ -1,6 +1,10 @@
 import { beforeEach, expect, it, vi } from "vitest";
 import { Prisma, type StudioDefinitionVersion, type StudioFieldValue } from "@/generated/prisma/client";
 import { retainedCutoverFixture, cutoverUuid as uuid } from "./fixtures/studio-field-cutover";
+import { assertCapability } from "@/core/permissions/check";
+import { compileConditionalCustomField } from "@/core/studio/fields/conditional-compiler";
+import { registeredRequiredFactMetadata } from "@/core/studio/fields/required-owner";
+import type { CustomFieldPayload } from "@/core/studio/fields/schema";
 import { compileCustomField } from "@/core/studio/compiler/fields";
 import { encodeFieldValue } from "@/core/studio/fields/codec";
 import { writeFieldValue, writeFieldValueInTransaction } from "@/core/studio/fields/runtime-write";
@@ -20,6 +24,21 @@ async function version(payload: typeof f.target.payload, id: string): Promise<St
   const compiled = await compileCustomField({ ...f.session, capabilities: new Set([...f.session.capabilities, "tickets.field.secret"]) }, payload, f.registry);
   return { id, definitionId: f.definition.id, organisationId: "company", version: 2, semanticVersion: "2.0.0", schemaVersion: 1, payload: compiled.payload as unknown as Prisma.JsonValue,
     compiledPlan: compiled.plan as unknown as Prisma.JsonValue, checksum: compiled.checksum, createdBy: "actor", publishedAt: new Date() };
+}
+// Actual sealed compiler/registered owner; native, storage, authority/window and
+// final-validator collaborators remain unit stubs. No SQL atomicity/condition-data
+// or live authentication proof is inferred from this suite.
+async function conditionalVersion(id = current.id, field: Partial<CustomFieldPayload["field"]> = {}) {
+  const metadata = f.registry.describe("tickets.ticket", 9);
+  const entity = { id: metadata.id, version: metadata.version, schemaHash: metadata.schemaHash, contractHash: metadata.contractHash };
+  const author = { ...f.session, capabilities: new Set([...f.session.capabilities, "tickets.field.secret"]) };
+  const compiled = await compileConditionalCustomField({ session: author, registry: f.registry, definitionId: f.definition.id,
+    resolveMetadata: async source => source.kind === "native" ? registeredRequiredFactMetadata(author, f.registry, entity, source.fieldId)
+      : Promise.reject(new Error("Unexpected unit condition source.")) }, { ...f.target.payload, entity, schemaVersion: 2,
+    field: { ...f.target.payload.field, ...field }, requiredIf: { match: "all", predicates: [{ source: { kind: "native", fieldId: "status" }, operator: "absent" }] } });
+  return { id, definitionId: f.definition.id, organisationId: "company", version: 2, semanticVersion: "2.0.0", schemaVersion: 2,
+    payload: compiled.payload as unknown as Prisma.JsonValue, compiledPlan: compiled.plan as unknown as Prisma.JsonValue,
+    checksum: compiled.checksum, createdBy: "actor", publishedAt: new Date() } satisfies StudioDefinitionVersion;
 }
 beforeEach(async () => {
   vi.resetAllMocks(); f = await retainedCutoverFixture(); f.session.capabilities.delete("studio.definition.publish");
@@ -137,4 +156,104 @@ it("validates the public save's complete staged state in the same transaction an
   // Storage is a unit collaborator. Propagation is proved here; actual rollback
   // of typed pointers, window and Audit needs the central PostgreSQL gate.
   expect(m.resulting).toHaveBeenCalledTimes(2);
+});
+
+it.each([[1, 2], [2, 1], [2, 2]])("stages current%s/written%s through the one codec/CAS/Audit engine without persisting a schema projection", async (currentSchema, writtenSchema) => {
+  if (currentSchema === 2) current = await conditionalVersion();
+  const written = writtenSchema === 2 ? await conditionalVersion(uuid(70)) : await version(f.target.payload, uuid(70));
+  row = { ...row, versionId: written.id, schemaVersion: written };
+  const result = await writeFieldValue(f.session, request);
+  expect(result).toMatchObject({ replayed: false, extensionRevision: 5, valueRevision: 2 });
+  expect(m.create.mock.calls[0][0].data).toMatchObject({ versionId: current.id, generationId: request.generationId, valueType: "decimal" });
+  expect(m.create.mock.calls[0][0].data.decimalValue.toFixed()).toBe("13.5");
+  expect(m.create.mock.calls[0][0].data).not.toHaveProperty("payload");
+  expect(m.create.mock.calls[0][0].data).not.toHaveProperty("schemaVersion");
+  expect(current.schemaVersion).toBe(currentSchema); expect(written.schemaVersion).toBe(writtenSchema);
+  expect(m.window).toHaveBeenCalledTimes(1); expect(m.resulting).toHaveBeenCalledTimes(1);
+});
+it("does not relax current/written Read or Write because the conditional rule is false", async () => {
+  const plain = current, written = row;
+  for (const capability of ["readCapability", "writeCapability"] as const) {
+    const restricted = await conditionalVersion(current.id, { [capability]: "tickets.field.secret" });
+    current = restricted;
+    await expect(writeFieldValue(f.session, request)).rejects.toThrow("FORBIDDEN");
+    current = plain; row = { ...written, versionId: restricted.id, schemaVersion: restricted };
+    await expect(writeFieldValue(f.session, request)).rejects.toThrow("FORBIDDEN");
+    row = written;
+  }
+  expect(m.window).not.toHaveBeenCalled(); expect(m.create).not.toHaveBeenCalled(); expect(m.resulting).not.toHaveBeenCalled();
+});
+it("retains ordinary native Read/Extend and existing/new reference Read for schema2", async () => {
+  current = await conditionalVersion();
+  f.session.capabilities.delete("tickets.ticket.read");
+  await expect(writeFieldValue(f.session, request)).rejects.toThrow("FORBIDDEN");
+  f.session.capabilities.add("tickets.ticket.read"); f.session.capabilities.delete("tickets.ticket.manage");
+  vi.mocked(f.registry.authoriseRecord).mockImplementation(async (context, reference, raw) => {
+    await f.registry.resolve(context.session, reference);
+    const input = raw as { recordId: string; intent: string };
+    if (input.intent === "extend") assertCapability(context.session, "tickets.ticket.manage");
+    return { recordId: input.recordId, organisationId: "company", revision: 7 };
+  });
+  await expect(writeFieldValue(f.session, request)).rejects.toThrow("FORBIDDEN");
+  f.session.capabilities.add("tickets.ticket.manage");
+  const metadata = f.registry.describe("tickets.ticket", 9), entity = { id: metadata.id, version: metadata.version, schemaHash: metadata.schemaHash, contractHash: metadata.contractHash };
+  current = await conditionalVersion(current.id, { storage: { type: "reference", entity } });
+  row = { ...row, ...encodeFieldValue({ ...f.target.payload.field, storage: { type: "reference", entity } }, "private"), schemaVersion: current };
+  vi.mocked(f.registry.authoriseRecord).mockImplementation(async (_context, _ref, input) => {
+    const request = input as { recordId: string }; if (request.recordId === "private") throw new Error("Private reference unavailable.");
+    return { recordId: request.recordId, organisationId: "company", revision: 7 };
+  });
+  await expect(writeFieldValue(f.session, { ...request, value: "new" })).rejects.toThrow("Private reference");
+  m.slot.mockResolvedValue(null);
+  await expect(writeFieldValue(f.session, { ...request, slotRevision: null, valueRevision: null, value: "private" })).rejects.toThrow("Private reference");
+  expect(m.window).not.toHaveBeenCalled(); expect(m.create).not.toHaveBeenCalled();
+});
+it("rejects unknown, foreign or tampered current/written sealed2 before settlement/value mutations", async () => {
+  const sealed = await conditionalVersion();
+  for (const patch of [{ schemaVersion: 3 }, { organisationId: "foreign" }, { definitionId: uuid(99) }, { checksum: "f".repeat(64) },
+    { payload: { ...(sealed.payload as object), requiredIf: { match: "any", predicates: [] } } }]) {
+    current = { ...sealed, ...patch };
+    await expect(writeFieldValue(f.session, request)).rejects.toThrow();
+    current = sealed; row = { ...row, schemaVersion: { ...sealed, ...patch } };
+    await expect(writeFieldValue(f.session, request)).rejects.toThrow();
+  }
+  expect(m.window).not.toHaveBeenCalled(); expect(m.create).not.toHaveBeenCalled(); expect(m.audit).not.toHaveBeenCalled();
+});
+it("replays sealed2 exactly before windows or resulting-state validation even if the current pointer moved", async () => {
+  current = await conditionalVersion(); row = { ...row, schemaVersion: current };
+  const written = current, result = await writeFieldValue(f.session, request), data = m.create.mock.calls[0][0].data;
+  m.existing.mockResolvedValue({ ...row, ...data, jsonValue: null, schemaVersion: written, slot: { extensionId: uuid(20), extension: { recordId: "native", entityId: "tickets.ticket" } } });
+  m.findAudit.mockResolvedValue({ after: Object.fromEntries(Object.entries(result).filter(([key]) => !["operationId", "replayed"].includes(key))) });
+  current = await version(f.target.payload, uuid(71));
+  m.definition.mockImplementation(async () => ({ ...f.definition, key: "tickets.ticket.extra", activeVersionId: current.id,
+    activeVersion: current, revision: f.definition.revision + 1 }));
+  m.create.mockClear(); m.window.mockClear(); m.resulting.mockClear(); m.audit.mockClear();
+  expect(await writeFieldValue(f.session, request)).toEqual({ ...result, replayed: true });
+  await expect(writeFieldValue(f.session, { ...request, value: "99" })).rejects.toThrow("CONFLICT");
+  row = { ...row, schemaVersion: written };
+  m.findAudit.mockResolvedValue(null); await expect(writeFieldValue(f.session, request)).rejects.toThrow("CONFLICT");
+  expect(m.window).not.toHaveBeenCalled(); expect(m.create).not.toHaveBeenCalled(); expect(m.resulting).not.toHaveBeenCalled(); expect(m.audit).not.toHaveBeenCalled();
+});
+it("stages schema2 transaction values but public saves require complete all-active validation and propagate hidden-field failure", async () => {
+  current = await conditionalVersion(); row = { ...row, schemaVersion: current };
+  const authority = { session: f.session, registry: f.registry, transaction: tx,
+    stamp: { organisationId: "company", userId: "actor", membershipId: "member", authVersion: 1, sessionVersion: 1 } };
+  await writeFieldValueInTransaction(authority, request);
+  expect(m.resulting).not.toHaveBeenCalled(); expect(m.authority).not.toHaveBeenCalled();
+  const hidden = new Error("Another hidden approved conditional field is required."); m.resulting.mockRejectedValue(hidden);
+  await expect(writeFieldValue(f.session, request)).rejects.toBe(hidden);
+  expect(m.resulting.mock.invocationCallOrder[0]).toBeGreaterThan(m.audit.mock.invocationCallOrder.at(-1)!);
+  // Unit propagation only; central SQL establishes rollback of windows/native/
+  // typed values/Audit. No input condition facts are evaluated by policy reads.
+  expect(m.resulting).toHaveBeenCalledWith(f.session, tx, { entity: expect.objectContaining({ version: 9 }), recordId: "native", expectedRevision: 7 });
+});
+it("retains unconditional required and uniqueness for sealed2 despite a false condition", async () => {
+  current = await conditionalVersion(current.id, { required: true }); m.slot.mockResolvedValue(null);
+  await expect(writeFieldValue(f.session, { ...request, slotRevision: null, valueRevision: null, value: null })).rejects.toThrow("required");
+  expect(m.window).not.toHaveBeenCalled();
+  current = await conditionalVersion(current.id, { unique: true }); m.slot.mockImplementation(async () => ({ id: uuid(30), revision: 1, activeValueId: row.id, activeValue: row }));
+  const result = await writeFieldValue(f.session, request);
+  expect(m.slotUpdate.mock.calls.at(-1)?.[0].data.uniqueToken).toBe(result.fingerprint);
+  m.create.mockRejectedValue(new Prisma.PrismaClientKnownRequestError("private duplicate", { code: "P2002", clientVersion: "7" }));
+  await expect(writeFieldValue(f.session, request)).rejects.toThrow("CONFLICT");
 });

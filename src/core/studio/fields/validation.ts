@@ -77,5 +77,13 @@ export function validateFieldConstraints(input: unknown): CustomField {
     if (storage.max !== undefined) decimalValue({ ...storage, min: undefined, max: undefined }, storage.max);
     if (storage.min !== undefined && storage.max !== undefined && new Prisma.Decimal(storage.min).gt(storage.max)) throw new Error("Minimum exceeds maximum.");
   }
+  if (field.defaultValue !== undefined) {
+    const { defaultValue, ...withoutDefault } = field;
+    const checked = validateFieldValue(withoutDefault, defaultValue.value);
+    if (checked === null || checked.type !== defaultValue.type) throw new Error("A literal default must be a present value of the field's type.");
+    // The same codec/validator owns precision, current choices and structured
+    // constraints. Canonical metadata never infers currency or timezone.
+    field.defaultValue = checked;
+  }
   return field;
 }

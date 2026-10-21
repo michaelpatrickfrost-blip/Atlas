@@ -80,7 +80,7 @@ export function EchoRail({
           <aside role="dialog" aria-label={`Echo for ${title}`} className="flex h-full w-full max-w-md flex-col bg-white shadow-2xl" onClick={(event) => event.stopPropagation()}>
             <header className="flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-4">
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[.16em] text-blue-600">Echo</p>
+                <p className="text-[10px] font-semibold tracking-[.16em] text-blue-600">Echo</p>
                 <h2 className="mt-1 text-lg font-semibold tracking-tight">{thread?.title ?? title}</h2>
                 <p className="mt-1 text-xs leading-relaxed text-slate-500">Leave a note on this record and tag the people who should look at it.</p>
               </div>

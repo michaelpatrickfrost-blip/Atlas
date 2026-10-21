@@ -140,7 +140,7 @@ export function AccessEditor({
             value !== "none" && !presetCapabilities(group, value).length
           }
           onClick={() => preset(group, value)}
-          className={`min-h-10 rounded-lg px-2.5 text-xs capitalize transition disabled:opacity-30 sm:px-3 ${selectedAccessLevel(group, selected) === value ? "bg-white font-bold text-blue-600 shadow-sm" : "text-slate-500 hover:text-blue-600"}`}
+          className={`min-h-10 rounded-lg px-2.5 text-xs capitalize transition disabled:opacity-30 sm:px-3 ${selectedAccessLevel(group, selected) === value ? "bg-white font-semibold text-blue-600 shadow-sm" : "text-slate-500 hover:text-blue-600"}`}
         >
           {permissionLabel(value)}
         </button>
@@ -330,7 +330,7 @@ export function AccessEditor({
                 )
                 .map((group) => (
                   <div key={group.id} className="rounded-xl bg-white p-4">
-                    <h4 className="text-xs font-bold">{group.name}</h4>
+                    <h4 className="text-xs font-semibold">{group.name}</h4>
                     <div className="mt-2 space-y-2">
                       {accessSections(group)
                         .filter((section) =>
@@ -447,7 +447,7 @@ export function AccessEditor({
                       >
                         <div className="flex flex-wrap items-center justify-between gap-3">
                           <div>
-                            <h4 className="text-xs font-bold">
+                            <h4 className="text-xs font-semibold">
                               {section.name}
                             </h4>
                             <p className="mt-1 text-[10px] text-slate-500">
@@ -565,7 +565,7 @@ export function AccessEditor({
             </button>
             <button
               type="submit"
-              className="min-h-11 rounded-xl bg-blue-600 px-5 text-xs font-bold text-white"
+              className="min-h-11 rounded-xl bg-blue-600 px-5 text-xs font-semibold text-white"
             >
               {roleId ? "Save profile" : "Save user access"}
             </button>

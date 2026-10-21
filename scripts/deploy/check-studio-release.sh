@@ -16,7 +16,7 @@ verify_revision() {
 verify_revision
 ATLAS_DASHBOARD_CHECK=1 ATLAS_DASHBOARD_URL="$STUDIO_URL" node --env-file=.env.local --import tsx scripts/check-dashboards.ts > "$STUDIO_EVIDENCE/dashboards.log" 2>&1 || { cat "$STUDIO_EVIDENCE/dashboards.log"; exit 1; }
 cat "$STUDIO_EVIDENCE/dashboards.log"
-ATLAS_STUDIO_LIVE_TEST=1 ATLAS_STUDIO_TEST_URL="$STUDIO_URL" node --env-file=.env.local --import tsx scripts/studio/check-metadata.ts > "$STUDIO_EVIDENCE/acceptance.log" 2>&1 || { cat "$STUDIO_EVIDENCE/acceptance.log"; exit 1; }
+ATLAS_STUDIO_LIVE_TEST=1 ATLAS_STUDIO_TEST_URL="$STUDIO_URL" ATLAS_STUDIO_EVIDENCE="$STUDIO_EVIDENCE" node --env-file=.env.local --import tsx scripts/studio/check-metadata.ts > "$STUDIO_EVIDENCE/acceptance.log" 2>&1 || { cat "$STUDIO_EVIDENCE/acceptance.log"; exit 1; }
 cat "$STUDIO_EVIDENCE/acceptance.log"
 ATLAS_HOME_MENU_CHECK=1 ATLAS_HOME_MENU_URL="$STUDIO_URL" node --env-file=.env.local --import tsx scripts/check-home-menu.ts > "$STUDIO_EVIDENCE/home-acceptance.log" 2>&1 || { cat "$STUDIO_EVIDENCE/home-acceptance.log"; exit 1; }
 cat "$STUDIO_EVIDENCE/home-acceptance.log"

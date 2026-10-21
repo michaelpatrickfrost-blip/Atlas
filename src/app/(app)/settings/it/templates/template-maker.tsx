@@ -68,7 +68,7 @@ export function TemplateMaker({ initial, brand }: { initial: Initial; brand: Bra
         <button className="rounded-xl bg-blue-600 px-5 py-2.5 text-xs text-white">Save template</button>
       </ActionForm>
       <div>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Live preview with your brand</p>
+        <p className="mb-2 text-xs font-semibold text-slate-500">Live preview with your brand</p>
         <iframe title="Email preview" sandbox="" srcDoc={html} className="h-[720px] w-full rounded-2xl border border-slate-200 bg-white" />
       </div>
     </div>

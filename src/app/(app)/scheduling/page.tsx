@@ -14,7 +14,7 @@ export default async function SchedulingPage({ searchParams }: { searchParams: P
         <h1 className="text-3xl font-semibold tracking-tight">Your rota</h1>
         <p className="mt-2 text-sm text-[#6e6e73]">Published shifts for the next eight weeks. Time off, tasks and contact details are with the rest of your work.</p>
         <Link href="/scheduling/workforce" className="mt-3 mr-4 inline-block text-sm font-semibold text-blue-700">Open shifts & availability →</Link>
-        <Link href="/profile" className="mt-3 inline-block text-sm font-medium text-[#0071e3]">Open My work</Link>
+        <Link href="/profile" className="mt-3 inline-block text-sm font-medium text-[#826038]">Open My work</Link>
       </div>
       <PersonSchedule shifts={shifts} heading="Published shifts" />
     </div>;

@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --color-app-bg: #f2f4f8;
+  --color-app-bg: #f7f5f3;
   --color-surface: rgba(255, 255, 255, 0.78);
   --color-surface-sunken: rgba(255, 255, 255, 0.5);
   --color-border: rgba(0, 0, 0, 0.08);
@@ -11,9 +11,9 @@
   --color-ink-muted: #6e6e73;
   --color-ink-faint: #86868b;
 
-  --color-atlas-blue: #0071e3;
-  --color-atlas-blue-hover: #0077ed;
-  --color-atlas-blue-soft: rgba(0, 113, 227, 0.12);
+  --color-atlas-blue: #826038;
+  --color-atlas-blue-hover: #88643a;
+  --color-atlas-blue-soft: rgba(130, 96, 56, 0.12);
 
   --color-status-success: #0c8f62;
   --color-status-success-soft: #e5f7ef;
@@ -21,28 +21,28 @@
   --color-status-warning-soft: #fff4e4;
   --color-status-danger: #d12b45;
   --color-status-danger-soft: #fdecef;
-  --color-status-neutral: #5c677a;
-  --color-status-neutral-soft: #eef2f7;
+  --color-status-neutral: #706b66;
+  --color-status-neutral-soft: #f5f3f0;
 
   --radius-atlas-sm: 12px;
   --radius-atlas-md: 18px;
   --radius-atlas-lg: 28px;
   --atlas-topbar: 6rem;
-  --shadow-atlas: 0 1px 1px rgba(16, 24, 40, 0.04), 0 16px 40px -24px rgba(16, 24, 40, 0.28);
-  --shadow-atlas-lg: 0 30px 70px -36px rgba(16, 24, 40, 0.45);
+  --shadow-atlas: 0 1px 1px rgba(32, 28, 24, 0.04), 0 16px 40px -24px rgba(32, 28, 24, 0.28);
+  --shadow-atlas-lg: 0 30px 70px -36px rgba(32, 28, 24, 0.45);
 
-  --color-accent-blue: #3d5afe;
-  --color-accent-blue-soft: #e7ecff;
-  --color-accent-violet: #7c4dff;
-  --color-accent-violet-soft: #f1eaff;
+  --color-accent-blue: #b3854f;
+  --color-accent-blue-soft: #f6f3f0;
+  --color-accent-violet: #b88b59;
+  --color-accent-violet-soft: #f7f5f2;
   --color-accent-teal: #0e9f8e;
   --color-accent-teal-soft: #e3f7f4;
   --color-accent-amber: #e08a12;
   --color-accent-amber-soft: #fff3e0;
   --color-accent-rose: #e5486d;
   --color-accent-rose-soft: #fde8ee;
-  --color-accent-indigo: #4f46e5;
-  --color-accent-indigo-soft: #ecebff;
+  --color-accent-indigo: #ac7e4a;
+  --color-accent-indigo-soft: #f7f5f3;
 }
 
 @media (min-width: 640px) {
@@ -53,11 +53,30 @@
   --color-background: var(--color-app-bg);
   --color-foreground: var(--color-ink);
   --font-sans: var(--font-atlas-sans);
+  --font-serif: var(--font-atlas-serif);
   --font-mono: var(--font-geist-mono);
 }
 
+/* Macro-inspired warm palette: Tailwind's cool slate and blue scales become warm
+   stone and bronze, so every app's existing utility classes share one language. */
+@theme {
+  --color-slate-50: #faf9f6; --color-slate-100: #f3f1ec; --color-slate-200: #e7e4dd;
+  --color-slate-300: #d5d1c7; --color-slate-400: #a8a398; --color-slate-500: #7a766c;
+  --color-slate-600: #5d5a52; --color-slate-700: #46433d; --color-slate-800: #2f2d29;
+  --color-slate-900: #1f1e1b; --color-slate-950: #141412;
+  --color-gray-50: #faf9f6; --color-gray-100: #f3f1ec; --color-gray-200: #e7e4dd;
+  --color-gray-300: #d5d1c7; --color-gray-400: #a8a398; --color-gray-500: #7a766c;
+  --color-gray-600: #5d5a52; --color-gray-700: #46433d; --color-gray-800: #2f2d29; --color-gray-900: #1f1e1b;
+  --color-blue-50: #f8f4ee; --color-blue-100: #f0e7da; --color-blue-200: #e2d0b6;
+  --color-blue-300: #cdb08b; --color-blue-400: #b58d61; --color-blue-500: #9c7146;
+  --color-blue-600: #865f37; --color-blue-700: #6f4d2c; --color-blue-800: #573c23;
+  --color-blue-900: #3f2c1a; --color-blue-950: #281c10;
+  --color-indigo-50: #f8f4ee; --color-indigo-100: #f0e7da; --color-indigo-500: #9c7146; --color-indigo-600: #865f37; --color-indigo-700: #6f4d2c;
+  --color-sky-50: #f8f4ee; --color-sky-100: #f0e7da; --color-sky-500: #9c7146; --color-sky-600: #865f37; --color-sky-700: #6f4d2c;
+}
+
 body {
-  background: #f2f4f8;
+  background: #f7f5f3;
   color: #1d1d1f;
   font-family: var(--font-sans);
   font-feature-settings: "tnum" 1;
@@ -65,7 +84,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-::selection { background: rgba(0, 113, 227, 0.18); color: #1d1d1f; }
+::selection { background: rgba(130, 96, 56, 0.18); color: #1d1d1f; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -76,14 +95,14 @@ body {
 
 .atlas-shell {
   background:
-    radial-gradient(900px 480px at 0% 0%, rgba(0, 113, 227, 0.12), transparent 55%),
-    radial-gradient(720px 420px at 100% 0%, rgba(10, 40, 120, 0.07), transparent 50%),
-    #f7f8fb;
+    radial-gradient(900px 480px at 0% 0%, rgba(130, 96, 56, 0.12), transparent 55%),
+    radial-gradient(720px 420px at 100% 0%, rgba(75, 55, 32, 0.07), transparent 50%),
+    #faf9f8;
 }
 
 .atlas-home-shell {
   --atlas-topbar: 5.5rem;
-  background: radial-gradient(ellipse at 78% 0%, #e0edff 0%, transparent 42%), linear-gradient(135deg, #f6faff 0%, #eef4fc 55%, #f8fbff 100%);
+  background: radial-gradient(ellipse at 78% 0%, #f3f0ec 0%, transparent 42%), linear-gradient(135deg, #fbfbfa 0%, #f7f5f3 55%, #fcfcfb 100%);
 }
 .atlas-sidebar {
   background: rgba(255, 255, 255, 0.58);
@@ -102,9 +121,9 @@ body {
   border: 1px solid transparent;
   color: var(--color-ink-muted);
   background: rgba(255, 255, 255, 0.62);
-  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  box-shadow: 0 1px 2px rgba(32, 28, 24, 0.04);
 }
-.atlas-tab:hover { color: var(--color-ink); border-color: rgba(61, 90, 254, 0.22); background: white; }
+.atlas-tab:hover { color: var(--color-ink); border-color: rgba(179, 133, 79, 0.22); background: white; }
 .atlas-tab.atlas-active {
   background: white;
   color: #1d1d1f;
@@ -126,15 +145,15 @@ textarea {
 input:not([type=checkbox]):not([type=radio]):focus,
 select:focus,
 textarea:focus {
-  border-color: #0071e3;
-  box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.16);
+  border-color: #826038;
+  box-shadow: 0 0 0 4px rgba(130, 96, 56, 0.16);
   outline: none;
 }
 /* Table-cell inputs (sales order lines): no box until hovered or focused. */
 input.atlas-cell { border-color: transparent !important; background: transparent !important; border-radius: 8px !important; padding: 0.4rem 0.5rem !important; font-size: 0.875rem; }
 tr:hover input.atlas-cell, input.atlas-cell:hover { border-color: rgba(0, 0, 0, 0.1) !important; }
-input.atlas-cell:focus { border-color: #0071e3 !important; background: white !important; box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.14) !important; }
-input.atlas-cell:disabled { color: #475569; border-color: transparent !important; }
+input.atlas-cell:focus { border-color: #826038 !important; background: white !important; box-shadow: 0 0 0 3px rgba(130, 96, 56, 0.14) !important; }
+input.atlas-cell:disabled { color: #5e5852; border-color: transparent !important; }
 input.atlas-cell.atlas-cell-search { padding-left: 1.75rem !important; }
 @layer base {
   input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]):not([type=color]),
@@ -146,16 +165,16 @@ input.atlas-cell.atlas-cell-search { padding-left: 1.75rem !important; }
   }
   input::placeholder, textarea::placeholder { color: #a1a1a6; }
 }
-input[type=checkbox], input[type=radio] { accent-color: #0071e3; }
+input[type=checkbox], input[type=radio] { accent-color: #826038; }
 select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='1.8'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
 a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--color-atlas-blue); outline-offset: 3px; }
 
 :where(button, a).bg-blue-600 {
-  background: #0071e3;
+  background: #826038;
   border-radius: 999px;
   box-shadow: none;
 }
-:where(button, a).bg-blue-600:hover { background: #0077ed; }
+:where(button, a).bg-blue-600:hover { background: #88643a; }
 
 @keyframes atlas-page-in {
   from { opacity: 0; transform: translateY(8px); }
@@ -179,15 +198,15 @@ button, summary { transition: background-color 160ms ease, border-color 160ms ea
 main {
   background: transparent;
 }
-main { scrollbar-color: #c5d0e2 transparent; }
+main { scrollbar-color: #d9d4ce transparent; }
 
 .atlas-app-header { display: flex; flex-direction: column; gap: 16px; }
 .atlas-app-mark {
   display: flex; width: 48px; height: 48px; flex: none; align-items: center; justify-content: center;
   border-radius: 14px; color: #fff;
-  background: #0a3d8f;
+  background: #584026;
   border: 0;
-  box-shadow: 0 8px 18px -12px rgba(10, 61, 143, 0.7);
+  box-shadow: 0 8px 18px -12px rgba(88, 64, 38, 0.7);
 }
 .atlas-app-mark svg { stroke: #fff; }
 .atlas-eyebrow { font-size: 12px; font-weight: 500; letter-spacing: 0; text-transform: none; color: #6e6e73; }
@@ -195,7 +214,7 @@ main { scrollbar-color: #c5d0e2 transparent; }
 
 .atlas-float-nav {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.8));
-  box-shadow: 0 16px 36px -28px rgba(16, 24, 40, 0.35);
+  box-shadow: 0 16px 36px -28px rgba(32, 28, 24, 0.35);
   backdrop-filter: blur(32px) saturate(1.9);
   -webkit-backdrop-filter: blur(32px) saturate(1.9);
 }
@@ -208,7 +227,7 @@ main { scrollbar-color: #c5d0e2 transparent; }
 .atlas-float-tab-active {
   background: var(--color-atlas-blue);
   color: #fff;
-  box-shadow: 0 6px 16px -8px rgba(0, 113, 227, 0.65);
+  box-shadow: 0 6px 16px -8px rgba(130, 96, 56, 0.65);
 }
 .atlas-float-tab-active:hover { background: var(--color-atlas-blue-hover); color: #fff; }
 .atlas-float-dropdown {
@@ -233,21 +252,21 @@ main :where(.rounded-2xl, .rounded-3xl, .rounded-\[28px\]):where(.border, .borde
   backdrop-filter: none;
 }
 .atlas-home-shell .atlas-launcher-card {
-  border-color: #e6edf7;
-  box-shadow: 0 4px 16px -12px rgba(51, 90, 148, 0.2);
+  border-color: #f2efeb;
+  box-shadow: 0 4px 16px -12px rgba(114, 84, 49, 0.2);
   backdrop-filter: none;
 }
-.atlas-home-shell .atlas-launcher-card:hover { border-color: #bfdbfe; background: #f7fbff; }
+.atlas-home-shell .atlas-launcher-card:hover { border-color: #e3dfda; background: #fcfbfa; }
 main table { border-collapse: separate; border-spacing: 0; }
 main thead th {
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #7b879c;
+  color: #918c86;
 }
 main tbody tr { transition: background-color 140ms ease; }
-main tbody tr:hover { background-color: rgba(61, 90, 254, 0.045); }
+main tbody tr:hover { background-color: rgba(179, 133, 79, 0.045); }
 
 summary { list-style: none; display: flex; align-items: center; gap: 8px; }
 summary::-webkit-details-marker { display: none; }
@@ -257,7 +276,7 @@ summary::after {
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='1.8'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E") center / 16px no-repeat;
 }
 details[open] > summary::after { transform: rotate(180deg); }
-.atlas-dialog::backdrop { background: rgba(8, 12, 24, 0.55); backdrop-filter: blur(8px); }
+.atlas-dialog::backdrop { background: rgba(18, 16, 14, 0.55); backdrop-filter: blur(8px); }
 .atlas-dialog[open] { animation: atlas-page-in 180ms ease-out; }
 
 /* Mobile: one scroll container (main); stop the page behind it rubber-banding or scrolling sideways. */
@@ -275,16 +294,16 @@ main { -webkit-overflow-scrolling: touch; padding-bottom: max(1.5rem, env(safe-a
   height: calc(100dvh - 16px);
   max-height: none;
   overflow: hidden;
-  border: 1px solid #dbeafe;
+  border: 1px solid #f1ede8;
   border-radius: 24px;
   background: white;
-  color: #1e293b;
-  box-shadow: -16px 0 70px -24px rgb(17 47 103 / 28%);
+  color: #322d27;
+  box-shadow: -16px 0 70px -24px rgb(69 51 30 / 28%);
 }
-.atlas-side-panel::backdrop { background: rgb(15 23 42 / 12%); animation: atlas-drawer-shade 240ms ease-out; }
+.atlas-side-panel::backdrop { background: rgb(32 29 25 / 12%); animation: atlas-drawer-shade 240ms ease-out; }
 .atlas-side-panel[data-closing]::backdrop { animation: atlas-drawer-unshade 240ms ease-in forwards; }
-@keyframes atlas-drawer-shade { from { background: transparent; } to { background: rgb(15 23 42 / 12%); } }
-@keyframes atlas-drawer-unshade { from { background: rgb(15 23 42 / 12%); } to { background: transparent; } }
+@keyframes atlas-drawer-shade { from { background: transparent; } to { background: rgb(32 29 25 / 12%); } }
+@keyframes atlas-drawer-unshade { from { background: rgb(32 29 25 / 12%); } to { background: transparent; } }
 @media (min-width: 640px) {
   .atlas-side-panel { inset: 16px 16px 16px auto; height: calc(100dvh - 32px); width: min(560px, calc(100vw - 32px)); }
 }

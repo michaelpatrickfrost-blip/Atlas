@@ -33,7 +33,7 @@ export default async function PlacePage({ params }: { params: Promise<{ placeId:
     {manage && !data.place.locations.length && <ActionForm action={ensureLocationsAction} className="flex items-center gap-3"><input type="hidden" name="placeId" value={data.place.id} /><Button type="submit" variant="primary">{data.place.kind === "YARD" ? "Add the yard location" : "Add the usual warehouse locations"}</Button></ActionForm>}
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {data.place.locations.map((location) => <div key={location.id} className={`rounded-2xl border bg-white p-5 ${location.active ? "border-slate-200" : "border-dashed border-slate-200 opacity-60"}`}>
-        <p className="text-xs font-medium uppercase tracking-wider text-slate-400">{location.code}</p>
+        <p className="text-xs font-medium text-slate-400">{location.code}</p>
         <h3 className="mt-1 font-semibold">{location.name}</h3>
         <p className="mt-4 text-2xl font-semibold">{held.get(location.id) ?? 0}</p>
         <p className="text-xs text-slate-500">{location.active ? "on hand here" : "Retired"}</p>

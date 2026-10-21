@@ -34,7 +34,7 @@ export async function PersonGoals({ employeeId, self = false, personLabel }: { e
     </div>
     {personPlans.map((plan) => <article key={plan.id} className="rounded-2xl bg-[var(--color-surface-sunken)] p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{planLabel[plan.kind] ?? "Plan"} · {plan.status.replaceAll("_", " ")}</p>
+        <p className="text-xs font-semibold text-slate-500">{planLabel[plan.kind] ?? "Plan"} · {plan.status.replaceAll("_", " ")}</p>
         <Link href={`/kpis/plans/${plan.id}`} className="text-xs font-semibold text-[var(--color-atlas-blue)]">Full plan</Link>
       </div>
       <h4 className="mt-2 font-semibold">{plan.title}</h4>

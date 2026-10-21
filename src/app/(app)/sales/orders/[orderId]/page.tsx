@@ -572,10 +572,10 @@ export default async function OrderPage({
   ];
   return (
     <div className="min-w-0 space-y-5">
-      <section className="rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-white p-6 sm:p-8">
+      <section className="rounded-3xl border border-blue-100 bg-[var(--color-surface)] p-6 sm:p-8">
         <div className="mb-7 flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[.16em] text-blue-600">
+            <p className="text-[10px] font-semibold tracking-[.16em] text-blue-600">
               {o.orderType === "CALL_OFF"
                 ? "Call-off order"
                 : o.orderType === "PROJECT"
@@ -777,7 +777,7 @@ export default async function OrderPage({
         <section className="rounded-2xl border border-blue-100 bg-blue-50/40 p-6">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[.16em] text-blue-600">
+              <p className="text-[10px] font-semibold tracking-[.16em] text-blue-600">
                 Export proforma ·{" "}
                 {o.proforma.status === "ISSUED"
                   ? "Issued with this sale"

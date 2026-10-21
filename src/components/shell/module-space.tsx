@@ -16,7 +16,7 @@ export async function ModuleSpace({ module, children, wide = false }: { module: 
   return (
     <div className={`mx-auto flex w-full ${wide ? "max-w-[1440px]" : "max-w-6xl"} flex-col gap-6`}>
       <FloatingModuleNav title={module.name} items={navigation} />
-      <AppHeader icon={module.icon} title={module.name} eyebrow="Atlas" />
+      <AppHeader icon={module.icon} title={module.name} eyebrow="Atlas workspace" appId={module.id} />
       {children}
     </div>
   );

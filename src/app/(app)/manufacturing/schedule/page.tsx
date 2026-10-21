@@ -31,7 +31,7 @@ export default async function SchedulePage() {
         </p>
       </header>
 
-      <section className="rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-5 sm:p-6">
+      <section className="rounded-3xl border border-blue-100 bg-[var(--color-surface)] p-5 sm:p-6">
         <div className="flex flex-wrap items-baseline justify-between gap-3"><h2 className="text-lg font-semibold">Machine availability · next 7 days</h2><Link href="/manufacturing/plant" className="text-sm font-semibold text-blue-600">Plant &amp; downtime →</Link></div>
         <p className="mt-1 text-xs text-slate-500">Working hours in each machine&apos;s timezone, less downtime and existing bookings. Throughput work can pause between shifts; machine batch cycles reserve an uninterrupted span.</p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{machines.map(m=><article key={m.id} className="rounded-2xl border border-blue-100 bg-white p-4"><div className="flex items-center justify-between gap-2"><h3 className="font-semibold">{m.name}</h3><span className="text-xs text-slate-500">{m.calendarMode==="CONTINUOUS"?"24/7":"Shifts"}</span></div>{m.error?<p className="mt-3 text-sm text-amber-700">{m.error}</p>:<><div className="mt-3 h-2 overflow-hidden rounded-full bg-blue-50"><div className="h-full rounded-full bg-blue-500" style={{width:`${Math.min(100,m.calendarHours?m.bookedHours/m.calendarHours*100:0)}%`}}/></div><div className="mt-3 flex justify-between text-xs"><span className="font-semibold text-blue-700">{m.freeHours.toFixed(1)}h free</span><span className="text-slate-500">{m.bookedHours.toFixed(1)}h booked · {m.downtimeHours.toFixed(1)}h downtime</span></div>{m.conflicts>0&&<p className="mt-2 text-xs font-semibold text-red-600">{m.conflicts} existing bookings overlap downtime. Review and reschedule.</p>}</>}</article>)}</div>
@@ -41,7 +41,7 @@ export default async function SchedulePage() {
       <SchedulerBoard rows={board.rows} unassigned={board.unassigned} windowStart={board.windowStart} windowDays={14} editable={editable} canLock={canLock} />
 
       <section className="space-y-4">
-        <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Rough labour capacity this week</h2>
+        <h2 className="text-xs font-semibold tracking-[0.16em] text-[var(--color-ink-faint)]">Rough labour capacity this week</h2>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {capacity.map((c) => (
             <div key={c.id} className="rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3">
@@ -60,7 +60,7 @@ export default async function SchedulePage() {
 
       <section className="space-y-4">
         <div>
-          <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Shifts &amp; man-hours</h2>
+          <h2 className="text-xs font-semibold tracking-[0.16em] text-[var(--color-ink-faint)]">Shifts &amp; man-hours</h2>
           <p className="mt-1 max-w-xl text-sm text-[var(--color-ink-muted)]">
             Set the local working hours for each work centre or specific machine. Overnight shifts end on the following day. Resource-specific shifts take precedence over centre shifts. Machines using shift hours need a calendar before scheduling; continuous machines run 24/7. The labour summary above remains a rough centre estimate.
           </p>

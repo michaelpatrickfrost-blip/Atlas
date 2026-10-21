@@ -6,7 +6,7 @@ SOURCE_BRANCH="${4:-main}"
 ACCEPTANCE="${5:-none}"
 CLEAN_TESTS="${6:-0}"
 [[ "$CLEAN_TESTS" = 0 || ( "$CLEAN_TESTS" = 1 && ( "$ACCEPTANCE" = usability || "$ACCEPTANCE" = supply ) ) ]] || { echo 'Test cleanup requires an explicitly authorised usability or manufacturing release.' >&2; exit 1; }
-[[ "$ACCEPTANCE" = none || "$ACCEPTANCE" = people || "$ACCEPTANCE" = dashboards || "$ACCEPTANCE" = supply || "$ACCEPTANCE" = studio || "$ACCEPTANCE" = settings || "$ACCEPTANCE" = commercial || "$ACCEPTANCE" = tasks || "$ACCEPTANCE" = usability ]] || { echo 'Unknown release acceptance workflow.' >&2; exit 1; }
+[[ "$ACCEPTANCE" = polish || "$ACCEPTANCE" = none || "$ACCEPTANCE" = people || "$ACCEPTANCE" = dashboards || "$ACCEPTANCE" = supply || "$ACCEPTANCE" = studio || "$ACCEPTANCE" = settings || "$ACCEPTANCE" = commercial || "$ACCEPTANCE" = tasks || "$ACCEPTANCE" = usability ]] || { echo 'Unknown release acceptance workflow.' >&2; exit 1; }
 [[ "$SOURCE_BRANCH" = main || "$SOURCE_BRANCH" =~ ^codex/[a-zA-Z0-9._/-]+$ ]] || { echo 'Invalid release source branch.' >&2; exit 1; }
 git check-ref-format "refs/heads/$SOURCE_BRANCH"
 [[ "$REV" =~ ^[a-f0-9]{40}$ ]] || { echo 'Full pinned revision required.' >&2; exit 1; }
@@ -89,6 +89,7 @@ fi
 [[ "$(cat "$CANDIDATE/.atlas-ready")" = "$REV" ]] || exit 1
 [[ -s "$CANDIDATE/.next/BUILD_ID" && -f "$CANDIDATE/.next/server/app-paths-manifest.json" ]] || { echo 'Candidate build outputs are incomplete; running release unchanged.' >&2; exit 1; }
 [[ ! -w "$CANDIDATE/.next/server/app-paths-manifest.json" ]] || { echo 'Candidate code is not immutable.' >&2; exit 1; }
+(cd "$CANDIDATE" && node --import tsx scripts/studio/runtime-feature-probe.ts "$CANDIDATE" "$PREVIOUS" "$REV")
 
 PROBE_PID=''; SWITCHED=0; TIMER_WAS_ACTIVE=0
 healthy() { curl --max-time 2 -fsS "http://127.0.0.1:$1/login" -o /dev/null 2>/dev/null; }
@@ -118,7 +119,10 @@ feature_acceptance() {
   fi
   (
     cd "$CANDIDATE"; set -a; . /etc/atlas/guardian.env; set +a
-    if [[ "$ACCEPTANCE" = people ]]; then
+    if [[ "$ACCEPTANCE" = polish ]]; then
+      NODE_ENV=production ATLAS_PREMIUM_CHECK=1 ATLAS_PREMIUM_URL="$url" ATLAS_PREMIUM_OUTPUT="$evidence" node --env-file=.env.local --import tsx scripts/check-premium-ui.ts || exit 1
+      NODE_ENV=production ATLAS_HOME_MENU_CHECK=1 ATLAS_HOME_MENU_URL="$url" node --env-file=.env.local --import tsx scripts/check-home-menu.ts || exit 1
+    elif [[ "$ACCEPTANCE" = people ]]; then
       NODE_ENV=production ATLAS_PEOPLE_TEST=1 ATLAS_PEOPLE_TEST_URL="$url" ATLAS_PEOPLE_EVIDENCE="$evidence" node --env-file=.env.local --import tsx scripts/check-people-workspaces.ts
     elif [[ "$ACCEPTANCE" = usability ]]; then
       NODE_ENV=production ATLAS_USABILITY_CHECK=1 ATLAS_USABILITY_URL="$url" ATLAS_USABILITY_OUTPUT="$evidence" ATLAS_TEST_REVISION="$REV" node --env-file=.env.local --import tsx scripts/check-usability-release.ts
@@ -169,7 +173,7 @@ settings_acceptance() {
 }
 release_acceptance() {
   case "$ACCEPTANCE" in
-    people|supply|studio|commercial|tasks|usability) feature_acceptance "$@" ;;
+    polish|people|supply|studio|commercial|tasks|usability) feature_acceptance "$@" ;;
     dashboards) dashboard_acceptance "$@" ;;
     settings) settings_acceptance "$@" ;;
     none) return 0 ;;

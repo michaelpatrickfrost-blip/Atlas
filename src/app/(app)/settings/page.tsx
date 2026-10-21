@@ -105,7 +105,7 @@ export default async function SettingsPage({
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[.16em] text-blue-600">
+          <p className="text-[10px] font-semibold tracking-[.16em] text-blue-600">
             Your people. Your workspace.
           </p>
           <h2 className="mt-2 text-3xl font-semibold tracking-tight">

@@ -2,11 +2,8 @@ import { z } from "zod";
 import type { Session } from "@/core/auth/session";
 import { checksum } from "../registry/contracts";
 import type { CapabilityRegistry } from "../registry/registry";
-export const referenceSchema = z.strictObject({
-  id: z.string().regex(/^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+$/),
-  version: z.number().int().positive(), schemaHash: z.string().regex(/^[a-f0-9]{64}$/),
-  contractHash: z.string().regex(/^[a-f0-9]{64}$/),
-});
+import { referenceSchema } from "./reference";
+export { referenceSchema } from "./reference";
 /** Phase 1 metadata-only definition. Later builders register their own compilers. */
 export const kernelPayloadSchema = z.strictObject({ schemaVersion: z.literal(1),
   description: z.string().max(2000), references: z.array(referenceSchema).max(100) });

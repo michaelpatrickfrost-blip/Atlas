@@ -159,7 +159,7 @@ export default async function New({
   return (
     <div className="mx-auto max-w-5xl space-y-6">
       <div>
-        <p className="text-xs uppercase tracking-wider text-emerald-700">
+        <p className="text-xs text-emerald-700">
           Finance
         </p>
         <h1 className="mt-2 text-2xl font-semibold">

@@ -15,6 +15,7 @@ import { CORE_CAPABILITIES } from "@/core/permissions/capabilities";
 import type { Session } from "@/core/auth/session";
 import { CompanyMark } from "./company-mark";
 import { TopbarTitle } from "./topbar-title";
+import { RailToggle } from "./rail-nav";
 import { getNavigableModules } from "@/core/modules/runtime";
 import { ContextGuideLink } from './context-guide-link';
 
@@ -25,6 +26,7 @@ export async function Topbar({ session }: { session: Session }) {
   return (
     // Keep fixed chat/search overlays relative to the viewport; backdrop-filter traps them in this header.
     <header className="atlas-workspace-topbar flex h-[var(--atlas-topbar)] shrink-0 flex-wrap items-center gap-1 px-2 py-2 min-[360px]:gap-2 min-[360px]:px-3 sm:flex-nowrap sm:gap-3 sm:px-5 sm:py-0">
+      <RailToggle />
       <Link href="/home" aria-label="Home" title="Home" className="atlas-top-icon flex size-9 shrink-0 items-center justify-center rounded-lg lg:hidden">
         <img src="/brand/atlas-icon.png" alt="" className="size-6" />
       </Link>

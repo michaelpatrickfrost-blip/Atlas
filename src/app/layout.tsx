@@ -4,7 +4,7 @@ import "./globals.css";
 import "./premium.css";
 import "./macro.css";
 
-const atlasSans = localFont({ src: "./fonts/Figtree-Variable.ttf", variable: "--font-atlas-sans", weight: "300 900", display: "swap" });
+const atlasSans = localFont({ src: "./fonts/Outfit-Variable.ttf", variable: "--font-atlas-sans", weight: "100 900", display: "swap" });
 const atlasSerif = localFont({ src: "./fonts/Fraunces-Variable.ttf", variable: "--font-atlas-serif", weight: "100 900", display: "swap" });
 const geistMono = localFont({ src: "./fonts/GeistMono-Variable.ttf", variable: "--font-geist-mono", weight: "100 900", display: "swap" });
 

@@ -1,3 +1,88 @@
+## 21 October 2026 — New "A." brand mark and wordmark (release branch, deploy pending)
+
+Michael asked for an icon and logo that match the ink-on-paper system. New set,
+rendered from the bundled Fraunces/Outfit fonts by scripts/brand/render-brand.mjs
+(Playwright; `node scripts/brand/render-brand.mjs <repo> <outdir>`), then copied in:
+- public/brand/atlas-icon.png 1024² — ink (#1a1917) squircle tile, paper "A"
+  in Fraunces 650, red full stop (#c9574b).
+- public/brand/atlas-mark.png 515×400 — the same "A." in ink on transparent
+  (admin shell, chat dock use it with multiply).
+- public/brand/atlas-wordmark.png now 336×145 (tight "Atlas." with red stop;
+  was a 900-wide "ATLAS"); AtlasLogo width/height attrs and the marketing
+  website header/footer sizes updated, .website-brand img gets object-fit:
+  contain so the fixed 154×54 box no longer distorts it.
+- public/brand/atlas-logo.png 905×715 — tile, "Atlas.", "Plan. Make. Deliver."
+  with red stops (sign-in and admin sign-in).
+- src/app/icon.png 512, apple-icon.png 180 (ink background, no transparent
+  corners), favicon.ico 16/32/48 generated with Pillow from the tile.
+No old blue-gradient assets remain in use. Checks: npx tsc --noEmit PASS
+(after removing stray macOS "* 2.ts" duplicates from .next/types), eslint on
+changed tsx PASS, npm run build PASS. Deploy delegated; see next entry.
+
+## 21 October 2026 — Push-reveal rail, Outfit and dynamic Home LIVE at https://atlassystem.online
+
+Supersedes "deploy pending" in the entry below. Deployed commit
+e95cd16433c72db6904c3313c78bacc6ba646578 (branch codex/macro-ui-overhaul-20261020,
+worktree /Users/michael/Desktop/atlas-macro-ui, pushed). App source is e3ad90b4; e95cd164
+adds only a gate change. Backup of the activated release:
+/home/administrator/backups/atlas-pre-deploy-20261021-061839. Rollback runtime retained:
+/opt/atlas-releases/dda7609b7680bb79cf2cabd6a392d84805ad021d (previous Macro release;
+database not changed by the release).
+Deploy attempts before it, none of which switched the live pointer:
+- b7d52f20: premium gate PASS; home-menu failed on the "Your apps" heading (it now
+  carries a live count). Fixed by 45fc82c6 (heading matched with /^Your apps\b/).
+- 45fc82c6 replayed read-only on the sealed b7d52f20 candidate: failed at
+  check-home-menu.ts:240, the Apps popup covered the header Search button and the page's
+  module tab strip (z-62) drew through the popup. Fixed in src by e3ad90b4 (.atlas-rail
+  z-index 76; .atlas-rail-popup top 50px, below the header). Popups already used the
+  opaque --m-surface (#fbfaf7); the bleed-through was layering, not transparency.
+- e3ad90b4: premium gate PASS; home-menu failed "desktop utility icons and labels must
+  fit the rail" because the hidden-at-rest rail slides items 14px aside and fades them.
+  Backups of these attempts: atlas-pre-deploy-20261021-055934 and -061003.
+Gate change in e95cd164 (scripts/check-home-menu.ts only): on viewports >= 1024px the
+rail is pinned ("Toggle navigation") and transitions are awaited before the fit check;
+the popup anchoring assertion now requires the popup beside the rail and below the
+header (was: top level with the Apps button). The Search-click-while-Apps-open assertion
+is unchanged and passes. Before redeploying this was run read-only on the sealed
+e3ad90b4 candidate (loopback :3011, scratch overlay since removed): PASS.
+Checks that ran and PASSED on e95cd164: tsc and eslint on b7d52f20 (0 errors); candidate
+polish acceptance (36 routes x 3 widths, phone Apps/focus, crossfade, reduced motion;
+home-menu desktop/tablet/phone/small-phone, business boundary, Search with Apps open);
+runtime switched; public-HTTPS polish acceptance PASS (evidence /tmp/atlas-polish-public-kHXAjs
+and /tmp/atlas-home-menu-check-L6gWog on the server); no restore. Live:
+/login 200, /api/health/release = e95cd164..., /opt/atlas-current resolves to it, atlas active.
+Public screenshots reviewed: Apps menu solid, header/Search unobstructed.
+Not run: a fresh local build of e95cd164 (the server built the candidate; tsc/eslint were run
+on b7d52f20 and the later commits changed only macro.css and scripts); manual signed-in
+click-through of every app; Desktop main checkout untouched.
+Next: reconcile the Desktop main checkout (~560 commits behind) and merge this branch
+lineage into main; keep dda7609b as the rollback runtime until then.
+
+## 21 October 2026 — Push-reveal rail, Outfit, dynamic Home (release branch, deploy pending)
+
+Michael's review of the live Macro release: the rail must not overlay the work
+("the screen needs to move seamlessly right and the menu appears neatly behind"),
+the UI font should be rounder/posher, and Home was bland. Changes on
+codex/macro-ui-overhaul-20261020 (worktree /Users/michael/Desktop/atlas-macro-ui):
+- src/components/shell/rail-nav.tsx: rail hidden at rest (slim edge handle).
+  Hovering the handle / focusing into the rail / pinning (top-bar toggle
+  `RailToggle`, or ⌘.) widens the rail column so the floating workspace panel
+  slides right and uncovers the navigation; it slides back on leave, after
+  navigation, and stays open while the Apps popup is open. Pin preference in
+  localStorage key `atlas.rail` (per-viewer convenience only). Items cascade in.
+- Fonts: Outfit replaces Figtree for UI (bundled, OFL, README/SHA updated);
+  Fraunces titles unchanged.
+- src/app/(app)/home/page.tsx: "Today" band (weekday/date, greeting with first
+  name, live tiles for attention / open tasks via loadMyTaskCount / active goals),
+  apps index with serif section titles, sticky side column for attention (pigment
+  severity dots, Urgent/Review tags) and goals; staggered entrance reveal and a
+  slow aurora wash behind Home only. No marketing copy; every figure is real data.
+- scripts/check-home-menu.ts: on desktop widths pins the rail via "Toggle
+  navigation" before clicking Apps (rail is hidden by default now).
+Checks: npx tsc --noEmit PASS; eslint on changed files PASS; npm run build PASS.
+Deploy: delegated (ATLAS_RELEASE_ACCEPTANCE=polish); see next entry. PR
+michaelpatrickfrost-blip/Atlas#1 (main-sync) needs this merged in after deploy.
+
 ## 21 October 2026 — main reconciled with the deployed Macro UI lineage (PR)
 
 Branch main-sync = origin/main (a9e01862, which had diverged from the release

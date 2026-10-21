@@ -16,8 +16,8 @@ export function ShellChrome({ rail, topbar, homeNavigation, children }: { rail: 
     <>
       <Refresh />
       <div className="atlas-shell flex h-dvh min-w-0 overflow-hidden">
-        <div className="hidden shrink-0 lg:flex">{rail}</div>
-        <div className="atlas-frame flex min-w-0 flex-1 flex-col lg:py-2 lg:pr-2">
+        <div className="hidden lg:contents">{rail}</div>
+        <div className="atlas-frame flex min-w-0 flex-1 flex-col lg:p-2">
           <div id="atlas-content-column" style={appAppearance(pathname.split("/")[1] || "home")} className={`atlas-panel flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden ${home ? "atlas-home-shell" : ""}`}>
             {topbar}
             <div id="atlas-module-nav-slot" className="relative z-[62] shrink-0" />

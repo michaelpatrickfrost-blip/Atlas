@@ -27,8 +27,8 @@ export async function Topbar({ session }: { session: Session }) {
     // Keep fixed chat/search overlays relative to the viewport; backdrop-filter traps them in this header.
     <header className="atlas-workspace-topbar flex h-[var(--atlas-topbar)] shrink-0 flex-wrap items-center gap-1 px-2 py-2 min-[360px]:gap-2 min-[360px]:px-3 sm:flex-nowrap sm:gap-3 sm:px-5 sm:py-0">
       <RailToggle />
-      <Link href="/home" aria-label="Home" title="Home" className="atlas-top-icon flex size-9 shrink-0 items-center justify-center rounded-lg lg:hidden">
-        <img src="/brand/atlas-icon.png" alt="" className="size-6" />
+      <Link href="/home" aria-label="Home" title="Home" className="atlas-top-icon atlas-top-brand flex size-9 shrink-0 items-center justify-center rounded-lg">
+        <img src="/brand/atlas-icon.png" alt="" width={1024} height={1024} className="size-6 rounded-[7px]" />
       </Link>
       <div className="lg:hidden"><AppMenu><AppDirectory session={session} /></AppMenu></div>
       <div className="hidden min-[360px]:block"><WorkspaceBack /></div>

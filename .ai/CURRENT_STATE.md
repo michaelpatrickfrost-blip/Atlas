@@ -1,23 +1,72 @@
-## 21 October 2026 — New "A." brand mark and wordmark (release branch, deploy pending)
+## 21 October 2026 — Stack brand + Guardian rail fix LIVE (b431bddc)
 
-Michael asked for an icon and logo that match the ink-on-paper system. New set,
-rendered from the bundled Fraunces/Outfit fonts by scripts/brand/render-brand.mjs
-(Playwright; `node scripts/brand/render-brand.mjs <repo> <outdir>`), then copied in:
-- public/brand/atlas-icon.png 1024² — ink (#1a1917) squircle tile, paper "A"
-  in Fraunces 650, red full stop (#c9574b).
-- public/brand/atlas-mark.png 515×400 — the same "A." in ink on transparent
-  (admin shell, chat dock use it with multiply).
-- public/brand/atlas-wordmark.png now 336×145 (tight "Atlas." with red stop;
-  was a 900-wide "ATLAS"); AtlasLogo width/height attrs and the marketing
-  website header/footer sizes updated, .website-brand img gets object-fit:
-  contain so the fixed 154×54 box no longer distorts it.
-- public/brand/atlas-logo.png 905×715 — tile, "Atlas.", "Plan. Make. Deliver."
+Deployed b431bddc4c9a995e777732f60e159a54149170a9 (codex/macro-ui-overhaul-20261020)
+to https://atlassystem.online at 19:14–19:22 UTC: candidate and public polish
+acceptance both PASS (36 routes × 3 widths, phone Apps/focus, client crossfade,
+reduced motion, Home/Apps/header/search business-boundary checks); no restore;
+/api/health/release reports b431bddc. Pre-deploy backup
+/home/administrator/backups/atlas-pre-deploy-20261021-191442; rollback runtime
+/opt/atlas-releases/e95cd16433c72db6904c3313c78bacc6ba646578 retained.
+This release carries the Stack brand (icon, favicon, Apple icon, mark, wordmark,
+logo; top-bar Home tile at every width) and the rail fix for the Guardian sweep.
+Three earlier attempts today exited 1 silently on the release lock (the failing
+sweep cycle; see the entry below); the deploy was started within seconds of the
+sweep reporting `failed`. Still to confirm: the next automatic Guardian sweep
+completes against this runtime (expected within ~40 min of 19:22 UTC); the
+main-sync PR branch (michaelpatrickfrost-blip/Atlas#1) is refreshed from this head.
+
+## 21 October 2026 — Guardian sweep regression from the hidden rail (fix on release branch)
+
+Since the push-reveal rail went live (e95cd164, ~06:18 UTC) every six-hourly
+Guardian sweep has failed after ~30 min and the timer (OnUnitInactiveSec=5min)
+restarts it, so the shared release lock is held ~85 % of the time and
+`npm run deploy:vps` exits 1 silently after its 600 s flock wait (two attempts
+today). Cause, from scripts/guardian/browser-sweep.ts: on every page it clicks each
+`button[data-guardian-safe="toggle"]` that Playwright deems visible and expects
+aria-expanded to flip. The rail's "+" Apps button sat in the hidden sheet at
+opacity 0 / pointer-events none (still "visible" to Playwright) so each click hit
+the 30 s action timeout, and the top-bar RailToggle carried data-guardian-safe
+without aria-expanded; 100 pages × 30 s outran the sweep's 30-minute QA token →
+"QA profile session changed during browser checks" → exit 1. No findings were
+recorded because the run threw before persisting them.
+Fix (presentation/accessibility only): the hidden sheet now also gets
+`visibility: hidden` (delayed until the slide-out finishes), so hidden controls
+are not probed, tabbed to or announced; RailNav dispatches `atlas:rail-state`
+and RailToggle mirrors it as aria-expanded, so Guardian's open/reset probe is
+true to the control. scripts/check-home-menu.ts already pins the rail before
+asserting the utilities nav, so the gate is unaffected.
+Checks: npx tsc --noEmit PASS (stray macOS "* 3.ts" duplicates in .next/types
+removed first); eslint rail-nav PASS; npm run build PASS. Deploy of this fix:
+next lock window after the Stack-brand release 196b4ceb; see next entry.
+
+## 21 October 2026 — Brand: the Stack mark replaces the "A." draft (release branch, deploy pending)
+
+Michael asked for an icon and logo that match the ink-on-paper system, rejected
+the serif "A." draft (935750f6, never deployed: its release collided with the
+six-hourly Guardian sweep, which holds the release lock ~20 min from :33 at
+05/11/17/23 UTC — a deploy started then waits 600 s and exits 1 silently) and
+three further sheets, and chose the "Stack": three rounded horizontal layers
+rising to a red point — the system's layers — with "Atlas" in Outfit 700.
+Rendered by scripts/brand/render-brand.mjs (Playwright, bundled Outfit;
+`node scripts/brand/render-brand.mjs <repo> <outdir>`), then copied in:
+- public/brand/atlas-icon.png 1024² — ink (#1a1917) squircle tile, paper
+  layers at 100/72/48 %, red (#c9574b) point.
+- public/brand/atlas-mark.png 515×400 — the mark in ink on transparent (admin
+  shell, chat dock use it with multiply); public/brand/atlas-mark.svg added as
+  the vector source.
+- public/brand/atlas-wordmark.png 426×145 — mark + "Atlas" (was a 900-wide
+  "ATLAS"); AtlasLogo width/height attrs and the marketing website header/footer
+  <img> sizes updated; .website-brand img gets object-fit: contain so the fixed
+  154×54 box no longer distorts it.
+- public/brand/atlas-logo.png 905×715 — tile, "Atlas", "Plan. Make. Deliver."
   with red stops (sign-in and admin sign-in).
 - src/app/icon.png 512, apple-icon.png 180 (ink background, no transparent
   corners), favicon.ico 16/32/48 generated with Pillow from the tile.
-No old blue-gradient assets remain in use. Checks: npx tsc --noEmit PASS
-(after removing stray macOS "* 2.ts" duplicates from .next/types), eslint on
-changed tsx PASS, npm run build PASS. Deploy delegated; see next entry.
+- src/components/shell/topbar.tsx: the Home link with the brand tile is now shown
+  at every width (it was phone-only), so the mark is visible in the app on desktop.
+No old blue-gradient assets remain in use. Checks: npx tsc --noEmit PASS,
+eslint on changed tsx PASS, npm run build PASS. Deploy: run from this session
+after the 17:33 UTC Guardian sweep clears; see next entry.
 
 ## 21 October 2026 — Push-reveal rail, Outfit and dynamic Home LIVE at https://atlassystem.online
 

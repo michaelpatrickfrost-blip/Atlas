@@ -97,10 +97,11 @@ svg.lucide { stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; 
 .atlas-rail[data-state=peek] .atlas-rail-handle, .atlas-rail[data-state=pinned] .atlas-rail-handle { opacity: 0; pointer-events: none; }
 .atlas-rail-sheet {
   position: absolute; top: 8px; bottom: 8px; left: 8px; display: flex; width: 232px; flex-direction: column; gap: 4px;
-  padding: 12px; background: transparent; opacity: 0; translate: -10px 0; pointer-events: none;
-  transition: opacity 320ms ease 120ms, translate 620ms var(--m-flow);
+  padding: 12px; background: transparent; opacity: 0; translate: -10px 0; pointer-events: none; visibility: hidden;
+  /* Hidden for real once it has slid away: out of the tab order, invisible to probes and screen readers. */
+  transition: opacity 320ms ease 120ms, translate 620ms var(--m-flow), visibility 0s linear 640ms;
 }
-.atlas-rail[data-state=peek] .atlas-rail-sheet, .atlas-rail[data-state=pinned] .atlas-rail-sheet { opacity: 1; translate: 0 0; pointer-events: auto; }
+.atlas-rail[data-state=peek] .atlas-rail-sheet, .atlas-rail[data-state=pinned] .atlas-rail-sheet { opacity: 1; translate: 0 0; pointer-events: auto; visibility: visible; transition-delay: 120ms, 0s, 0s; }
 /* The workspace panel is the thing that moves; it casts its shadow onto the uncovered rail. */
 .atlas-frame { transition: padding 620ms var(--m-flow); }
 @media (min-width: 1024px) { .atlas-panel { box-shadow: -18px 0 50px -30px rgb(40 32 20 / 35%), var(--m-shadow-float); } }
@@ -510,3 +511,7 @@ summary::after { transition: transform 360ms var(--m-flow); }
   .atlas-reveal, .atlas-launcher-list > li { animation: none !important; }
   .atlas-home-shell .atlas-panel::before, .atlas-sev-critical .atlas-attention-dot { animation: none !important; }
 }
+
+/* Brand mark in the top bar: the ink tile, always present, Home on click. */
+.atlas-top-brand img { transition: transform 320ms var(--m-flow); }
+.atlas-top-brand:hover img { transform: scale(1.08); }

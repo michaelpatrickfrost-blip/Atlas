@@ -11,9 +11,11 @@ This release carries the Stack brand (icon, favicon, Apple icon, mark, wordmark,
 logo; top-bar Home tile at every width) and the rail fix for the Guardian sweep.
 Three earlier attempts today exited 1 silently on the release lock (the failing
 sweep cycle; see the entry below); the deploy was started within seconds of the
-sweep reporting `failed`. Still to confirm: the next automatic Guardian sweep
-completes against this runtime (expected within ~40 min of 19:22 UTC); the
-main-sync PR branch (michaelpatrickfrost-blip/Atlas#1) is refreshed from this head.
+sweep reporting `failed`. Confirmed 19:25 UTC: the first automatic Guardian sweep
+against this runtime completed in ~2.5 min — 300 page requests, Chromium checked
+100 rendered pages and 117 explicit safe toggles, 0 browser failures, 0 findings
+(the previous runs had failed after ~30 min since 06:18). The main-sync PR branch
+(michaelpatrickfrost-blip/Atlas#1) is refreshed from this head.
 
 ## 21 October 2026 — Guardian sweep regression from the hidden rail (fix on release branch)
 

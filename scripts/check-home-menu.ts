@@ -79,6 +79,16 @@ async function main() {
         page.getByRole("heading", { name: /^Your apps\b/ }),
       ).toBeVisible();
       await assertBusinessBoundary();
+      // Desktop keeps the rail tucked away (items slid aside and faded) until it
+      // is pinned, so measure it open and settled rather than mid-reveal.
+      if (width >= 1024) {
+        if (!(await page.locator(".atlas-rail[data-state=pinned]").count()))
+          await page.getByRole("button", { name: "Toggle navigation" }).click();
+        await expect(page.locator(".atlas-rail[data-state=pinned]")).toHaveCount(1);
+        await page.evaluate(() =>
+          Promise.all(document.getAnimations().map((animation) => animation.finished.catch(() => undefined))),
+        );
+      }
       const utilities = page.locator(
         'nav[aria-label="Workspace utilities"]:visible',
       );
@@ -213,10 +223,15 @@ async function main() {
         const triggerBounds = await trigger.boundingBox();
         assert(popupBounds && triggerBounds);
         assert(popupBounds.width <= 900 && popupBounds.height <= height - triggerBounds.height, "Apps remains a compact popup.");
+        // Desktop opens beside the rail but below the workspace header, so the header's
+        // Search and controls stay reachable while the menu is open.
+        const headerBottom = width >= 1024
+          ? await page.getByRole("button", { name: /Search apps, people, reports/ }).evaluate((el) => el.closest("header")!.getBoundingClientRect().bottom)
+          : 0;
         assert(width >= 1024
-          ? popupBounds.x >= triggerBounds.x + triggerBounds.width && popupBounds.y <= triggerBounds.y
+          ? popupBounds.x >= triggerBounds.x + triggerBounds.width && popupBounds.y >= headerBottom - 1
           : (width < 640 || Math.abs(popupBounds.x - triggerBounds.x) < 2) && popupBounds.y >= triggerBounds.y + triggerBounds.height,
-          "Popup is anchored beside the rail's Apps button on desktop and below Apps otherwise.");
+          "Popup is anchored beside the rail on desktop, below the header, and below Apps otherwise.");
         await page.screenshot({
           path: `${evidence}/apps-menu-${name}.png`,
           fullPage: false,

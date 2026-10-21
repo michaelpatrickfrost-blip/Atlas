@@ -1,3 +1,20 @@
+## 21 October 2026 — Stack brand + Guardian rail fix LIVE (b431bddc)
+
+Deployed b431bddc4c9a995e777732f60e159a54149170a9 (codex/macro-ui-overhaul-20261020)
+to https://atlassystem.online at 19:14–19:22 UTC: candidate and public polish
+acceptance both PASS (36 routes × 3 widths, phone Apps/focus, client crossfade,
+reduced motion, Home/Apps/header/search business-boundary checks); no restore;
+/api/health/release reports b431bddc. Pre-deploy backup
+/home/administrator/backups/atlas-pre-deploy-20261021-191442; rollback runtime
+/opt/atlas-releases/e95cd16433c72db6904c3313c78bacc6ba646578 retained.
+This release carries the Stack brand (icon, favicon, Apple icon, mark, wordmark,
+logo; top-bar Home tile at every width) and the rail fix for the Guardian sweep.
+Three earlier attempts today exited 1 silently on the release lock (the failing
+sweep cycle; see the entry below); the deploy was started within seconds of the
+sweep reporting `failed`. Still to confirm: the next automatic Guardian sweep
+completes against this runtime (expected within ~40 min of 19:22 UTC); the
+main-sync PR branch (michaelpatrickfrost-blip/Atlas#1) is refreshed from this head.
+
 ## 21 October 2026 — Guardian sweep regression from the hidden rail (fix on release branch)
 
 Since the push-reveal rail went live (e95cd164, ~06:18 UTC) every six-hourly

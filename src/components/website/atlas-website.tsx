@@ -407,7 +407,7 @@ export function AtlasWebsite({ signedIn = false }: { signedIn?: boolean }) {
             <img
               src="/brand/atlas-wordmark.png"
               alt="Atlas"
-              width={148}
+              width={188}
               height={64}
             />
           </Link>
@@ -934,7 +934,7 @@ export function AtlasWebsite({ signedIn = false }: { signedIn?: boolean }) {
             <img
               src="/brand/atlas-wordmark.png"
               alt="Atlas"
-              width={116}
+              width={147}
               height={50}
             />
           </Link>

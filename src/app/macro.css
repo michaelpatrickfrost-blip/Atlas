@@ -510,3 +510,7 @@ summary::after { transition: transform 360ms var(--m-flow); }
   .atlas-reveal, .atlas-launcher-list > li { animation: none !important; }
   .atlas-home-shell .atlas-panel::before, .atlas-sev-critical .atlas-attention-dot { animation: none !important; }
 }
+
+/* Brand mark in the top bar: the ink tile, always present, Home on click. */
+.atlas-top-brand img { transition: transform 320ms var(--m-flow); }
+.atlas-top-brand:hover img { transform: scale(1.08); }

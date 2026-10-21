@@ -1,23 +1,31 @@
-## 21 October 2026 — New "A." brand mark and wordmark (release branch, deploy pending)
+## 21 October 2026 — Brand: the Stack mark replaces the "A." draft (release branch, deploy pending)
 
-Michael asked for an icon and logo that match the ink-on-paper system. New set,
-rendered from the bundled Fraunces/Outfit fonts by scripts/brand/render-brand.mjs
-(Playwright; `node scripts/brand/render-brand.mjs <repo> <outdir>`), then copied in:
-- public/brand/atlas-icon.png 1024² — ink (#1a1917) squircle tile, paper "A"
-  in Fraunces 650, red full stop (#c9574b).
-- public/brand/atlas-mark.png 515×400 — the same "A." in ink on transparent
-  (admin shell, chat dock use it with multiply).
-- public/brand/atlas-wordmark.png now 336×145 (tight "Atlas." with red stop;
-  was a 900-wide "ATLAS"); AtlasLogo width/height attrs and the marketing
-  website header/footer sizes updated, .website-brand img gets object-fit:
-  contain so the fixed 154×54 box no longer distorts it.
-- public/brand/atlas-logo.png 905×715 — tile, "Atlas.", "Plan. Make. Deliver."
+Michael asked for an icon and logo that match the ink-on-paper system, rejected
+the serif "A." draft (935750f6, never deployed: its release collided with the
+six-hourly Guardian sweep, which holds the release lock ~20 min from :33 at
+05/11/17/23 UTC — a deploy started then waits 600 s and exits 1 silently) and
+three further sheets, and chose the "Stack": three rounded horizontal layers
+rising to a red point — the system's layers — with "Atlas" in Outfit 700.
+Rendered by scripts/brand/render-brand.mjs (Playwright, bundled Outfit;
+`node scripts/brand/render-brand.mjs <repo> <outdir>`), then copied in:
+- public/brand/atlas-icon.png 1024² — ink (#1a1917) squircle tile, paper
+  layers at 100/72/48 %, red (#c9574b) point.
+- public/brand/atlas-mark.png 515×400 — the mark in ink on transparent (admin
+  shell, chat dock use it with multiply); public/brand/atlas-mark.svg added as
+  the vector source.
+- public/brand/atlas-wordmark.png 426×145 — mark + "Atlas" (was a 900-wide
+  "ATLAS"); AtlasLogo width/height attrs and the marketing website header/footer
+  <img> sizes updated; .website-brand img gets object-fit: contain so the fixed
+  154×54 box no longer distorts it.
+- public/brand/atlas-logo.png 905×715 — tile, "Atlas", "Plan. Make. Deliver."
   with red stops (sign-in and admin sign-in).
 - src/app/icon.png 512, apple-icon.png 180 (ink background, no transparent
   corners), favicon.ico 16/32/48 generated with Pillow from the tile.
-No old blue-gradient assets remain in use. Checks: npx tsc --noEmit PASS
-(after removing stray macOS "* 2.ts" duplicates from .next/types), eslint on
-changed tsx PASS, npm run build PASS. Deploy delegated; see next entry.
+- src/components/shell/topbar.tsx: the Home link with the brand tile is now shown
+  at every width (it was phone-only), so the mark is visible in the app on desktop.
+No old blue-gradient assets remain in use. Checks: npx tsc --noEmit PASS,
+eslint on changed tsx PASS, npm run build PASS. Deploy: run from this session
+after the 17:33 UTC Guardian sweep clears; see next entry.
 
 ## 21 October 2026 — Push-reveal rail, Outfit and dynamic Home LIVE at https://atlassystem.online
 

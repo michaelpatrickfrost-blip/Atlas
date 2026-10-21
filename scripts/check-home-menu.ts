@@ -168,6 +168,8 @@ async function main() {
         ["small-phone", 320, 740],
       ] as const) {
         await page.setViewportSize({ width, height });
+        // Desktop keeps the rail tucked away until it is pinned; phones use the header Apps button.
+        if (width >= 1024) { const toggle = page.getByRole("button", { name: "Toggle navigation" }); if (!(await page.locator(".atlas-rail[data-state=pinned]").count())) await toggle.click(); }
         const trigger = page.getByRole("button", { name: "Apps", exact: true });
         await trigger.click();
         const panel = page.getByRole("region", {
@@ -231,6 +233,7 @@ async function main() {
       // popup deliberately covers the second header row. Mobile Escape/focus
       // and all four viewport fits were checked above without forced clicks.
       await page.setViewportSize({ width: 1448, height: 1086 });
+      if (!(await page.locator(".atlas-rail[data-state=pinned]").count())) await page.getByRole("button", { name: "Toggle navigation" }).click();
       await page.getByRole("button", { name: "Apps", exact: true }).click();
       await page
         .getByRole("button", { name: /Search apps, people, reports/ })

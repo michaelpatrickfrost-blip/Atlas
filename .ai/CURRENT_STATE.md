@@ -1,3 +1,28 @@
+## 21 October 2026 — Push-reveal rail, Outfit, dynamic Home (release branch, deploy pending)
+
+Michael's review of the live Macro release: the rail must not overlay the work
+("the screen needs to move seamlessly right and the menu appears neatly behind"),
+the UI font should be rounder/posher, and Home was bland. Changes on
+codex/macro-ui-overhaul-20261020 (worktree /Users/michael/Desktop/atlas-macro-ui):
+- src/components/shell/rail-nav.tsx: rail hidden at rest (slim edge handle).
+  Hovering the handle / focusing into the rail / pinning (top-bar toggle
+  `RailToggle`, or ⌘.) widens the rail column so the floating workspace panel
+  slides right and uncovers the navigation; it slides back on leave, after
+  navigation, and stays open while the Apps popup is open. Pin preference in
+  localStorage key `atlas.rail` (per-viewer convenience only). Items cascade in.
+- Fonts: Outfit replaces Figtree for UI (bundled, OFL, README/SHA updated);
+  Fraunces titles unchanged.
+- src/app/(app)/home/page.tsx: "Today" band (weekday/date, greeting with first
+  name, live tiles for attention / open tasks via loadMyTaskCount / active goals),
+  apps index with serif section titles, sticky side column for attention (pigment
+  severity dots, Urgent/Review tags) and goals; staggered entrance reveal and a
+  slow aurora wash behind Home only. No marketing copy; every figure is real data.
+- scripts/check-home-menu.ts: on desktop widths pins the rail via "Toggle
+  navigation" before clicking Apps (rail is hidden by default now).
+Checks: npx tsc --noEmit PASS; eslint on changed files PASS; npm run build PASS.
+Deploy: delegated (ATLAS_RELEASE_ACCEPTANCE=polish); see next entry. PR
+michaelpatrickfrost-blip/Atlas#1 (main-sync) needs this merged in after deploy.
+
 ## 20 October 2026 — Macro ink-on-paper redesign LIVE at https://atlassystem.online
 
 Supersedes the "build and deploy delegated" status of the entry below. Deployed
